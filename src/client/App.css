@@ -6,4 +6,13 @@ body {
 }
 
 @layer components {
+    .circled {
+        @apply rounded-full w-55 h-55 flex justify-center items-center
+    }
+    .mid-title {
+        @apply max-w-55 text-center text-2xl text-[#808080] font-bold my-5
+    }
+    .mid-text {
+        @apply max-w-55 text-center text-sm text-[#808080]
+    }
 }
