@@ -1,5 +1,7 @@
 import Shneta from "../../assets/images/Shneta.png";
 import menu from "../../assets/images/icons8-menu-50.png";
+import {useState} from 'react'
+import { Link, NavLink } from "react-router-dom"
 
 export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false)

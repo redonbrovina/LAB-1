@@ -1,4 +1,5 @@
 import Shneta from "../../assets/images/Shneta.png";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
     return (
