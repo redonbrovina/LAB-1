@@ -2,6 +2,7 @@ import './App.css';
 import Layout from './components/layout/Layout';
 import Home from "./pages/Home";
 import Services from "./pages/Services";
+import About from "./pages/About"
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
