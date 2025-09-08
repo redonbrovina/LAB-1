@@ -36,7 +36,7 @@ export default function Signup() {
                 setCountries(data)
             }
         }catch(err){
-            setErrorMessage("Network Error")
+            setErrorMessage("Network Error ", err)
         }
     }
 
@@ -46,14 +46,6 @@ export default function Signup() {
 
     const validateForm = () => {
         let isValid = true;
-        const newErrors = {
-            companyName: "",
-            email: "",
-            address: "",
-            city: "",
-            postalCode: "",
-            password: "",
-        };
 
         if (formData.companyName.length < 2) {
             setErrorMessage("Company name must be at least 2 characters long");
@@ -119,7 +111,7 @@ export default function Signup() {
             }
 
         }catch(err){
-            setErrorMessage("Network Error")
+            setErrorMessage("Network Error ", err)
         }
     };
 
