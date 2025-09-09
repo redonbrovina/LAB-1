@@ -1,5 +1,5 @@
 import {Link, useNavigate} from "react-router-dom"
-import {useEffect, useState} from "react"
+import {useState} from "react"
 import Shneta from "../assets/images/Shneta.png"
 import pic from "../assets/images/login5.jpg"
 
@@ -15,7 +15,6 @@ export default function Signup() {
         password: "",
     });
 
-    const [countries, setCountries] = useState([])
     const [errorMessage, setErrorMessage] = useState("")
 
     const navigate = useNavigate()
@@ -28,91 +27,56 @@ export default function Signup() {
         }));
     };
 
-    const fetchCountries = async () => {
-        try {
-            const response = await fetch("http://localhost:5000/api/countries")
-            const data = await response.json()
-            if(response.ok){
-                setCountries(data)
-            }
-        }catch(err){
-            setErrorMessage("Network Error ", err)
-        }
-    }
-
-    useEffect(() => {
-        fetchCountries()
-    }, [])
-
     const validateForm = () => {
-        let isValid = true;
-
+        // Check fields in order and return the first error found
         if (formData.companyName.length < 2) {
+            console.log("Setting error message");
             setErrorMessage("Company name must be at least 2 characters long");
-            isValid = false;
+            return false;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(formData.email)) {
             setErrorMessage("Please enter a valid email address");
-            isValid = false;
+            return false;
         }
 
         if (formData.address.length < 5) {
             setErrorMessage("Please enter a valid address");
-            isValid = false;
+            return false;
         }
 
         if (formData.city.length < 2) {
             setErrorMessage("Please enter a valid city");
-            isValid = false;
+            return false;
         }
 
         const postalCodeRegex = /^[0-9]{5,10}$/;
         if (!postalCodeRegex.test(formData.postalCode)) {
             setErrorMessage("Please enter a valid postal code (5-10 digits)");
-            isValid = false;
+            return false;
         }
 
         if (formData.password.length < 8) {
             setErrorMessage("Password must be at least 8 characters long");
-            isValid = false;
+            return false;
         }
 
-        if (!formData.shtetiId) {
-            setErrorMessage("Please select a country");
-            isValid = false;
-        }
-
-        return isValid;
+        setErrorMessage(""); // Clear any previous errors
+        return true;
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         const isValid = validateForm();
 
         if(!isValid){
             return;
         }
 
-        try{
-            const {companyName, email, address, shtetiId, city, postalCode, password} = formData;
-            const response = await fetch("http://localhost:5000/api/signup", {
-            method: "POST",
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({companyName, email, address, shtetiId, city, postalCode, password})
-            })
-    
-            if(response.ok){
-                navigate('/signup-success')
-            }else {
-                const data = await response.json()
-                setErrorMessage(data.message || 'Login failed')
-            }
-
-        }catch(err){
-            setErrorMessage("Network Error ", err)
-        }
+        // If all validations pass, navigate to success page
+        navigate('/signup-success');
     };
 
     return(
@@ -132,7 +96,6 @@ export default function Signup() {
                                 name="companyName"
                                 value={formData.companyName}
                                 onChange={handleChange}
-                                required
                                 className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
                             />
 
@@ -142,7 +105,6 @@ export default function Signup() {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                required
                                 className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
                             />
 
@@ -152,7 +114,6 @@ export default function Signup() {
                                 name="address"
                                 value={formData.address}
                                 onChange={handleChange}
-                                required
                                 className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
                             />
 
@@ -161,15 +122,9 @@ export default function Signup() {
                                 name="shtetiId"
                                 value={formData.shtetiId}
                                 onChange={handleChange}
-                                required
                                 className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3 text-gray-500"
                             >
                                 <option value="">Select a country</option>   
-                                {countries.map((country) => (
-                                    <option key={country.shtetiID} value={country.shtetiID}>
-                                        {country.emri_shtetit}
-                                    </option>
-                                ))}
                             </select>
 
                             <label className="text-[#808080] ml-3">City</label>
@@ -178,7 +133,6 @@ export default function Signup() {
                                 name="city"
                                 value={formData.city}
                                 onChange={handleChange}
-                                required
                                 className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
                             />
 
@@ -188,7 +142,6 @@ export default function Signup() {
                                 name="postalCode"
                                 value={formData.postalCode}
                                 onChange={handleChange}
-                                required
                                 className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
                             />
 
@@ -198,7 +151,6 @@ export default function Signup() {
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                required
                                 className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
                             />
                             
@@ -210,7 +162,7 @@ export default function Signup() {
                             </button>
                             
                             {errorMessage && (
-                                <p className="text-red-500 text-sm my-2">{errorMessage}</p>
+                                <p className="text-red-500 text-xs my-2 ml-3">{errorMessage}</p>
                             )}
                         </form>
                         <p className="text-sm text-[#808080] mt-5 ml-3">Already have an account? <Link className="text-[#7ED957] underline" to="/login">Sign in</Link></p>
