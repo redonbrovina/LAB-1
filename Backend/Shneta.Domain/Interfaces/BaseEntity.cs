@@ -1,8 +1,7 @@
-namespace Shneta.Core.Interfaces;
-
-public class BaseEntity<T>
+namespace Shneta.Domain.Interfaces
 {
-    public T Id { get; set; }
+    public abstract class BaseEntity
+    {
+        public int Id { get; set; }
+    }
 }
-
-
