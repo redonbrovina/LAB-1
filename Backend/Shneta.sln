@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shneta.Domain", "Shneta.Domain\Shneta.Domain.csproj", "{6194F2E1-066D-45F8-A852-C91755B525A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shneta.Infrastructure", "Shneta.Infrastructure\Shneta.Infrastructure.csproj", "{3641671C-716F-46A5-A0D1-DEE968F05C14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shneta.Application", "Shneta.Application\Shneta.Application.csproj", "{375F9B94-E183-4435-A6F1-FE0B16B66127}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shneta.API", "Shneta.API\Shneta.API.csproj", "{646E44C8-A111-4C49-9FCE-FB6F17D6E9E5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6194F2E1-066D-45F8-A852-C91755B525A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6194F2E1-066D-45F8-A852-C91755B525A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6194F2E1-066D-45F8-A852-C91755B525A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6194F2E1-066D-45F8-A852-C91755B525A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3641671C-716F-46A5-A0D1-DEE968F05C14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3641671C-716F-46A5-A0D1-DEE968F05C14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3641671C-716F-46A5-A0D1-DEE968F05C14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3641671C-716F-46A5-A0D1-DEE968F05C14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{375F9B94-E183-4435-A6F1-FE0B16B66127}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{375F9B94-E183-4435-A6F1-FE0B16B66127}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{375F9B94-E183-4435-A6F1-FE0B16B66127}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{375F9B94-E183-4435-A6F1-FE0B16B66127}.Release|Any CPU.Build.0 = Release|Any CPU
+		{646E44C8-A111-4C49-9FCE-FB6F17D6E9E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{646E44C8-A111-4C49-9FCE-FB6F17D6E9E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{646E44C8-A111-4C49-9FCE-FB6F17D6E9E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{646E44C8-A111-4C49-9FCE-FB6F17D6E9E5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
