@@ -13,7 +13,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Shneta.Domain\Shneta.Domain.csproj" />
-      <ProjectReference Include="..\Shneta.Infrastructure\Shneta.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

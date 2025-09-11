@@ -14,6 +14,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Shneta.Domain\Shneta.Domain.csproj" />
+      <ProjectReference Include="..\Shneta.Application\Shneta.Application.csproj" />
     </ItemGroup>
 
 </Project>
