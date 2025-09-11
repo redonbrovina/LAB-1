@@ -1,5 +1,5 @@
 import {Link, useNavigate} from "react-router-dom"
-import {useState} from "react"
+import {useState, useEffect} from "react"
 import svg from "../assets/images/undraw_finance_m6vw 1.png"
 
 export default function Login() {
@@ -31,22 +31,7 @@ export default function Login() {
             return
         }
         
-        try{
-            const response = await fetch("http://localhost:5000/api/login", {
-            method: "POST",
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({email, password})
-            })
-    
-            if(response.ok){
-                navigate('/dashboard')
-            }else {
-                const data = await response.json()
-                setErrorMessage(data.message || 'Login failed')
-            }
-        }catch(err){
-            setErrorMessage('Network Error')
-        }
+        navigate('/dashboard')
         
     }
 

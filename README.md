@@ -2,9 +2,45 @@
 
 
 
-Before running server and/or client there are a few steps that need to be completed
+Before running server and/or client there are a few steps that need to be completed. Follow instructions for database implementation as well.
 
-Currently both need to be started up with different commands.
+
+
+### DATABASE --- Ignore for Now
+
+
+
+In the documentation you will find Shneta.sql which is the script you can use to create the current version of the Shneta database on your own devices. Each personal device serves as a database server.
+
+
+
+Before running server, both the .net commands and the database you must set the connection string for the database. This can be changed for each person in Backend/Shneta.API/appsettings.json
+
+
+
+"DefaultConnection": "Server=LAPTOPHOQ77UM1;Database=Shneta;Trusted\_Connection=True;TrustServerCertificate=True;"
+
+
+
+You can find your own server name using:
+
+
+
+sqlcmd -L
+
+
+
+
+
+WARNING: You need to have SQL SERVER MANAGEMENT STUDIO (SSMS)
+
+The Shneta database is not automatically in your devices. You need to actually run the script to create it in order to use it. If you don't know how to run the script you can use a database name that you currently have on your device in order for the server to run successfully.
+
+
+
+The server does not run without the proper connection string.
+
+
 
 
 
@@ -42,11 +78,11 @@ dotnet restore
 
 
 
-4\. Finally, to run the server:
+4\. To run only server go:
 
 
 
-dotnet run --project Shneta.API/
+dotnet watch run --project Shneta.API/
 
 
 
@@ -82,11 +118,37 @@ npm install
 
 
 
-3\. To run the application:
+3\. To run only the client:
 
 
 
 npm run dev
+
+
+
+
+
+### CLIENT AND SERVER RUN
+
+
+
+To run both client and server you need to be on the main directory (LAB-1) and type the following commands:
+
+
+
+1. npm install
+
+
+
+2\. npm start
+
+
+
+
+
+npm start will run both server and client concurrently. To run npm start, please check that you have installed dependencies on both the server and the client.
+
+
 
 
 
