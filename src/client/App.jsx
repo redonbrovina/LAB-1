@@ -14,10 +14,11 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="services" element={<Services />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/about" element={<About />} />
         </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} /> 
       </Routes>
     </BrowserRouter>

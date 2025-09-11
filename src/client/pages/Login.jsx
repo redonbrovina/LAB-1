@@ -31,22 +31,8 @@ export default function Login() {
             return
         }
         
-        try{
-            const response = await fetch("http://localhost:5000/api/login", {
-            method: "POST",
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({email, password})
-            })
-    
-            if(response.ok){
-                navigate('/dashboard')
-            }else {
-                const data = await response.json()
-                setErrorMessage(data.message || 'Login failed')
-            }
-        }catch(err){
-            setErrorMessage('Network Error')
-        }
+        
+        navigate('/dashboard')
         
     }
 
@@ -66,8 +52,7 @@ export default function Login() {
                      value={email}
                      onChange={(e) => {
                         setEmail(e.target.value)
-                     }}
-                     required 
+                     }} 
                      className="rounded-full px-3 py-2 bg-[#EDECEC]"></input>
 
                     <label className="text-[#808080] pt-5">Password</label>
@@ -76,17 +61,16 @@ export default function Login() {
                     value={password}
                     onChange={(e) => {
                         setPassword(e.target.value)
-                    }}
-                    required 
+                    }} 
                     className="rounded-full px-3 py-2 bg-[#EDECEC]"></input>
 
                     <button type="submit" onClick={handleSubmit} className="mt-5 py-2 bg-[#7ED957] text-white cursor-pointer text-xl rounded-full hover:bg-[#6bc348] transition-colors duration-200">Login</button>
 
                      {errorMessage && (
-                            <p className="text-red-500 text-sm my-2">{errorMessage}</p>
+                            <p className="text-red-500 text-xs my-2 ml-3">{errorMessage}</p>
                     )}
                 </form>
-                <p className="pt-3 text-[#808080]">Don't have an account? <Link className="underline text-[#7ED957] text-sm" to="/signup">Sign Up!</Link></p>
+                <p className="pt-3 text-[#808080] text-sm ml-3">Don't have an account? <Link className="underline text-[#7ED957] text-sm" to="/signup">Sign Up!</Link></p>
             </div>
         </div>
         </>
