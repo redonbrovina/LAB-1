@@ -4,7 +4,7 @@
   },
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "cd Backend && dotnet run --project Shneta.API/",
+    "server": "cd Backend && dotnet watch run --project Shneta.API/",
     "client": "cd Frontend && npm run dev"
   }
 }
