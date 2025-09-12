@@ -2,79 +2,40 @@
 
 
 
-Before running server and/or client there are a few steps that need to be completed
-
-Currently both need to be started up with different commands.
 
 
-
-### Server
+### Before Startup
 
 
 
-1. Before starting the run on the server, check if you have dotnet installed in your CLI:
+To start up the application you need to first install Node (https://nodejs.org/en/download/)
 
 
 
-dotnet --version
+The database is connected locally using XAMPP.
+
+Start Apache and MYSQL from the XAMPP Control Panel.
 
 
 
-If you do not you will need to install the .NET 9.0 SDK (https://dotnet.microsoft.com/en-us/download)
-
-After intstall check with the previous command if dotnet was installed successfully.
+After starting both up you will find in the /current\_database folder the database file (shneta.sql). You must import this database in phpMyAdmin in order for the database connection to be successful and the application to run.
 
 
-
-2\. Check to see that you are in the project root (LAB-1) and navigate to Backend:
-
-
-
-cd Backend
-
-
-
-3\. Then run to restore project dependencies for .NET:
-
-
-
-dotnet restore
-
-
-
-4\. Finally, to run the server:
-
-
-
-dotnet run --project Shneta.API/
+For any changes made to the database, you must export and replace the current version of the database in the /current\_database folder.
 
 
 
 
 
-Note: Only after you first pull commits do you need to run dotnet restore. After installing dependencies, you can run the server whenever you want.
+------------------------------------------------------------------------------------------------------
 
 
 
-
-
-### Client
-
-
-
-Before running the client application always install dependencies in the LAB-1/ folder using the following command in the command prompt/terminal:
+### App Startup
 
 
 
-1. First check that you are in the project root and navigate to frontend:
-
-
-
-cd Frontend
-
-
-
-2\. Then install dependencies using:
+To start up the application you must first install dependencies. Do this with the command:
 
 
 
@@ -82,7 +43,7 @@ npm install
 
 
 
-3\. To run the application:
+To start up the actual application you use:
 
 
 
@@ -92,5 +53,41 @@ npm run dev
 
 
 
-Note: Same as the Server, only after pulling commits do you need to run npm install. After installing dependencies you can run the client application whenever you want.
+This command runs the server and the client concurrently. You can find details on how this works in the package.json file in the main directory under 'scripts'.
+
+
+
+-------------------------------------------------------------------------------------------------------
+
+
+
+### 
+
+### General Information
+
+
+
+The server runs on port 5000, while the client runs on port 5173 (vite default)
+
+In \_documentation you will find the .drawio files for the erd and physical diagrams of the database.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
