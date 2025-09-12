@@ -30,6 +30,24 @@ export default function Login() {
         if(error){
             return
         }
+
+        try{
+            const response = await fetch("http://localhost:5000/api/login", {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email, password})
+            })
+
+            if(response.ok){
+                navigate('/dashboard')
+            }else{
+                const data = await response.json()
+                setErrorMessage(data.message || 'Login failed')
+            }
+
+        }catch(err){
+            setErrorMessage('Network Error')
+        }
         
         
         navigate('/dashboard')

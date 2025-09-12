@@ -1,5 +1,5 @@
 import {Link, useNavigate} from "react-router-dom"
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import Shneta from "../assets/images/Shneta.png"
 import pic from "../assets/images/login5.jpg"
 
@@ -15,6 +15,7 @@ export default function Signup() {
         password: "",
     });
 
+    const [shtetet, setShtetet] = useState([])
     const [errorMessage, setErrorMessage] = useState("")
 
     const navigate = useNavigate()
@@ -26,6 +27,20 @@ export default function Signup() {
             [name]: value
         }));
     };
+
+    const fetchShtetet = async () => {
+        try{
+            const response = await fetch("http://localhost:5000/api/shtetet")
+            const data = await response.json()
+            setShtetet(data)
+        }catch(err){
+            console.log("Error fetching countries: ", err)
+        }
+    }
+
+    useEffect(()=>{
+        fetchShtetet()
+    }, [])
 
 
     const validateForm = () => {
@@ -76,7 +91,23 @@ export default function Signup() {
             return;
         }
 
-        navigate('/signup-success')        
+        try{
+            const {companyName, email, address, shtetiId, city, postalCode, password} = formData
+            const response = await fetch("http://localhost:5000/api/signup", {
+                method:'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({companyName, email, address, shtetiId, city, postalCode, password})
+            })
+
+            if(response.ok){
+                navigate('/signup-success')
+            }else{
+                const data = await response.json()
+                setErrorMessage(data.message || 'Signup Failed')
+            }
+        }catch(err){
+            setErrorMessage('Network Error')
+        }
     }
 
     return(
@@ -124,6 +155,12 @@ export default function Signup() {
                                 onChange={handleChange}
                                 className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3 text-gray-500"
                             >
+                                <option value="">Select a Country</option>
+                                {shtetet.map((shteti) => (
+                                    <option key={shteti.ShtetiID} value={shteti.ShtetiID}>
+                                        {shteti.Emri_shtetit}
+                                    </option>
+                                ))}
                             </select>
 
                             <label className="text-[#808080] ml-3">City</label>
