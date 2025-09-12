@@ -31,6 +31,7 @@ export default function Signup() {
     const validateForm = () => {
 
         if (formData.companyName.length < 2) {
+            console.log("Setting error message");
             setErrorMessage("Company name must be at least 2 characters long");
             return false;
         }
@@ -62,16 +63,13 @@ export default function Signup() {
             return false;
         }
 
-        if (!formData.shtetiId) {
-            setErrorMessage("Please select a country");
-            return false;
-        }
-
+        setErrorMessage(""); // Clear any previous errors
         return true;
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         const isValid = validateForm();
 
         if(!isValid){
