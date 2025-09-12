@@ -27,10 +27,10 @@ export default function Signup() {
         }));
     };
 
-
     const validateForm = () => {
-
+        // Check fields in order and return the first error found
         if (formData.companyName.length < 2) {
+            console.log("Setting error message");
             setErrorMessage("Company name must be at least 2 characters long");
             return false;
         }
@@ -62,24 +62,22 @@ export default function Signup() {
             return false;
         }
 
-        if (!formData.shtetiId) {
-            setErrorMessage("Please select a country");
-            return false;
-        }
-
+        setErrorMessage(""); // Clear any previous errors
         return true;
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         const isValid = validateForm();
 
         if(!isValid){
             return;
         }
 
-        navigate('/signup-success')        
-    }
+        // If all validations pass, navigate to success page
+        navigate('/signup-success');
+    };
 
     return(
         <>
@@ -126,6 +124,7 @@ export default function Signup() {
                                 onChange={handleChange}
                                 className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3 text-gray-500"
                             >
+                                <option value="">Select a country</option>   
                             </select>
 
                             <label className="text-[#808080] ml-3">City</label>
@@ -163,7 +162,7 @@ export default function Signup() {
                             </button>
                             
                             {errorMessage && (
-                                <p className="text-red-500 text-xs mt-4 mb-2 ml-3">{errorMessage}</p>
+                                <p className="text-red-500 text-xs my-2 ml-3">{errorMessage}</p>
                             )}
                         </form>
                         <p className="text-sm text-[#808080] mt-5 ml-3">Already have an account? <Link className="text-[#7ED957] underline" to="/login">Sign in</Link></p>
