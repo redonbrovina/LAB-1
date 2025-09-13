@@ -72,7 +72,20 @@ The server runs on port 5000, while the client runs on port 5173 (vite default)
 In \_documentation you will find the .drawio files for the erd and physical diagrams of the database.
 
 
+VS CODE TERMINAL FIX
 
+To run scripts on the vs code terminal complete the following steps:
+Open windows powershell on your computer and check your execution policy with the following command:
+
+Get-ExecutionPolicy
+
+If it shows up as restricted change it with the following command:
+
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+
+Check Get-ExecutionPolicy again at it should show up as RemoteSigned.
+
+Re-open vs code and you should be able to run scripts in the vs code terminal.
 
 
 

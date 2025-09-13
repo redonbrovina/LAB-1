@@ -1,22 +1,30 @@
 const express = require('express')
 const router = express.Router()
-const pool = require('../database/Database')
+const { Shteti } = require('../models')
 
-router.get('/shtetet', (req, res)=>{
-    console.log('Fetching countries...')
-    pool.query(
-        'SELECT ShtetiID, Emri_shtetit FROM shteti ORDER BY Emri_shtetit',
-        (error, results) => {
-            if(error) {
-                console.log('Database Error when fetching countries', error)
-                return res.status(500).json({
-                    message: 'Error fetching countries',
-                    error: error.message
-                })
-            }
-            res.json(results)
-        }
-    )
+// Initialize model
+const shtetiModel = new Shteti()
+
+router.get('/shtetet', async (req, res) => {
+    try {
+        console.log('Fetching countries...')
+        const countries = await shtetiModel.findAll({
+            orderBy: 'emri_shtetit'
+        })
+        
+        const formattedCountries = countries.map(country => ({
+            ShtetiID: country.shtetiID,
+            Emri_shtetit: country.emri_shtetit
+        }))
+        
+        res.json(formattedCountries)
+    } catch (error) {
+        console.log('Database Error when fetching countries', error)
+        return res.status(500).json({
+            message: 'Error fetching countries',
+            error: error.message
+        })
+    }
 })
 
 router.post('/login', (req, res)=>{
