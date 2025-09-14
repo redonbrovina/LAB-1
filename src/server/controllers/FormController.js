@@ -47,4 +47,4 @@ router.get('/test', (req, res)=>{
     return res.status(200)
 })
 
-module.exports = router
+module.exports = router;
