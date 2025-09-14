@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const { ShtetiRepository } = require('../repositories')
-const shtetiRep = new ShtetiRepository()
+const { ShtetiService } = require('../services')
+const shtetiService = new ShtetiService()
 
 
 router.post('/login', (req, res)=>{
@@ -21,7 +21,7 @@ router.post('/signup', (req, res)=>{
 router.get('/shtetet', async (req, res) => {
     try{
         console.log('Fetching countries...')
-        const countries = await shtetiRep.getAllShtetet()
+        const countries = await shtetiService.getAllShtetet()
         return res.status(200).json(countries)
     } catch (error) {
             res.status(500).json({
