@@ -1,9 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-
-const formRoutes = require('./src/server/routes/form');
-app.use('/api/form', formRoutes);
+const formRoutes = require('./src/server/controllers/FormController');
 
 const pagesaRoutes = require('./src/server/routes/pagesa');
 const menyraPagesesRoutes = require('./src/server/routes/menyraPageses');
@@ -15,12 +13,10 @@ app.use(cors({
   credentials: true
 }));
 
-//app.use(express.json());
+app.use(express.json());
 
 app.use('/api', formRoutes);
-app.use('/api/pagesa', pagesaRoutes);
-app.use('/api/menyra-pageses', menyraPagesesRoutes);
-app.use('/api/stock-moves', levizjaNeStokRoutes);
+app.use('/api', pagesaRoutes);
 
 const port = 5000;
 app.listen(port, () => console.log(`Server is running on port ${port}`));
