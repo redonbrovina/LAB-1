@@ -1,11 +1,7 @@
-const express = require('express');
-const cors = require('cors');
-const app = express();
-const formRoutes = require('./src/server/controllers/FormController');
-
-const pagesaRoutes = require('./src/server/routes/pagesa');
-const menyraPagesesRoutes = require('./src/server/routes/menyraPageses');
-const levizjaNeStokRoutes = require('./src/server/routes/levizjaNeStok');
+const express = require('express')
+const cors = require('cors')
+const app = express()
+const formRoutes = require('./src/server/routes/formRoutes')
 
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:5000'],
