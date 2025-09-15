@@ -1,31 +1,20 @@
-const ProduktVariacioni = require("../models/ProduktVariacioni");
-const Forma = require("../models/Forma");
-const Doza = require("../models/Doza");
-const Furnitori = require("../models/Furnitori");
+const BaseRepository = require("./BaseRepository");
 
-class ProduktVariacioniRepository {
-  async findAll() {
-    return await ProduktVariacioni.findAll({
-      include: [Forma, Doza, Furnitori]
-    });
+class ProduktVariacioniRepository extends BaseRepository {
+  constructor() {
+    super("ProduktVariacioni", "ProduktVariacioniID");
   }
 
-  async findById(id) {
-    return await ProduktVariacioni.findByPk(id, {
-      include: [Forma, Doza, Furnitori]
-    });
-  }
-
-  async create(data) {
-    return await ProduktVariacioni.create(data);
-  }
-
-  async update(id, data) {
-    return await ProduktVariacioni.update(data, { where: { ProduktVariacioniID: id } });
-  }
-
-  async delete(id) {
-    return await ProduktVariacioni.destroy({ where: { ProduktVariacioniID: id } });
+  // shembull: me marrë variacione me furnitor, formë, dozë
+  async getVariacioneTePlota() {
+    const query = `
+      SELECT pv.*, f.emri AS furnitori, d.doza, fo.lloji_formes
+      FROM ProduktVariacioni pv
+      JOIN Furnitori f ON pv.FurnitoriID = f.FurnitoriID
+      JOIN Doza d ON pv.DozaID = d.DozaID
+      JOIN Forma fo ON pv.FormaID = fo.FormaID
+    `;
+    return await this.query(query);
   }
 }
 
