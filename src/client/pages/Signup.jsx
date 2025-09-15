@@ -1,17 +1,18 @@
 import {Link, useNavigate} from "react-router-dom"
 import {useEffect, useState} from "react"
+import {publicApiPost, publicApiGet} from "../utils/api"
 import Shneta from "../assets/images/Shneta.png"
 import pic from "../assets/images/login5.jpg"
 
 export default function Signup() {
 
     const [formData, setFormData] = useState({
-        companyName: "",
+        emri_kompanise: "",
         email: "",
-        address: "",
+        adresa: "",
         shtetiId: "",
-        city: "",
-        postalCode: "",
+        qyteti: "",
+        kodi_postal: "",
         password: "",
     });
 
@@ -30,8 +31,7 @@ export default function Signup() {
 
     const fetchShtetet = async () => {
         try{
-            const response = await fetch("http://localhost:5000/api/shtetet")
-            const data = await response.json()
+            const data = await publicApiGet('/form/shtetet')
             setShtetet(data)
         }catch(err){
             console.log("Error fetching countries: ", err)
@@ -45,7 +45,7 @@ export default function Signup() {
 
     const validateForm = () => {
 
-        if (formData.companyName.length < 2) {
+        if (formData.emri_kompanise.length < 2) {
             console.log("Setting error message");
             setErrorMessage("Company name must be at least 2 characters long");
             return false;
@@ -57,18 +57,18 @@ export default function Signup() {
             return false;
         }
 
-        if (formData.address.length < 5) {
+        if (formData.adresa.length < 5) {
             setErrorMessage("Please enter a valid address");
             return false;
         }
 
-        if (formData.city.length < 2) {
+        if (formData.qyteti.length < 2) {
             setErrorMessage("Please enter a valid city");
             return false;
         }
 
         const postalCodeRegex = /^[0-9]{5,10}$/;
-        if (!postalCodeRegex.test(formData.postalCode)) {
+        if (!postalCodeRegex.test(formData.kodi_postal)) {
             setErrorMessage("Please enter a valid postal code (5-10 digits)");
             return false;
         }
@@ -92,21 +92,11 @@ export default function Signup() {
         }
 
         try{
-            const {companyName, email, address, shtetiId, city, postalCode, password} = formData
-            const response = await fetch("http://localhost:5000/api/signup", {
-                method:'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({companyName, email, address, shtetiId, city, postalCode, password})
-            })
-
-            if(response.ok){
-                navigate('/signup-success')
-            }else{
-                const data = await response.json()
-                setErrorMessage(data.message || 'Signup Failed')
-            }
+            const {emri_kompanise, email, adresa, shtetiId, qyteti, kodi_postal, password} = formData
+            await publicApiPost('/form/signup', {emri_kompanise, email, adresa, shtetiId, qyteti, kodi_postal, password})
+            navigate('/signup-success')
         }catch(err){
-            setErrorMessage('Network Error')
+            setErrorMessage(err.message || 'Signup Failed')
         }
     }
 
@@ -124,8 +114,8 @@ export default function Signup() {
                             <label className="text-[#808080] mt-10 ml-3">Company Name</label>
                             <input
                                 type="text"
-                                name="companyName"
-                                value={formData.companyName}
+                                name="emri_kompanise"
+                                value={formData.emri_kompanise}
                                 onChange={handleChange}
                                 className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
                             />
@@ -142,8 +132,8 @@ export default function Signup() {
                             <label className="text-[#808080] ml-3">Address</label>
                             <input
                                 type="text"
-                                name="address"
-                                value={formData.address}
+                                name="adresa"
+                                value={formData.adresa}
                                 onChange={handleChange}
                                 className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
                             />
@@ -166,8 +156,8 @@ export default function Signup() {
                             <label className="text-[#808080] ml-3">City</label>
                             <input
                                 type="text"
-                                name="city"
-                                value={formData.city}
+                                name="qyteti"
+                                value={formData.qyteti}
                                 onChange={handleChange}
                                 className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
                             />
@@ -175,8 +165,8 @@ export default function Signup() {
                             <label className="text-[#808080] ml-3">Postal Code</label>
                             <input
                                 type="text"
-                                name="postalCode"
-                                value={formData.postalCode}
+                                name="kodi_postal"
+                                value={formData.kodi_postal}
                                 onChange={handleChange}
                                 className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
                             />

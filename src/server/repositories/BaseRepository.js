@@ -75,6 +75,7 @@ class BaseRepository {
     }
 
     async deleteById(id) {
+        console.log(id)
         const query = `DELETE FROM ${this.tableName} WHERE ${this.primaryKey} = ?`;
         const result = await this.query(query, [id]);
         return result.affectedRows > 0;
