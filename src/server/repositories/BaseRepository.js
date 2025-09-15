@@ -56,7 +56,7 @@ class BaseRepository {
         const result = await this.query(query, values);
         
         const createdId = result.insertId;
-        return await this.findById(createdId);
+        return await this.getById(createdId);
     }
 
     async updateById(id, data) {
@@ -71,7 +71,7 @@ class BaseRepository {
             return null;
         }
         
-        return await this.findById(id);
+        return await this.getById(id);
     }
 
     async deleteById(id) {
