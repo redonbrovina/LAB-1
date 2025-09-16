@@ -16,11 +16,7 @@
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
-<<<<<<< Updated upstream
-    "express": "^4.21.2",
-=======
     "express": "^5.1.0",
->>>>>>> Stashed changes
     "lucide-react": "^0.544.0",
     "mysql": "^2.18.1",
     "mysql2": "^3.14.5",

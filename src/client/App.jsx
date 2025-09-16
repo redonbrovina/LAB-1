@@ -10,6 +10,9 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import SignupSuccess from './pages/SignupSuccess';
+import Payments from "./pages/Payments";
+import StockMovement from "./pages/StockMovement";
+import PaymentMethods from "./pages/PaymentMethods";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 export default function App() {
@@ -32,6 +35,9 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/products" element={<Products />} />
         <Route path="/cart" element={<Cart />} />       {/* Shto Cart */}
+        <Route path="/payments" element={<Payments />} />
+        <Route path="/stock-movement" element={<StockMovement />} />
+        <Route path="/payment-methods" element={<PaymentMethods />} />
         <Route path="/profile" element={<Profile />} /> {/* Shto Profile */}
       </Routes>
     </BrowserRouter>
