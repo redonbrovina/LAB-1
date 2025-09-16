@@ -14,7 +14,7 @@ const aplikimiRoutes = require('./src/server/routes/aplikimiRoutes');
 const klientiRoutes = require('./src/server/routes/klientiRoutes');
 const adminRoutes = require('./src/server/routes/adminRoutes');
 
-// Importo routes te eles
+// Importo routes e tua
 const furnitoriRoutes = require('./src/server/routes/furnitoriRoutes');
 const produktiRoutes = require('./src/server/routes/produktiRoutes');
 const produktVariacioniRoutes = require('./src/server/routes/produktVariacioniRoutes');
@@ -38,7 +38,7 @@ app.use('/api/produkt-porosise', produktPorosiseRoutes);
 app.use('/api/produkt-cart', produktCartRoutes);
 app.use('/api/porosia-status', porosiaStatusRoutes);
 
-// Rutat e eles
+// Rutat e tua
 app.use('/api/furnitore', furnitoriRoutes);
 app.use('/api/produkte', produktiRoutes);
 app.use('/api/variacione', produktVariacioniRoutes);
