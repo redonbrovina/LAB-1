@@ -16,6 +16,9 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import SignupSuccess from './pages/SignupSuccess';
+import Payments from "./pages/Payments";
+import StockMovement from "./pages/StockMovement";
+import PaymentMethods from "./pages/PaymentMethods";
 import { AuthProvider } from './utils/AuthContext';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -56,7 +59,7 @@ export default function App() {
               <AdminLogin />
             </PublicRoute>
           } />
-
+          
           {/* Client Only Pages*/}
           <Route path="/" element={
             <ClientOnlyRoute>
@@ -67,6 +70,9 @@ export default function App() {
             <Route path="products" element={<Products />} />
             <Route path="cart" element={<Cart />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="/payments" element={<Payments />} />
+            <Route path="/stock-movement" element={<StockMovement />} />
+            <Route path="/payment-methods" element={<PaymentMethods />} />
           </Route>
 
           {/* Admin Only Pages*/}

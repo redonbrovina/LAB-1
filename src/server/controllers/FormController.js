@@ -1,4 +1,3 @@
-//This is a placeholder for future middleware functions
 const jwt = require('jsonwebtoken');
 const { ShtetiService } = require('../services')
 const shtetiService = new ShtetiService()

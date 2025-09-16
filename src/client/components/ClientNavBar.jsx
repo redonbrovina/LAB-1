@@ -1,5 +1,5 @@
 import Shneta from "../assets/images/Shneta.png";
-import { Home, Package, ShoppingCart, User } from "lucide-react";
+import { Home, Package, ShoppingCart, User, CreditCard, TrendingUp, Wallet } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 export default function ClientNavBar() {
@@ -33,6 +33,21 @@ export default function ClientNavBar() {
         <Link to="/cart" className={getLinkClass("/cart")}>
           <ShoppingCart size={18} />
           Cart
+        </Link>
+
+        <Link to="/payments" className={getLinkClass("/payments")}>
+          <CreditCard size={18} />
+          Payments
+        </Link>
+
+        <Link to="/stock-movement" className={getLinkClass("/stock-movement")}>
+          <TrendingUp size={18} />
+          Stock Movement
+        </Link>
+
+        <Link to="/payment-methods" className={getLinkClass("/payment-methods")}>
+          <Wallet size={18} />
+          Payment Methods
         </Link>
 
         <Link to="/profile" className={getLinkClass("/profile")}>
