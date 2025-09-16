@@ -3,6 +3,16 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
+const porosiaRoutes = require('./src/server/routes/porosiaRoutes');
+const cartRoutes = require('./src/server/routes/cartRoutes');
+const produktPorosiseRoutes = require('./src/server/routes/produktPorosiseRoutes');
+const produktCartRoutes = require('./src/server/routes/produktCartRoutes');
+const porosiaStatusRoutes = require('./src/server/routes/porosiaStatusRoutes');
+const formRoutes = require('./src/server/routes/formRoutes');
+const aplikimiRoutes = require('./src/server/routes/aplikimiRoutes');
+const klientiRoutes = require('./src/server/routes/klientiRoutes');
+const adminRoutes = require('./src/server/routes/adminRoutes');
+
 // Routes ekzistuese
 const porosiaRoutes = require('./src/server/routes/porosiaRoutes');
 const cartRoutes = require('./src/server/routes/cartRoutes');
@@ -23,9 +33,14 @@ app.use(cors({
     methods: ['GET','POST','PUT','DELETE'],
     credentials: true
 }));
+
 app.use(express.json());
 
 // Rutat e grupit
+
+app.use(express.json());
+
+
 app.use('/api/klienti', klientiRoutes);
 app.use('/api/aplikimi', aplikimiRoutes);
 app.use('/api/form', formRoutes);

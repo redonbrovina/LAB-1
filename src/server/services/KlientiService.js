@@ -1,0 +1,30 @@
+const {KlientiRepository} = require('../repositories');
+
+class KlientiService {
+    constructor() {
+        this.klientiRepository = new KlientiRepository();
+    }
+
+    async getAllKlientet() {
+        return await this.klientiRepository.getAllKlientet();
+    }
+    async getKlientiById(klientiID) {
+        return await this.klientiRepository.getKlientiById(klientiID);
+    }
+
+    async getKlientiByEmail(email) {
+        return await this.klientiRepository.getKlientiByEmail(email);
+    }
+
+    async createKlienti(data) {
+        return await this.klientiRepository.createKlienti(data);
+    }
+    async updateKlienti(klientiID, data) {
+        return await this.klientiRepository.updateKlienti(klientiID, data);
+    }
+    async deleteKlienti(klientiID) {
+        return await this.klientiRepository.deleteKlienti(klientiID);
+    }
+}
+
+module.exports = KlientiService;
