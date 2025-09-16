@@ -1,5 +1,7 @@
 import {Link, useNavigate} from "react-router-dom"
 import {useState} from "react"
+import {useAuth} from "../utils/AuthContext"
+import {publicApiPost} from "../utils/api"
 import svg from "../assets/images/undraw_finance_m6vw 1.png"
 
 export default function Login() {
@@ -8,6 +10,7 @@ export default function Login() {
     const [password, setPassword] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
     const navigate = useNavigate()
+    const { login } = useAuth()
 
     const validate = () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -32,26 +35,12 @@ export default function Login() {
         }
 
         try{
-            const response = await fetch("http://localhost:5000/api/login", {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email, password})
-            })
-
-            if(response.ok){
-                navigate('/dashboard')
-            }else{
-                const data = await response.json()
-                setErrorMessage(data.message || 'Login failed')
-            }
-
+            const data = await publicApiPost('/form/login', {email, password})
+            login(data.token)
+            navigate('/dashboard')
         }catch(err){
-            setErrorMessage('Network Error')
+            setErrorMessage(err.message || 'Login failed')
         }
-        
-        
-        navigate('/dashboard')
-        
     }
 
     return(

@@ -88,11 +88,12 @@ Check Get-ExecutionPolicy again at it should show up as RemoteSigned.
 Re-open vs code and you should be able to run scripts in the vs code terminal.
 
 
+In order to open Postman, open terminal and go to LAB-1. Enter "node server.js", and it will show: Database pool created successfully
+      Server is running on port 5000
+      Database connection successful
+    
 
-
-
-
-
+After that, you can open postman and enter the url for testing.
 
 
 
