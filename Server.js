@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-const formRoutes = require('./src/server/routes/formRoutes');
 const pagesaRoutes = require('./src/server/routes/pagesaRoutes');
 const menyraPagesesRoutes = require('./src/server/routes/menyraPagesesRoutes');
 const levizjaNeStokRoutes = require('./src/server/admin/routes/LevizjaNeStokRoutes');

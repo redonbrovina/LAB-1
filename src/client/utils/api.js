@@ -27,8 +27,8 @@ const apiCall = async (endpoint, options = {}) => {
     }
   } catch (error) {
     console.error('API call failed:', error);
-// API utility functions for making requests
-const API_BASE_URL = 'http://localhost:5000/api';
+  }
+}
 
 
 export const publicApiRequest = async (endpoint, options = {}) => {
