@@ -11,7 +11,7 @@ export default function Dashboard() {
       <div className="flex-1 p-8 overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
-                      <h1 className="text-2xl font-bold" style={{ color: "#808080" }}>Wlcome, Client</h1>
+                      <h1 className="text-2xl font-bold" style={{ color: "#808080" }}>Welcome, Client</h1>
           <div className="flex items-center gap-4">
             <button className="p-2 rounded-full bg-white shadow">
               <span role="img" aria-label="bell">🔔</span>
