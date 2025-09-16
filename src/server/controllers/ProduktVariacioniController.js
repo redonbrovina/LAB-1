@@ -1,53 +1,50 @@
-const ProduktVariacioniService = require("../services/ProduktVariacioniService");
+const ProduktVariacioniRepository = require("../repositories/ProduktVariacioniRepository");
 
 class ProduktVariacioniController {
-  static async getAll(req, res) {
+  async getAll(req, res) {
     try {
-      const data = await ProduktVariacioniService.getAll();
-      res.json(data);
+      const variacione = await ProduktVariacioniRepository.getAll();
+      res.json(variacione);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
 
-  static async getById(req, res) {
+  async getById(req, res) {
     try {
-      const data = await ProduktVariacioniService.getById(req.params.id);
-      if (!data) return res.status(404).json({ message: "Variacioni nuk u gjet" });
-      res.json(data);
+      const variacioni = await ProduktVariacioniRepository.getById(req.params.id);
+      res.json(variacioni);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
 
-  static async create(req, res) {
+  async create(req, res) {
     try {
-      const data = await ProduktVariacioniService.create(req.body);
-      res.status(201).json(data);
+      const newVar = await ProduktVariacioniRepository.create(req.body);
+      res.status(201).json(newVar);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
 
-  static async update(req, res) {
+  async update(req, res) {
     try {
-      const data = await ProduktVariacioniService.update(req.params.id, req.body);
-      if (!data) return res.status(404).json({ message: "Variacioni nuk u gjet" });
-      res.json(data);
+      const updatedVar = await ProduktVariacioniRepository.update(req.params.id, req.body);
+      res.json(updatedVar);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
 
-  static async delete(req, res) {
+  async delete(req, res) {
     try {
-      const data = await ProduktVariacioniService.delete(req.params.id);
-      if (!data) return res.status(404).json({ message: "Variacioni nuk u gjet" });
-      res.json({ message: "Variacioni u fshi me sukses" });
+      const result = await ProduktVariacioniRepository.delete(req.params.id);
+      res.json(result);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
 }
 
-module.exports = ProduktVariacioniController;
+module.exports = new ProduktVariacioniController();

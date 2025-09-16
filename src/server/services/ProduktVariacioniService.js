@@ -2,11 +2,11 @@ const ProduktVariacioniRepository = require("../repositories/ProduktVariacioniRe
 
 class ProduktVariacioniService {
   async getAll() {
-    return await ProduktVariacioniRepository.findAll();
+    return await ProduktVariacioniRepository.getAll();
   }
 
   async getById(id) {
-    const variacioni = await ProduktVariacioniRepository.findById(id);
+    const variacioni = await ProduktVariacioniRepository.getById(id);
     if (!variacioni) throw new Error("Variacioni i produktit nuk u gjet");
     return variacioni;
   }
