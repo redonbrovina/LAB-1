@@ -1,6 +1,6 @@
 const PagesaModel = require('../models/Pagesa');
 const MenyraPagesesModel = require('../models/MenyraPageses');
-const LevizjaNeStokModel = require('../models/Levizja_ne_stok');
+const LevizjaNeStokModel = require('../admin/models/Levizja_ne_stok');
 
 // Pagesa
 const getPagesa = async (_req, res) => {
