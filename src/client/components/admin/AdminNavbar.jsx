@@ -1,0 +1,54 @@
+import { Link, useLocation } from "react-router-dom";
+import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings } from "lucide-react";
+
+export default function AdminNavbar() {
+  const location = useLocation();
+
+  const getLinkClass = (path) => {
+    return location.pathname === path
+      ? "flex items-center gap-2 text-white font-semibold bg-red-700 px-4 py-2 rounded-lg transition-colors duration-200"
+      : "flex items-center gap-2 text-white hover:bg-red-700 px-4 py-2 rounded-lg transition-colors duration-200";
+  };
+
+  return (
+    <div className="fixed left-0 top-0 h-screen w-64 bg-red-600 text-white flex flex-col z-10">
+      {/* Header */}
+      <div className="p-6">
+        <h2 className="text-xl font-bold">Admin Panel</h2>
+      </div>
+
+      {/* Menu Items */}
+      <nav className="flex-1 p-6 space-y-4">
+        <Link to="/admin" className={getLinkClass("/admin")}>
+          <LayoutDashboard size={18} />
+          Dashboard
+        </Link>
+
+        <Link to="/admin/applications" className={getLinkClass("/admin/applications")}>
+          <FileText size={18} />
+          Applications
+        </Link>
+
+        <Link to="/admin/orders" className={getLinkClass("/admin/orders")}>
+          <ShoppingBag size={18} />
+          Orders
+        </Link>
+
+        <Link to="/admin/products" className={getLinkClass("/admin/products")}>
+          <Package size={18} />
+          Products
+        </Link>
+
+        <Link to="/admin/users" className={getLinkClass("/admin/users")}>
+          <Users size={18} />
+          Users
+        </Link>
+
+        <Link to="/admin/settings" className={getLinkClass("/admin/settings")}>
+          <Settings size={18} />
+          Settings
+        </Link>
+      </nav>
+    </div>
+  );
+}

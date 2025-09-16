@@ -12,6 +12,10 @@ class ShtetiRepository extends BaseRepository {
             Emri_shtetit: c.emri_shtetit
         }));
     }
+
+    async getShtetiById(shtetiID) {
+        return await this.getByField('shtetiID', shtetiID);
+    }
 }
 
 module.exports = ShtetiRepository;

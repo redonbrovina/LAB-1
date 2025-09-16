@@ -1,5 +1,7 @@
 const {KlientiService} = require('../services');
+const {ShtetiService} = require('../services');
 const klientiService = new KlientiService();
+const shtetiService = new ShtetiService();
 
 const getAllKlientet = async (req, res) => {
     try {
@@ -25,6 +27,18 @@ const getKlientiById = async (req, res) => {
     }
 }
 
+const getKlientiByEmri = async (req, res) => {
+    try {
+        const klienti = await klientiService.getKlientiByEmri(req.params.emri_kompanise);
+        return res.status(200).json(klienti);
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error fetching client by name',
+            error: error.message
+        });
+    }
+}
+
 const createKlienti = async (req, res) => {
     try {
         const newKlienti = await klientiService.createKlienti(req.body);
@@ -40,6 +54,7 @@ const createKlienti = async (req, res) => {
 const updateKlienti = async (req, res) => {
     try {
         const updatedKlienti = await klientiService.updateKlienti(req.params.klientiID, req.body);
+        console.log('Updated client');
         return res.status(200).json(updatedKlienti);
     } catch (error) {
         res.status(500).json({
@@ -61,10 +76,25 @@ const deleteKlienti = async (req, res) => {
     }
 }
 
+const getShtetiById = async (req, res) => {
+    try {
+        const shteti = await shtetiService.getShtetiById(req.params.shtetiID);
+        const emri = shteti[0].emri_shtetit;
+        return res.status(200).json(emri);
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error fetching shteti by ID',
+            error: error.message
+        });
+    }
+}
+
 module.exports = {
     getAllKlientet,
     getKlientiById,
+    getKlientiByEmri,
     createKlienti,
     updateKlienti,
-    deleteKlienti
+    deleteKlienti,
+    getShtetiById
 };

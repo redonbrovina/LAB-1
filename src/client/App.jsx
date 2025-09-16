@@ -13,6 +13,8 @@ import Cart from "./pages/Cart";
 import Profile from "./pages/Profile";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminUsers from "./pages/AdminUsers";
+import AdminCreateClient from "./pages/AdminCreateClient";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import SignupSuccess from './pages/SignupSuccess';
@@ -76,8 +78,10 @@ export default function App() {
           </Route>
 
           {/* Admin Only Pages*/}
-          <Route path="/" element={<AdminProtectedLayout />}>
-            <Route path="admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/admin" element={<AdminProtectedLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="users/create" element={<AdminCreateClient />} />
           </Route>
         </Routes>
       </BrowserRouter>

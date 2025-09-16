@@ -1,6 +1,7 @@
 import { DollarSign, TrendingUp, Users, Settings } from "lucide-react";
 import { useAuth } from "../utils/AuthContext";
 import { useNavigate } from "react-router-dom";
+import AdminNavbar from "../components/admin/AdminNavbar";
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
@@ -12,32 +13,10 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="flex h-screen" style={{ backgroundColor: "#FEF2F2" }}>
-      <div className="w-64 bg-red-600 text-white p-6">
-        <h2 className="text-xl font-bold mb-8">Admin Panel</h2>
-        <nav className="space-y-4">
-          <button className="w-full text-left px-4 py-2 bg-red-700 rounded-lg">
-            Dashboard
-          </button>
-          <button className="w-full text-left px-4 py-2 hover:bg-red-700 rounded-lg">
-            Applications
-          </button>
-          <button className="w-full text-left px-4 py-2 hover:bg-red-700 rounded-lg">
-            Orders
-          </button>
-          <button className="w-full text-left px-4 py-2 hover:bg-red-700 rounded-lg">
-            Products
-          </button>
-          <button className="w-full text-left px-4 py-2 hover:bg-red-700 rounded-lg">
-            Users
-          </button>
-          <button className="w-full text-left px-4 py-2 hover:bg-red-700 rounded-lg">
-            Settings
-          </button>
-        </nav>
-      </div>
+    <div className="min-h-screen" style={{ backgroundColor: "#FEF2F2" }}>
+      <AdminNavbar />
 
-      <div className="flex-1 p-8 overflow-y-auto">
+      <div className="ml-64 p-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold" style={{ color: "#808080" }}>
             Welcome, Admin {user?.id}
@@ -93,7 +72,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="grid grid-cols-2 gap-6">
-          //Applications
+          {/*Applications */}
           <div className="bg-white shadow rounded-2xl p-6">
             <h2 className="font-semibold mb-4 text-red-600">Recent Applications</h2>
             <div className="space-y-3">

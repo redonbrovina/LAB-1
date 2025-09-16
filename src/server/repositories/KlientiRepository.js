@@ -13,8 +13,8 @@ class KlientiRepository extends BaseRepository {
         return await this.getByField('klientiID', klientiID);
     }
 
-    async getKlientiByEmail(email) {
-        return await this.getByField('email', email);
+    async getKlientiByEmri(emri_kompanise) {
+        return await this.getByField('emri_kompanise', emri_kompanise);
     }
 
     async createKlienti(data) {
@@ -22,7 +22,8 @@ class KlientiRepository extends BaseRepository {
     }
 
     async updateKlienti(klientiID, data) {
-        return await this.update(klientiID, data);
+        const result = await this.updateById(klientiID, data);
+        return result;
     }
 
     async deleteKlienti(klientiID) {

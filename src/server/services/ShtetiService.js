@@ -9,6 +9,9 @@ class ShtetiService {
         return await this.shtetiRepository.getAllShtetet();
     }
 
+    async getShtetiById(shtetiID) {
+        return await this.shtetiRepository.getShtetiById(shtetiID);
+    }
 }
 
 module.exports = ShtetiService; 

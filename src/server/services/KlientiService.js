@@ -12,8 +12,8 @@ class KlientiService {
         return await this.klientiRepository.getKlientiById(klientiID);
     }
 
-    async getKlientiByEmail(email) {
-        return await this.klientiRepository.getKlientiByEmail(email);
+    async getKlientiByEmri(emri_kompanise) {
+        return await this.klientiRepository.getKlientiByEmri(emri_kompanise);
     }
 
     async createKlienti(data) {
