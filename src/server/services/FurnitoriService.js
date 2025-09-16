@@ -2,13 +2,11 @@ const FurnitoriRepository = require("../repositories/FurnitoriRepository");
 
 class FurnitoriService {
   async getAll() {
-    return await FurnitoriRepository.findAll();
+    return await FurnitoriRepository.getAll(); 
   }
 
   async getById(id) {
-    const furnitori = await FurnitoriRepository.findById(id);
-    if (!furnitori) throw new Error("Furnitori nuk u gjet");
-    return furnitori;
+    return await FurnitoriRepository.getById(id);
   }
 
   async create(data) {
@@ -16,12 +14,10 @@ class FurnitoriService {
   }
 
   async update(id, data) {
-    await this.getById(id);
     return await FurnitoriRepository.update(id, data);
   }
 
   async delete(id) {
-    await this.getById(id);
     return await FurnitoriRepository.delete(id);
   }
 }

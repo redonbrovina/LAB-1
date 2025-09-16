@@ -2,14 +2,13 @@ const BaseRepository = require("./BaseRepository");
 
 class ProduktVariacioniRepository extends BaseRepository {
   constructor() {
-    super("ProduktVariacioni", "ProduktVariacioniID");
+    super("produkt_variacioni", "ProduktVariacioniID"); //  tabela me emrin e saktë
   }
 
-  // shembull: me marrë variacione me furnitor, formë, dozë
   async getVariacioneTePlota() {
     const query = `
       SELECT pv.*, f.emri AS furnitori, d.doza, fo.lloji_formes
-      FROM ProduktVariacioni pv
+      FROM produkt_variacioni pv
       JOIN Furnitori f ON pv.FurnitoriID = f.FurnitoriID
       JOIN Doza d ON pv.DozaID = d.DozaID
       JOIN Forma fo ON pv.FormaID = fo.FormaID

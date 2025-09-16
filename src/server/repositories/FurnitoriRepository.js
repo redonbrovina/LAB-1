@@ -2,7 +2,7 @@ const BaseRepository = require("./BaseRepository");
 
 class FurnitoriRepository extends BaseRepository {
   constructor() {
-    super("Furnitori", "FurnitoriID");
+    super("furnitori", "FurnitoriID"); 
   }
 }
 
