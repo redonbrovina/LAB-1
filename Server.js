@@ -17,6 +17,7 @@ const klientiRoutes = require('./src/server/routes/klientiRoutes');
 const adminRoutes = require('./src/server/routes/adminRoutes');
 const furnitoriRoutes = require('./src/server/routes/furnitoriRoutes');
 const produktiRoutes = require('./src/server/routes/produktiRoutes');
+const kategoriaRoutes = require('./src/server/routes/kategoriaRoutes');
 const produktVariacioniRoutes = require('./src/server/routes/produktVariacioniRoutes');
 
 app.use(cors({
@@ -43,6 +44,7 @@ app.use('/api/porosia-status', porosiaStatusRoutes);
 app.use('/api/furnitore', furnitoriRoutes);
 app.use('/api/produkte', produktiRoutes);
 app.use('/api/variacione', produktVariacioniRoutes);
+app.use('/api/kategorite', kategoriaRoutes);
 
 // Start server
 const port = process.env.PORT || 5000;

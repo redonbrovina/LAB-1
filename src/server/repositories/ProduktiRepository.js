@@ -2,7 +2,7 @@ const BaseRepository = require("./BaseRepository");
 
 class ProduktiRepository extends BaseRepository {
   constructor() {
-    super("Produkti", "ProduktiID"); // tabela + primary key
+    super("produkti", "produktiID"); // tabela + primary key
   }
 }
 

@@ -200,3 +200,21 @@ export const cartItemsAPI = {
   update: (id, data) => apiPut(`/produkt-cart/${id}`, data),
   delete: (id) => apiDelete(`/produkt-cart/${id}`),
 };
+
+// Products API functions
+export const productsAPI = {
+  getAll: () => apiGet('/produkte'),
+  getById: (id) => apiGet(`/produkte/${id}`),
+  create: (data) => apiPost('/produkte', data),
+  update: (id, data) => apiPut(`/produkte/${id}`, data),
+  delete: (id) => apiDelete(`/produkte/${id}`),
+};
+
+// Categories API functions
+export const categoriesAPI = {
+  getAll: () => apiGet('/kategorite'),
+  getById: (id) => apiGet(`/kategorite/${id}`),
+  create: (data) => apiPost('/kategorite', data),
+  update: (id, data) => apiPut(`/kategorite/${id}`, data),
+  delete: (id) => apiDelete(`/kategorite/${id}`),
+};

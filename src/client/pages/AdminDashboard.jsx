@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Orders from "../components/Orders";
 import CartManagement from "../components/CartManagement";
+import ProductsAdmin from "../components/ProductsAdmin";
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
@@ -201,12 +202,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {activeTab === 'products' && (
-          <div className="bg-white shadow rounded-2xl p-6">
-            <h2 className="font-semibold mb-4 text-red-600">Produktet</h2>
-            <p className="text-gray-500">Funksionaliteti për produktet do të shtohet së shpejti.</p>
-          </div>
-        )}
+        {activeTab === 'products' && <ProductsAdmin />}
 
         {activeTab === 'users' && (
           <div className="bg-white shadow rounded-2xl p-6">
