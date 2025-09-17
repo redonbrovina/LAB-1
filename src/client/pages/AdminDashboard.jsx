@@ -1,8 +1,9 @@
-import { DollarSign, TrendingUp, Users, Settings } from "lucide-react";
+import { DollarSign, TrendingUp, Users, Settings, ShoppingCart } from "lucide-react";
 import { useAuth } from "../utils/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Orders from "../components/Orders";
+import CartManagement from "../components/CartManagement";
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
@@ -44,6 +45,15 @@ export default function AdminDashboard() {
             Orders
           </button>
           <button 
+            onClick={() => setActiveTab('carts')}
+            className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+              activeTab === 'carts' ? 'bg-red-700' : 'hover:bg-red-700'
+            }`}
+          >
+            <ShoppingCart size={16} className="inline mr-2" />
+            Carts
+          </button>
+          <button 
             onClick={() => setActiveTab('products')}
             className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
               activeTab === 'products' ? 'bg-red-700' : 'hover:bg-red-700'
@@ -75,6 +85,8 @@ export default function AdminDashboard() {
           <h1 className="text-2xl font-bold" style={{ color: "#808080" }}>
             {activeTab === 'dashboard' && `Welcome, Admin ${user?.id}`}
             {activeTab === 'applications' && 'Aplikimet'}
+            {activeTab === 'orders' && 'Orders'}
+            {activeTab === 'carts' && 'Carts'}
             {activeTab === 'products' && 'Produktet'}
             {activeTab === 'users' && 'Përdoruesit'}
             {activeTab === 'settings' && 'Cilësimet'}
@@ -179,6 +191,8 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'orders' && <Orders />}
+        
+        {activeTab === 'carts' && <CartManagement />}
         
         {activeTab === 'applications' && (
           <div className="bg-white shadow rounded-2xl p-6">
