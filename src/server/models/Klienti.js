@@ -1,3 +1,6 @@
+import { DataTypes } from "sequelize";
+
+
 class Klienti {
     constructor(klientiID, adresa, qyteti, kodiPostal, shtetiID, aplikimiID, emriKompanise, password) {
         this.id = id;

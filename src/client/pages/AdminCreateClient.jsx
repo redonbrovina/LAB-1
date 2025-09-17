@@ -5,7 +5,9 @@ export default function AdminCreateClient() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FEF2F2" }}>
       <AdminNavbar />
-      <ClientForm />
+      <div className="ml-64 p-8">
+        <ClientForm />
+      </div>
     </div>
   );
 }

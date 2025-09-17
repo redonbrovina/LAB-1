@@ -19,20 +19,9 @@ export default function AdminDashboard() {
   return (
       <div className="min-h-screen" style={{ backgroundColor: "#FEF2F2" }}>
         <AdminNavbar />
-      <div className="flex h-screen" style={{ backgroundColor: "#FEF2F2" }}>
-      
-
         <div className="ml-64 p-8">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-2xl font-bold" style={{ color: "#808080" }}>
-              {activeTab === 'dashboard' && `Welcome, Admin ${user?.id}`}
-              {activeTab === 'applications' && 'Aplikimet'}
-              {activeTab === 'orders' && 'Orders'}
-              {activeTab === 'carts' && 'Carts'}
-              {activeTab === 'products' && 'Produktet'}
-              {activeTab === 'users' && 'Përdoruesit'}
-              {activeTab === 'settings' && 'Cilësimet'}
-            </h1>
+
             <div className="flex items-center gap-4">
               <button className="p-2 rounded-full bg-white shadow">
                 <span role="img" aria-label="bell">🔔</span>
@@ -128,6 +117,5 @@ export default function AdminDashboard() {
             </div>
           </div>
       </div>
-    </div>
   );
 }

@@ -16,6 +16,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
 import AdminCreateClient from "./pages/AdminCreateClient";
 import AdminPayments from "./pages/AdminPayments";
+import ProductsAdmin from "./components/ProductsAdmin";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import SignupSuccess from './pages/SignupSuccess';
@@ -80,10 +81,11 @@ export default function App() {
 
           {/* Admin Only Pages*/}
           <Route path="/admin" element={<AdminProtectedLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="users/create" element={<AdminCreateClient />} />
-            <Route path="admin-payments" element={<AdminPayments />} />
+              <Route index element={<AdminDashboard />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="users/create" element={<AdminCreateClient />} />
+              <Route path="payments" element={<AdminPayments />} />
+              <Route path="products" element={<ProductsAdmin />} />
           </Route>
         </Routes>
       </BrowserRouter>

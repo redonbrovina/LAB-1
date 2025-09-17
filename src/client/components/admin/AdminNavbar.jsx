@@ -34,9 +34,19 @@ export default function AdminNavbar() {
           Orders
         </Link>
 
+        <Link to="/admin/carts" className={getLinkClass("/admin/carts")}>
+          <ShoppingBag size={18} />
+          Carts
+        </Link>
+
         <Link to="/admin/products" className={getLinkClass("/admin/products")}>
           <Package size={18} />
           Products
+        </Link>
+
+        <Link to="/admin/payments" className={getLinkClass("/admin/payments")}>
+          <Package size={18} />
+          Payments
         </Link>
 
         <Link to="/admin/users" className={getLinkClass("/admin/users")}>
