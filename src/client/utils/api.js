@@ -189,3 +189,12 @@ export const apiPut = (endpoint, data) => apiRequest(endpoint, {
   body: JSON.stringify(data) 
 });
 export const apiDelete = (endpoint) => apiRequest(endpoint, { method: 'DELETE' });
+
+// Orders API functions
+export const ordersAPI = {
+  getAll: () => apiGet('/porosite'),
+  getById: (id) => apiGet(`/porosite/${id}`),
+  create: (data) => apiPost('/porosite', data),
+  update: (id, data) => apiPut(`/porosite/${id}`, data),
+  delete: (id) => apiDelete(`/porosite/${id}`),
+};
