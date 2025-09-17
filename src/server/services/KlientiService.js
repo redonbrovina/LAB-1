@@ -16,6 +16,10 @@ class KlientiService {
         return await this.klientiRepository.getKlientiByEmri(emri_kompanise);
     }
 
+    async getKlientiByEmail(email) {
+        return await this.klientiRepository.getKlientiByEmail(email);
+    }
+
     async createKlienti(data) {
         return await this.klientiRepository.createKlienti(data);
     }

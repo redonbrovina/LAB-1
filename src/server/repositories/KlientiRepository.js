@@ -17,6 +17,10 @@ class KlientiRepository extends BaseRepository {
         return await this.getByField('emri_kompanise', emri_kompanise);
     }
 
+    async getKlientiByEmail(email) {
+        return await this.getByField('email', email);
+    }
+
     async createKlienti(data) {
         return await this.insert(data);
     }
