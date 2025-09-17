@@ -68,7 +68,7 @@ export default function AdminDashboard() {
           >
             Payments
           </button>
-          <button className="w-full text-left px-4 py-2 hover:bg-red-700 rounded-lg">
+          <button 
             onClick={() => setActiveTab('users')}
             className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
               activeTab === 'users' ? 'bg-red-700' : 'hover:bg-red-700'
@@ -114,49 +114,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-6 mb-8">
-          <div className="bg-white shadow rounded-2xl p-4">
-            <div className="flex items-center gap-2 text-red-600 font-semibold">
-              <Users size={18} /> Total Users
-            </div>
-            <p className="text-2xl font-bold">1,234</p>
-            <p className="text-xs text-green-500">+12% this month</p>
-          </div>
-
-          <div className="bg-white shadow rounded-2xl p-4">
-            <div className="flex items-center gap-2 text-red-600 font-semibold">
-              <TrendingUp size={18} /> Pending Applications
-            </div>
-            <p className="text-2xl font-bold">23</p>
-            <p className="text-xs text-orange-500">Needs review</p>
-          </div>
-
-          <div className="bg-white shadow rounded-2xl p-4">
-            <div className="flex items-center gap-2 text-red-600 font-semibold">
-              <DollarSign size={18} /> Revenue
-            </div>
-            <p className="text-2xl font-bold">$45.2K</p>
-            <p className="text-xs text-green-500">+8% vs last month</p>
-          </div>
-
-          <div className="bg-white shadow rounded-2xl p-4">
-            <div className="flex items-center gap-2 text-red-600 font-semibold">
-              <Settings size={18} /> System Status
-            </div>
-            <p className="text-2xl font-bold text-green-500">Online</p>
-            <p className="text-xs text-gray-500">All systems operational</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-6">
-          {/* Applications */}
-          <div className="bg-white shadow rounded-2xl p-6">
-            <h2 className="font-semibold mb-4 text-red-600">Recent Applications</h2>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="font-medium">Albania Foods Shpk</p>
-                  <p className="text-sm text-gray-500">contact@albaniafoods.com</p>
         {/* Render content based on active tab */}
         {activeTab === 'dashboard' && (
           <>
