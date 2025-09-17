@@ -119,22 +119,6 @@ export const formAPI = {
   getCountries: () => apiCall('/form/shtetet'),
 };
 
-// Cart API functions
-export const cartAPI = {
-  getAll: () => apiCall('/carts'),
-  getById: (id) => apiCall(`/carts/${id}`),
-  create: (data) => apiCall('/carts', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
-  update: (id, data) => apiCall(`/carts/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(data),
-  }),
-  delete: (id) => apiCall(`/carts/${id}`, {
-    method: 'DELETE',
-  }),
-};
 
 
 export const apiRequest = async (endpoint, options = {}) => {
@@ -189,3 +173,30 @@ export const apiPut = (endpoint, data) => apiRequest(endpoint, {
   body: JSON.stringify(data) 
 });
 export const apiDelete = (endpoint) => apiRequest(endpoint, { method: 'DELETE' });
+
+// Orders API functions
+export const ordersAPI = {
+  getAll: () => apiGet('/porosite'),
+  getById: (id) => apiGet(`/porosite/${id}`),
+  create: (data) => apiPost('/porosite', data),
+  update: (id, data) => apiPut(`/porosite/${id}`, data),
+  delete: (id) => apiDelete(`/porosite/${id}`),
+};
+
+// Cart API functions
+export const cartAPI = {
+  getAll: () => apiGet('/carts'),
+  getById: (id) => apiGet(`/carts/${id}`),
+  create: (data) => apiPost('/carts', data),
+  update: (id, data) => apiPut(`/carts/${id}`, data),
+  delete: (id) => apiDelete(`/carts/${id}`),
+};
+
+// Cart Items API functions
+export const cartItemsAPI = {
+  getAll: () => apiGet('/produkt-cart'),
+  getById: (id) => apiGet(`/produkt-cart/${id}`),
+  create: (data) => apiPost('/produkt-cart', data),
+  update: (id, data) => apiPut(`/produkt-cart/${id}`, data),
+  delete: (id) => apiDelete(`/produkt-cart/${id}`),
+};
