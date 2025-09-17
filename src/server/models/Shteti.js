@@ -1,37 +1,32 @@
-//Will be removed in the future, placeholder for how classes should look like
-//This class has only static data, it cant be changed cause only a certain number of countries exist
-//Only add class models that have create, update, delete operations
-//This class is just for reference
-//This class is not used in the code
-class Shteti {
-    #shtetiID;
-    #emriShtetit;
-    #iso_kodi;
+const { DataTypes } = require("sequelize");
+const sequelize = require("../database/Database");
 
-    constructor(shtetiID, emriShtetit, iso_kodi) {
-        this.#shtetiID = shtetiID;
-        this.#emriShtetit = emriShtetit;
-        this.#iso_kodi = iso_kodi;
+const Shteti = sequelize.define("Shteti", {
+    shtetiID: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
+    emri_shtetit: {
+        type: DataTypes.STRING(255),
+        allowNull: false
+    },
+    iso_kodi: {
+        type: DataTypes.STRING(10),
+        allowNull: false
     }
+}, {
+    tableName: 'shteti',
+    timestamps: false
+});
 
-    getShtetiID() {
-        return this.#shtetiID;
-    }
-
-    getEmriShtetit() {
-        return this.#emriShtetit;
-    }   
-    getIso_kodi() {
-        return this.#iso_kodi;
-    }
-
-    setShtetiID(shtetiID) {
-        this.#shtetiID = shtetiID;
-    }
-
-    setIsokodi(iso_kodi) {
-        this.#iso_kodi = iso_kodi;
-    }
-}
+// Define relationships after model is created
+Shteti.associate = function(models) {
+    Shteti.hasMany(models.Klienti, { 
+        foreignKey: 'shtetiID',
+        as: 'klientet'
+    });
+};
 
 module.exports = Shteti;

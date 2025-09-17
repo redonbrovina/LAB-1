@@ -1,4 +1,4 @@
-const { AplikimiRepository } = require("../repositories/");
+const AplikimiRepository = require("../repositories/AplikimiRepository");
 
 class AplikimiService {
     constructor() {
@@ -10,7 +10,9 @@ class AplikimiService {
     }
 
     async getAplikimiById(aplikimiID) {
-        return await this.aplikimiRepository.getAplikimiById(aplikimiID);
+        const aplikimi = await this.aplikimiRepository.getAplikimiById(aplikimiID);
+        if (!aplikimi) throw new Error("Aplikimi nuk u gjet");
+        return aplikimi;
     }
 
     async getAplikimiByAplikimiStatusID(aplikimiStatusID) {
@@ -22,9 +24,12 @@ class AplikimiService {
     }
 
     async updateAplikimi(aplikimiID, data) {
+        await this.getAplikimiById(aplikimiID);
         return await this.aplikimiRepository.updateAplikimi(aplikimiID, data);
     }
+
     async deleteAplikimi(aplikimiID) {
+        await this.getAplikimiById(aplikimiID);
         return await this.aplikimiRepository.deleteAplikimi(aplikimiID);
     }
 }
