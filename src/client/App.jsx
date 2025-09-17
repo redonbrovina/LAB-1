@@ -15,6 +15,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
 import AdminCreateClient from "./pages/AdminCreateClient";
+import AdminPayments from "./pages/AdminPayments";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import SignupSuccess from './pages/SignupSuccess';
@@ -82,6 +83,7 @@ export default function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="users/create" element={<AdminCreateClient />} />
+            <Route path="admin-payments" element={<AdminPayments />} />
           </Route>
         </Routes>
       </BrowserRouter>
