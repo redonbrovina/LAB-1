@@ -63,6 +63,12 @@ export default function AdminDashboard() {
             Products
           </button>
           <button 
+            onClick={() => navigate('/admin-payments')}
+            className="w-full text-left px-4 py-2 hover:bg-red-700 rounded-lg"
+          >
+            Payments
+          </button>
+          <button 
             onClick={() => setActiveTab('users')}
             className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
               activeTab === 'users' ? 'bg-red-700' : 'hover:bg-red-700'
