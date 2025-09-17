@@ -1,72 +1,91 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database/Database");
-const Produkti = require("./Produkti");
-const Forma = require("./Forma");
-const Doza = require("./Doza");
-const Furnitori = require("./Furnitori");
 
 const ProduktVariacioni = sequelize.define("ProduktVariacioni", {
-  ProduktVariacioniID: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  ProduktiID: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: "Produkti",
-      key: "ProduktiID"
+    produkt_variacioniID: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
+    cmimi: {
+        type: DataTypes.DECIMAL(8, 2),
+        allowNull: true
+    },
+    sasia_ne_stok: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+            min: 0
+        }
+    },
+    formaID: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: "Forma",
+            key: "formaID"
+        }
+    },
+    dozaID: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: "Doza",
+            key: "dozaID"
+        }
+    },
+    furnitoriID: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: "Furnitori",
+            key: "furnitoriID"
+        }
+    },
+    produktiID: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: "Produkti",
+            key: "produktiID"
+        }
     }
-  },
-  FormaID: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: "Forma",
-      key: "FormaID"
-    }
-  },
-  DozaID: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: "Doza",
-      key: "DozaID"
-    }
-  },
-  FurnitoriID: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: "Furnitori",
-      key: "FurnitoriID"
-    }
-  },
-  cmimi: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
-  },
-  sasia_ne_stok: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  }
 }, {
-  tableName: "ProduktVariacioni",
-  timestamps: false
+    tableName: "produkt_variacioni",
+    timestamps: false
 });
 
-// 🔗 Associations
-ProduktVariacioni.belongsTo(Produkti, { foreignKey: "ProduktiID" });
-Produkti.hasMany(ProduktVariacioni, { foreignKey: "ProduktiID" });
-
-ProduktVariacioni.belongsTo(Forma, { foreignKey: "FormaID" });
-Forma.hasMany(ProduktVariacioni, { foreignKey: "FormaID" });
-
-ProduktVariacioni.belongsTo(Doza, { foreignKey: "DozaID" });
-Doza.hasMany(ProduktVariacioni, { foreignKey: "DozaID" });
-
-ProduktVariacioni.belongsTo(Furnitori, { foreignKey: "FurnitoriID" });
-Furnitori.hasMany(ProduktVariacioni, { foreignKey: "FurnitoriID" });
+// Define relationships after model is created
+ProduktVariacioni.associate = function(models) {
+    ProduktVariacioni.belongsTo(models.Forma, { 
+        foreignKey: 'formaID',
+        as: 'forma'
+    });
+    ProduktVariacioni.belongsTo(models.Doza, { 
+        foreignKey: 'dozaID',
+        as: 'doza'
+    });
+    ProduktVariacioni.belongsTo(models.Furnitori, { 
+        foreignKey: 'furnitoriID',
+        as: 'furnitori'
+    });
+    ProduktVariacioni.belongsTo(models.Produkti, { 
+        foreignKey: 'produktiID',
+        as: 'produkti'
+    });
+    ProduktVariacioni.hasMany(models.ProduktCart, { 
+        foreignKey: 'produkt_variacioniID',
+        as: 'cartItems'
+    });
+    ProduktVariacioni.hasMany(models.ProduktPorosise, { 
+        foreignKey: 'produkt_variacioniID',
+        as: 'orderItems'
+    });
+    ProduktVariacioni.hasMany(models.LevizjaNeStok, { 
+        foreignKey: 'produkt_variacioniID',
+        as: 'stockMovements'
+    });
+};
 
 module.exports = ProduktVariacioni;
