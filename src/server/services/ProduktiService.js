@@ -1,29 +1,37 @@
 const ProduktiRepository = require("../repositories/ProduktiRepository");
 
 class ProduktiService {
-  async getAll() {
-    return await ProduktiRepository.getAll(); // jo findAll
-  }
+    constructor() {
+        this.produktiRepo = new ProduktiRepository();
+    }
 
-  async getById(id) {
-    const produkti = await ProduktiRepository.getById(id); // jo findById
-    if (!produkti) throw new Error("Produkti nuk u gjet");
-    return produkti;
-  }
+    async getAll() {
+        return await this.produktiRepo.getAllProduktet();
+    }
 
-  async create(data) {
-    return await ProduktiRepository.insert(data); // jo create
-  }
+    async getById(id) {
+        const produkti = await this.produktiRepo.getProduktiById(id);
+        if (!produkti) throw new Error("Produkti nuk u gjet");
+        return produkti;
+    }
 
-  async update(id, data) {
-    await this.getById(id); // sigurohu që ekziston
-    return await ProduktiRepository.updateById(id, data); // jo update
-  }
+    async getByKategoria(kategoriaID) {
+        return await this.produktiRepo.getProduktetByKategoria(kategoriaID);
+    }
 
-  async delete(id) {
-    await this.getById(id);
-    return await ProduktiRepository.deleteById(id); // jo delete
-  }
+    async create(data) {
+        return await this.produktiRepo.createProdukti(data);
+    }
+
+    async update(id, data) {
+        await this.getById(id);
+        return await this.produktiRepo.updateProdukti(id, data);
+    }
+
+    async delete(id) {
+        await this.getById(id);
+        return await this.produktiRepo.deleteProdukti(id);
+    }
 }
 
-module.exports = new ProduktiService();
+module.exports = ProduktiService;

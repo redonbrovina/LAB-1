@@ -1,25 +1,37 @@
 const FurnitoriRepository = require("../repositories/FurnitoriRepository");
 
 class FurnitoriService {
-  async getAll() {
-    return await FurnitoriRepository.getAll(); 
-  }
+    constructor() {
+        this.furnitoriRepo = new FurnitoriRepository();
+    }
 
-  async getById(id) {
-    return await FurnitoriRepository.getById(id);
-  }
+    async getAll() {
+        return await this.furnitoriRepo.getAllFurnitore();
+    }
 
-  async create(data) {
-    return await FurnitoriRepository.create(data);
-  }
+    async getById(id) {
+        const furnitori = await this.furnitoriRepo.getFurnitoriById(id);
+        if (!furnitori) throw new Error("Furnitori nuk u gjet");
+        return furnitori;
+    }
 
-  async update(id, data) {
-    return await FurnitoriRepository.update(id, data);
-  }
+    async getByShteti(shtetiID) {
+        return await this.furnitoriRepo.getFurnitoreByShteti(shtetiID);
+    }
 
-  async delete(id) {
-    return await FurnitoriRepository.delete(id);
-  }
+    async create(data) {
+        return await this.furnitoriRepo.createFurnitori(data);
+    }
+
+    async update(id, data) {
+        await this.getById(id);
+        return await this.furnitoriRepo.updateFurnitori(id, data);
+    }
+
+    async delete(id) {
+        await this.getById(id);
+        return await this.furnitoriRepo.deleteFurnitori(id);
+    }
 }
 
-module.exports = new FurnitoriService();
+module.exports = FurnitoriService;
