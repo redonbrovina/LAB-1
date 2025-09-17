@@ -1,25 +1,30 @@
-const Doza = require("../models/Doza");
+const BaseRepository = require("./BaseRepository");
+const { Doza } = require("../models");
 
-class DozaRepository {
-  async findAll() {
-    return await Doza.findAll();
-  }
+class DozaRepository extends BaseRepository {
+    constructor() {
+        super(Doza);
+    }
 
-  async findById(id) {
-    return await Doza.findByPk(id);
-  }
+    async getAllDoza() {
+        return await this.getAll();
+    }
 
-  async create(data) {
-    return await Doza.create(data);
-  }
+    async getDozaById(dozaID) {
+        return await this.getById(dozaID);
+    }
 
-  async update(id, data) {
-    return await Doza.update(data, { where: { DozaID: id } });
-  }
+    async createDoza(data) {
+        return await this.insert(data);
+    }
 
-  async delete(id) {
-    return await Doza.destroy({ where: { DozaID: id } });
-  }
+    async updateDoza(dozaID, data) {
+        return await this.updateById(dozaID, data);
+    }
+
+    async deleteDoza(dozaID) {
+        return await this.deleteById(dozaID);
+    }
 }
 
-module.exports = new DozaRepository();
+module.exports = DozaRepository;
