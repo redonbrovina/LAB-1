@@ -2,11 +2,13 @@ const express = require("express");
 const router = express.Router();
 const KategoriaController = require("../controllers/KategoriaController");
 
-router.get("/", KategoriaController.getAll);
-router.get("/:id", KategoriaController.getById);
-router.post("/", KategoriaController.create);
-router.put("/:id", KategoriaController.update);
-router.delete("/:id", KategoriaController.delete);
+const controller = new KategoriaController();
+
+router.get("/", controller.getAll.bind(controller));
+router.get("/:id", controller.getById.bind(controller));
+router.post("/", controller.create.bind(controller));
+router.put("/:id", controller.update.bind(controller));
+router.delete("/:id", controller.delete.bind(controller));
 
 module.exports = router;
 
