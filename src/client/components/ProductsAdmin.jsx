@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { categoriesAPI, productsAPI } from '../utils/api';
+import AdminNavbar from '../admin/AdminNavbar';
 
 export default function ProductsAdmin() {
   const [products, setProducts] = useState([]);
@@ -100,7 +101,8 @@ export default function ProductsAdmin() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white shadow rounded-2xl p-6">
+      <AdminNavbar />
+      <div className="bg-white shadow rounded-2xl p-6 ml-64">
         <h3 className="font-semibold mb-4 text-red-600">{editingId ? 'Përditëso Produktin' : 'Shto Produkt të Ri'}</h3>
         {error && <div className="mb-3 text-sm text-red-600">{error}</div>}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -158,7 +160,7 @@ export default function ProductsAdmin() {
         </form>
       </div>
 
-      <div className="bg-white shadow rounded-2xl p-6">
+      <div className="bg-white shadow rounded-2xl p-6 ml-64">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-red-600">Lista e Produkteve</h3>
           <button className="px-3 py-2 text-sm bg-gray-100 rounded-lg" onClick={loadAll}>Refresh</button>

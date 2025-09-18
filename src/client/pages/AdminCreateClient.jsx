@@ -1,5 +1,5 @@
-import AdminNavbar from "../components/admin/AdminNavbar";
-import ClientForm from "../components/admin/ClientForm";
+import AdminNavbar from "../admin/AdminNavbar";
+import ClientForm from "../admin/ClientForm";
 
 export default function AdminCreateClient() {
   return (

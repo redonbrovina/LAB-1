@@ -1,8 +1,8 @@
-const BaseRepository = require('../repositories/ProduktCartRepository');
+const ProduktCartService = require('../services/ProduktCartService');
 
 class ProduktCartController {
     constructor() {
-        this.repo = new BaseRepository();
+        this.repo = new ProduktCartService();
     }
 
     async getAll(req, res) {

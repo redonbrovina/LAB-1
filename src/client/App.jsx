@@ -28,6 +28,7 @@ import CartManagement from "./components/CartManagement";
 import ProductsAdmin from "./components/ProductsAdmin";
 import { AuthProvider } from './utils/AuthContext';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AdminCreateClient from "./pages/AdminCreateClient";
 
 export default function App() {
   return (
@@ -91,6 +92,7 @@ export default function App() {
             <Route path="carts" element={<CartManagement />} />
             <Route path="products" element={<ProductsAdmin />} />
             <Route path="users" element={<AdminUsers />} />
+            <Route path="users/create" element={<AdminCreateClient />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>
         </Routes>
