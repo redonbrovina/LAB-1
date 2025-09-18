@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Save } from "lucide-react";
-import { apiPut, apiGet } from "../../utils/api";
+import { apiPut, apiGet } from "../utils/api";
 
 export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) {
   const [formData, setFormData] = useState({

@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign } from "lucide-react";
-import { useAuth } from "../../utils/AuthContext";
+import { useAuth } from "../utils/AuthContext";
 
 export default function AdminNavbar() {
   const location = useLocation();

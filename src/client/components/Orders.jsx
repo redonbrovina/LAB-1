@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiGet, apiPut } from '../utils/api';
-import AdminNavbar from './admin/AdminNavbar';
+import AdminNavbar from '../admin/AdminNavbar';
 import { Eye, CheckCircle, XCircle, Clock, Package, Search, Filter } from 'lucide-react';
 
 export default function Orders() {

@@ -1,5 +1,5 @@
-import AdminNavbar from "../components/admin/AdminNavbar";
-import EditUserModal from "../components/admin/EditUserModal";
+import AdminNavbar from "../admin/AdminNavbar";
+import EditUserModal from "../admin/EditUserModal";
 import { useState, useEffect } from "react";
 import { apiGet, apiDelete } from "../utils/api";
 import { Search, Plus, Edit, Trash2, Eye, Mail, Phone, Calendar } from "lucide-react";

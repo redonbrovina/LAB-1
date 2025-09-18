@@ -1,7 +1,7 @@
 import { DollarSign, TrendingUp, Users, Settings, ShoppingCart } from "lucide-react";
 import { useAuth } from "../utils/AuthContext";
 import { useNavigate } from "react-router-dom";
-import AdminNavbar from "../components/admin/AdminNavbar";
+import AdminNavbar from "../admin/AdminNavbar";
 import Orders from "../components/Orders";
 import CartManagement from "../components/CartManagement";
 import ProductsAdmin from "../components/ProductsAdmin";

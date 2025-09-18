@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { apiGet, apiPut, apiDelete } from '../utils/api';
 import { ShoppingCart, Plus, Minus, Trash2, Eye, Calendar, Euro } from 'lucide-react';
-import AdminNavbar from './admin/AdminNavbar';
+import AdminNavbar from '../admin/AdminNavbar';
 
 export default function CartManagement() {
   const [carts, setCarts] = useState([]);

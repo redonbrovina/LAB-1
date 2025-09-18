@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save } from "lucide-react";
-import { apiPost, apiGet } from "../../utils/api";
+import { apiPost, apiGet } from "../utils/api";
 
 export default function ClientForm() {
   const navigate = useNavigate();

@@ -1,8 +1,9 @@
 const BaseRepository = require("./BaseRepository");
+const { Klienti } = require("../models");
 
 class KlientiRepository extends BaseRepository {
     constructor() {
-        super('klienti', 'klientiID');
+        super(Klienti);
     }
 
     async getAllKlientet() {

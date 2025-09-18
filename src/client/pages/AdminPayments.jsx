@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { DollarSign, Plus, Edit, Trash2, CreditCard, Banknote } from "lucide-react";
 import { paymentAPI } from "../utils/api";
+import AdminNavbar from "../admin/AdminNavbar";
 
 export default function AdminPayments() {
   const [payments, setPayments] = useState([]);
@@ -85,8 +86,9 @@ export default function AdminPayments() {
 
   if (loading) {
     return (
-      <div className="flex h-screen" style={{ backgroundColor: "#FEF2F2" }}>
-        <div className="flex-1 flex items-center justify-center">
+      <div className="min-h-screen" style={{ backgroundColor: "#FEF2F2" }}>
+        <AdminNavbar />
+        <div className="ml-64 flex items-center justify-center h-screen">
           <div className="text-lg">Loading payments...</div>
         </div>
       </div>
@@ -94,8 +96,9 @@ export default function AdminPayments() {
   }
 
   return (
-    <div className="flex h-screen" style={{ backgroundColor: "#FEF2F2" }}>
-      <div className="flex-1 p-8 overflow-y-auto">
+    <div className="min-h-screen" style={{ backgroundColor: "#FEF2F2" }}>
+      <AdminNavbar />
+      <div className="ml-64 p-8 overflow-y-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold" style={{ color: "#808080" }}>
             Admin Payments
@@ -231,7 +234,7 @@ export default function AdminPayments() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Status</label>
+                    <label className="block text sm font-medium mb-2">Status</label>
                     <select
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -268,5 +271,3 @@ export default function AdminPayments() {
     </div>
   );
 }
-
-

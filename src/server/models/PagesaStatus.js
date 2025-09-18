@@ -17,12 +17,13 @@ const PagesaStatus = sequelize.define("PagesaStatus", {
     timestamps: false
 });
 
-// Define relationships after model is created
 PagesaStatus.associate = function(models) {
-    PagesaStatus.hasMany(models.Porosia, { 
+    PagesaStatus.hasMany(models.Porosia, {
         foreignKey: 'pagesa_statusID',
         as: 'porosite'
     });
 };
 
 module.exports = PagesaStatus;
+
+
