@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const controller = new (require('../controllers/PorosiaStatusController'))();
+const PorosiaStatusController = require('../controllers/PorosiaStatusController');
+
+const controller = new PorosiaStatusController();
 
 router.get('/', controller.getAll.bind(controller));
 router.get('/:id', controller.getById.bind(controller));
