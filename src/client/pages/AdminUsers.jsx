@@ -25,6 +25,10 @@ export default function AdminUsers() {
   }
 
   useEffect(() => {
+    fetchUsers();
+  }, [users]);
+
+  useEffect(() => {
     // Clear previous timeout
     if (searchTimeout) {
       clearTimeout(searchTimeout);
@@ -41,7 +45,7 @@ export default function AdminUsers() {
         clearTimeout(timeout);
       }
     };
-  }, [search, users]);
+  }, [search]);
 
 
   const handleSearch = (e) => {
@@ -54,16 +58,18 @@ export default function AdminUsers() {
   }
 
   const handleDeleteClick = (user) => {
-    const deleteUser = async () => {
-      await apiDelete(`/klienti/${user.klientiID}`);
-      setUsers(users.filter((u) => u.klientiID !== user.klientiID));
+    if(window.confirm("Are you sure you want to delete this user?")) {
+      const deleteUser = async () => {
+        await apiDelete(`/klienti/${user.klientiID}`);
+        setUsers(users.filter((u) => u.klientiID !== user.klientiID));
+      }
+      deleteUser();
     }
-    deleteUser();
   }
 
   const handleUserUpdated = (updatedUser) => {
     console.log('User updated callback received:', updatedUser);
-    setUsers(users.map((user) => user.klientiID === updatedUser.klientiID ? updatedUser : user));
+    fetchUsers();
   }
 
   const handleCloseModal = () => {

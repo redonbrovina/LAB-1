@@ -1,5 +1,6 @@
 const BaseRepository = require("./BaseRepository");
 const { Klienti } = require("../models");
+const { Shteti } = require("../models");
 
 class KlientiRepository extends BaseRepository {
     constructor() {
@@ -7,7 +8,13 @@ class KlientiRepository extends BaseRepository {
     }
 
     async getAllKlientet() {
-        return await this.getAll();
+        return await this.getAll({
+            include: [{
+                model: Shteti,
+                as: 'shteti',
+                attributes: ['emri_shtetit']
+            }]
+        });
     }
 
     async getKlientiById(klientiID) {
@@ -23,7 +30,7 @@ class KlientiRepository extends BaseRepository {
     }
 
     async updateKlienti(klientiID, data) {
-        return await this.update(klientiID, data);
+        return await this.updateById(klientiID, data);
     }
 
     async deleteKlienti(klientiID) {
