@@ -1,29 +1,33 @@
 const FormaRepository = require("../repositories/FormaRepository");
 
 class FormaService {
-  async getAll() {
-    return await FormaRepository.findAll();
-  }
+    constructor() {
+        this.formaRepo = new FormaRepository();
+    }
 
-  async getById(id) {
-    const forma = await FormaRepository.findById(id);
-    if (!forma) throw new Error("Forma nuk u gjet");
-    return forma;
-  }
+    async getAll() {
+        return await this.formaRepo.getAllForma();
+    }
 
-  async create(data) {
-    return await FormaRepository.create(data);
-  }
+    async getById(id) {
+        const forma = await this.formaRepo.getFormaById(id);
+        if (!forma) throw new Error("Forma nuk u gjet");
+        return forma;
+    }
 
-  async update(id, data) {
-    await this.getById(id);
-    return await FormaRepository.update(id, data);
-  }
+    async create(data) {
+        return await this.formaRepo.createForma(data);
+    }
 
-  async delete(id) {
-    await this.getById(id);
-    return await FormaRepository.delete(id);
-  }
+    async update(id, data) {
+        await this.getById(id);
+        return await this.formaRepo.updateForma(id, data);
+    }
+
+    async delete(id) {
+        await this.getById(id);
+        return await this.formaRepo.deleteForma(id);
+    }
 }
 
-module.exports = new FormaService();
+module.exports = FormaService;

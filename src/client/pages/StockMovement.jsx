@@ -1,6 +1,7 @@
-import ClientNavBar from "../components/ClientNavBar";
+import AdminNavbar from "../admin/AdminNavbar";
 import { Package, TrendingUp, TrendingDown, Plus, Edit, Trash2, ArrowUpDown } from "lucide-react";
 import { useState, useEffect } from "react";
+import ClientNavBar from "../components/ClientNavBar";
 
 export default function StockMovement() {
   const [movements, setMovements] = useState([]);
@@ -114,7 +115,7 @@ export default function StockMovement() {
 
   return (
     <div className="flex h-screen" style={{ backgroundColor: "#ECFAEA" }}>
-      <ClientNavBar />
+      <AdminNavbar />
 
       <div className="flex-1 p-8 overflow-y-auto">
         {/* Header */}

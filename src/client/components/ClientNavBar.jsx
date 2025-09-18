@@ -1,9 +1,17 @@
 import Shneta from "../assets/images/Shneta.png";
 import { Home, Package, ShoppingCart, User, CreditCard, TrendingUp, Wallet } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../utils/AuthContext";
 
 export default function ClientNavBar() {
   const location = useLocation(); // merr path-in aktual
+
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   const getLinkClass = (path) => {
     return location.pathname === path
@@ -40,11 +48,6 @@ export default function ClientNavBar() {
           Payments
         </Link>
 
-        <Link to="/stock-movement" className={getLinkClass("/stock-movement")}>
-          <TrendingUp size={18} />
-          Stock Movement
-        </Link>
-
         <Link to="/payment-methods" className={getLinkClass("/payment-methods")}>
           <Wallet size={18} />
           Payment Methods
@@ -54,6 +57,13 @@ export default function ClientNavBar() {
           <User size={18} />
           Profile
         </Link>
+
+        <button 
+          onClick={handleLogout}
+          className="px-4 mt-2 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+        >
+          Logout
+        </button>
       </nav>
     </div>
   );

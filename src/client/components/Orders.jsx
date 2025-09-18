@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiGet, apiPut } from '../utils/api';
+import AdminNavbar from '../admin/AdminNavbar';
 import { Eye, CheckCircle, XCircle, Clock, Package, Search, Filter } from 'lucide-react';
 
 export default function Orders() {
@@ -108,8 +109,9 @@ export default function Orders() {
 
   return (
     <div className="space-y-6">
+      <AdminNavbar />
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center ml-64">
         <h1 className="text-2xl font-bold text-gray-800">Menaxhimi i Porosive</h1>
         <div className="text-sm text-gray-500">
           Total: {orders.length} porosi
@@ -117,7 +119,7 @@ export default function Orders() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-4">
+      <div className="bg-white rounded-lg shadow p-4 ml-64">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1">
@@ -134,7 +136,7 @@ export default function Orders() {
           </div>
 
           {/* Status Filter */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-64">
             <Filter className="text-gray-400" size={20} />
             <select
               value={statusFilter}
@@ -151,7 +153,7 @@ export default function Orders() {
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-hidden ml-64">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">

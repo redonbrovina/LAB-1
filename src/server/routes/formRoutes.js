@@ -1,13 +1,15 @@
 const express = require('express')
 const router = express.Router()
-const controller = require('../controllers/FormController')
+const FormController = require('../controllers/FormController')
 
-router.post('/login', controller.checkLogin)
+const controller = new FormController()
 
-router.post('/signup', controller.checkApplication)
+router.post('/login', controller.checkLogin.bind(controller))
 
-router.post('/logout', controller.logout)
+router.post('/signup', controller.checkApplication.bind(controller))
 
-router.get('/shtetet', controller.getAllShtetet)
+router.post('/logout', controller.logout.bind(controller))
+
+router.get('/shtetet', controller.getAllShtetet.bind(controller))
 
 module.exports = router

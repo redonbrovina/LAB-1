@@ -9,7 +9,7 @@ export default function PaymentMethods() {
   const [editingMethod, setEditingMethod] = useState(null);
 
   const [formData, setFormData] = useState({
-    emri: "",
+    menyra_pageses: "",
     pershkrimi: ""
   });
 
@@ -51,7 +51,7 @@ export default function PaymentMethods() {
         setShowForm(false);
         setEditingMethod(null);
         setFormData({
-          emri: "",
+          menyra_pageses: "",
           pershkrimi: ""
         });
       }
@@ -63,7 +63,7 @@ export default function PaymentMethods() {
   const handleEdit = (method) => {
     setEditingMethod(method);
     setFormData({
-      emri: method.emri || "",
+      menyra_pageses: method.menyra_pageses || "",
       pershkrimi: method.pershkrimi || ""
     });
     setShowForm(true);
@@ -170,7 +170,7 @@ export default function PaymentMethods() {
                   </div>
                   
                   <h3 className="text-lg font-semibold mb-2">
-                    {method.emri || `Payment Method ${index + 1}`}
+                    {method.menyra_pageses || `Payment Method ${index + 1}`}
                   </h3>
                   
                   <p className="text-gray-600 text-sm mb-4">
@@ -202,8 +202,8 @@ export default function PaymentMethods() {
                     <label className="block text-sm font-medium mb-2">Method Name</label>
                     <input
                       type="text"
-                      value={formData.emri}
-                      onChange={(e) => setFormData({...formData, emri: e.target.value})}
+                      value={formData.menyra_pageses}
+                      onChange={(e) => setFormData({...formData, menyra_pageses: e.target.value})}
                       className="w-full border rounded-lg px-3 py-2"
                       placeholder="e.g., Credit Card, PayPal, Bank Transfer"
                       required
@@ -235,7 +235,7 @@ export default function PaymentMethods() {
                       setShowForm(false);
                       setEditingMethod(null);
                       setFormData({
-                        emri: "",
+                        menyra_pageses: "",
                         pershkrimi: ""
                       });
                     }}

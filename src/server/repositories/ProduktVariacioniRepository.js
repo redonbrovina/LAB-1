@@ -1,20 +1,103 @@
 const BaseRepository = require("./BaseRepository");
+const { ProduktVariacioni, Furnitori, Doza, Forma, Produkti } = require("../models");
 
 class ProduktVariacioniRepository extends BaseRepository {
-  constructor() {
-    super("produkt_variacioni", "ProduktVariacioniID"); //  tabela me emrin e saktë
-  }
+    constructor() {
+        super(ProduktVariacioni);
+    }
 
-  async getVariacioneTePlota() {
-    const query = `
-      SELECT pv.*, f.emri AS furnitori, d.doza, fo.lloji_formes
-      FROM produkt_variacioni pv
-      JOIN Furnitori f ON pv.FurnitoriID = f.FurnitoriID
-      JOIN Doza d ON pv.DozaID = d.DozaID
-      JOIN Forma fo ON pv.FormaID = fo.FormaID
-    `;
-    return await this.query(query);
-  }
+    async getAllVariacione() {
+        return await this.getAll({
+            include: [
+                {
+                    model: Furnitori,
+                    as: 'furnitori',
+                    attributes: ['emri']
+                },
+                {
+                    model: Doza,
+                    as: 'doza',
+                    attributes: ['doza']
+                },
+                {
+                    model: Forma,
+                    as: 'forma',
+                    attributes: ['lloji_formes']
+                },
+                {
+                    model: Produkti,
+                    as: 'produkti',
+                    attributes: ['emri', 'pershkrimi']
+                }
+            ]
+        });
+    }
+
+    async getVariacioneTePlota() {
+        return await this.getAll({
+            include: [
+                {
+                    model: Furnitori,
+                    as: 'furnitori',
+                    attributes: ['emri']
+                },
+                {
+                    model: Doza,
+                    as: 'doza',
+                    attributes: ['doza']
+                },
+                {
+                    model: Forma,
+                    as: 'forma',
+                    attributes: ['lloji_formes']
+                },
+                {
+                    model: Produkti,
+                    as: 'produkti',
+                    attributes: ['emri', 'pershkrimi']
+                }
+            ]
+        });
+    }
+
+    async getVariacioniById(variacioniID) {
+        return await this.getOneByField('produkt_variacioniID', variacioniID, {
+            include: [
+                {
+                    model: Furnitori,
+                    as: 'furnitori',
+                    attributes: ['emri']
+                },
+                {
+                    model: Doza,
+                    as: 'doza',
+                    attributes: ['doza']
+                },
+                {
+                    model: Forma,
+                    as: 'forma',
+                    attributes: ['lloji_formes']
+                },
+                {
+                    model: Produkti,
+                    as: 'produkti',
+                    attributes: ['emri', 'pershkrimi']
+                }
+            ]
+        });
+    }
+
+    async createVariacioni(data) {
+        return await this.insert(data);
+    }
+
+    async updateVariacioni(variacioniID, data) {
+        return await this.updateById(variacioniID, data);
+    }
+
+    async deleteVariacioni(variacioniID) {
+        return await this.deleteById(variacioniID);
+    }
 }
 
-module.exports = new ProduktVariacioniRepository();
+module.exports = ProduktVariacioniRepository;

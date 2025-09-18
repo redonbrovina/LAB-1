@@ -1,29 +1,33 @@
 const KategoriaRepository = require("../repositories/KategoriaRepository");
 
 class KategoriaService {
-  async getAll() {
-    return await KategoriaRepository.getAll();
-  }
+    constructor() {
+        this.kategoriaRepo = new KategoriaRepository();
+    }
 
-  async getById(id) {
-    const kategoria = await KategoriaRepository.getById(id);
-    if (!kategoria) throw new Error("Kategoria nuk u gjet");
-    return kategoria;
-  }
+    async getAll() {
+        return await this.kategoriaRepo.getAllKategorite();
+    }
 
-  async create(data) {
-    return await KategoriaRepository.insert(data);
-  }
+    async getById(id) {
+        const kategoria = await this.kategoriaRepo.getKategoriaById(id);
+        if (!kategoria) throw new Error("Kategoria nuk u gjet");
+        return kategoria;
+    }
 
-  async update(id, data) {
-    await this.getById(id);
-    return await KategoriaRepository.updateById(id, data);
-  }
+    async create(data) {
+        return await this.kategoriaRepo.createKategoria(data);
+    }
 
-  async delete(id) {
-    await this.getById(id);
-    return await KategoriaRepository.deleteById(id);
-  }
+    async update(id, data) {
+        await this.getById(id);
+        return await this.kategoriaRepo.updateKategoria(id, data);
+    }
+
+    async delete(id) {
+        await this.getById(id);
+        return await this.kategoriaRepo.deleteKategoria(id);
+    }
 }
 
-module.exports = new KategoriaService();
+module.exports = KategoriaService;

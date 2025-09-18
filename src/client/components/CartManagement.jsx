@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { apiGet, apiPut, apiDelete } from '../utils/api';
 import { ShoppingCart, Plus, Minus, Trash2, Eye, Calendar, Euro } from 'lucide-react';
+import AdminNavbar from '../admin/AdminNavbar';
 
 export default function CartManagement() {
   const [carts, setCarts] = useState([]);
@@ -159,8 +160,9 @@ export default function CartManagement() {
 
   return (
     <div className="space-y-6">
+      <AdminNavbar />
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center ml-64">
         <h1 className="text-2xl font-bold text-gray-800">Menaxhimi i Carts</h1>
         <div className="text-sm text-gray-500">
           Total: {carts.length} carts
@@ -168,7 +170,7 @@ export default function CartManagement() {
       </div>
 
       {/* Search */}
-      <div className="bg-white rounded-lg shadow p-4">
+      <div className="bg-white rounded-lg shadow p-4 ml-64">
         <div className="relative">
           <ShoppingCart className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
           <input
@@ -182,7 +184,7 @@ export default function CartManagement() {
       </div>
 
       {/* Carts Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-hidden ml-64">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -203,7 +205,7 @@ export default function CartManagement() {
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white divide-y divide-gray-200 ml-64">
             {filteredCarts.length > 0 ? (
               filteredCarts.map((cart) => (
                 <tr key={cart.cartID} className="hover:bg-gray-50">
@@ -255,7 +257,7 @@ export default function CartManagement() {
 
       {/* Cart Detail Modal */}
       {showModal && selectedCart && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50 ml-64">
           <div className="bg-white p-8 rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-gray-800">Cart #{selectedCart.cartID} - Detajet</h3>

@@ -1,36 +1,44 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database/Database");
-const Kategoria = require("./Kategoria");
 
 const Produkti = sequelize.define("Produkti", {
-  ProduktiID: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  emri: {
-    type: DataTypes.STRING(100),
-    allowNull: false
-  },
-  pershkrimi: {
-    type: DataTypes.TEXT,
-    allowNull: true
-  },
-  KategoriaID: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: "Kategoria",
-      key: "KategoriaID"
+    produktiID: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
+    emri: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+    },
+    pershkrimi: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    kategoriaID: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: "Kategoria",
+            key: "kategoriaID"
+        }
     }
-  }
 }, {
-  tableName: "Produkti",
-  timestamps: false
+    tableName: "produkti",
+    timestamps: false
 });
 
-// Associations
-Produkti.belongsTo(Kategoria, { foreignKey: "KategoriaID" });
-Kategoria.hasMany(Produkti, { foreignKey: "KategoriaID" });
+// Define relationships after model is created
+Produkti.associate = function(models) {
+    Produkti.belongsTo(models.Kategoria, { 
+        foreignKey: 'kategoriaID',
+        as: 'kategoria'
+    });
+    Produkti.hasMany(models.ProduktVariacioni, { 
+        foreignKey: 'produktiID',
+        as: 'variacionet'
+    });
+};
 
 module.exports = Produkti;

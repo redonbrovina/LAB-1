@@ -2,18 +2,19 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../database/Database");
 
 const Doza = sequelize.define("Doza", {
-  DozaID: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  doza: {
-    type: DataTypes.STRING(50),
-    allowNull: false
-  }
+    dozaID: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
+    doza: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true
+    }
 }, {
-  tableName: "Doza",
-  timestamps: false
+    tableName: "doza",
+    timestamps: false
 });
 
 module.exports = Doza;

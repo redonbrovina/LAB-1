@@ -1,8 +1,9 @@
 const BaseRepository = require('./BaseRepository');
+const ProduktPorosise = require('../models/ProduktPorosise');
 
 class ProduktiPorosiseRepository extends BaseRepository {
     constructor() {
-        super('produkti_porosise', 'produkti_porosiseID');
+        super(ProduktPorosise);
     }
 
     async getByPorosiaId(porosiaID) {

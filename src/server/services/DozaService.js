@@ -1,29 +1,33 @@
 const DozaRepository = require("../repositories/DozaRepository");
 
 class DozaService {
-  async getAll() {
-    return await DozaRepository.findAll();
-  }
+    constructor() {
+        this.dozaRepo = new DozaRepository();
+    }
 
-  async getById(id) {
-    const doza = await DozaRepository.findById(id);
-    if (!doza) throw new Error("Doza nuk u gjet");
-    return doza;
-  }
+    async getAll() {
+        return await this.dozaRepo.getAllDoza();
+    }
 
-  async create(data) {
-    return await DozaRepository.create(data);
-  }
+    async getById(id) {
+        const doza = await this.dozaRepo.getDozaById(id);
+        if (!doza) throw new Error("Doza nuk u gjet");
+        return doza;
+    }
 
-  async update(id, data) {
-    await this.getById(id);
-    return await DozaRepository.update(id, data);
-  }
+    async create(data) {
+        return await this.dozaRepo.createDoza(data);
+    }
 
-  async delete(id) {
-    await this.getById(id);
-    return await DozaRepository.delete(id);
-  }
+    async update(id, data) {
+        await this.getById(id);
+        return await this.dozaRepo.updateDoza(id, data);
+    }
+
+    async delete(id) {
+        await this.getById(id);
+        return await this.dozaRepo.deleteDoza(id);
+    }
 }
 
-module.exports = new DozaService();
+module.exports = DozaService;

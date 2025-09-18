@@ -10,7 +10,7 @@ export default function Signup() {
         emri_kompanise: "",
         email: "",
         adresa: "",
-        shtetiId: "",
+        shtetiID: "",
         qyteti: "",
         kodi_postal: "",
         password: "",
@@ -92,8 +92,8 @@ export default function Signup() {
         }
 
         try{
-            const {emri_kompanise, email, adresa, shtetiId, qyteti, kodi_postal, password} = formData
-            await publicApiPost('/form/signup', {emri_kompanise, email, adresa, shtetiId, qyteti, kodi_postal, password})
+            const {emri_kompanise, email, adresa, shtetiID, qyteti, kodi_postal, password} = formData
+            await publicApiPost('/form/signup', {emri_kompanise, email, adresa, shtetiID, qyteti, kodi_postal, password})
             navigate('/signup-success')
         }catch(err){
             setErrorMessage(err.message || 'Signup Failed')
@@ -140,15 +140,15 @@ export default function Signup() {
 
                             <label className="text-[#808080] ml-3">Country</label>
                             <select
-                                name="shtetiId"
-                                value={formData.shtetiId}
+                                name="shtetiID"
+                                value={formData.shtetiID}
                                 onChange={handleChange}
                                 className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3 text-gray-500"
                             >
                                 <option value="">Select a Country</option>
                                 {shtetet.map((shteti) => (
-                                    <option key={shteti.ShtetiID} value={shteti.ShtetiID}>
-                                        {shteti.Emri_shtetit}
+                                    <option key={shteti.shtetiID} value={shteti.shtetiID}>
+                                        {shteti.emri_shtetit}
                                     </option>
                                 ))}
                             </select>

@@ -1,12 +1,57 @@
 const ProduktiPorosiseService = require('../services/ProduktiPorosiseService');
-const service = new ProduktiPorosiseService();
 
 class ProduktiPorosiseController {
-    getAll(req, res) { service.getAll().then(r => res.json(r)); }
-    getById(req, res) { service.getById(req.params.id).then(r => res.json(r)); }
-    create(req, res) { service.create(req.body).then(r => res.json(r)); }
-    update(req, res) { service.update(req.params.id, req.body).then(r => res.json(r)); }
-    delete(req, res) { service.delete(req.params.id).then(r => res.json({ success: r })); }
+    constructor() {
+        this.service = new ProduktiPorosiseService();
+    }
+
+    async getAll(req, res) {
+        try {
+            const items = await this.service.getAll();
+            res.json(items);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
+    async getById(req, res) {
+        try {
+            const item = await this.service.getById(req.params.id);
+            if (!item) return res.status(404).json({ message: 'Produkti nuk u gjet' });
+            res.json(item);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
+    async create(req, res) {
+        try {
+            const newItem = await this.service.create(req.body);
+            res.status(201).json(newItem);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
+    async update(req, res) {
+        try {
+            const updated = await this.service.update(req.params.id, req.body);
+            if (!updated) return res.status(404).json({ message: 'Produkti nuk u gjet' });
+            res.json(updated);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
+    async delete(req, res) {
+        try {
+            const deleted = await this.service.delete(req.params.id);
+            if (!deleted) return res.status(404).json({ message: 'Produkti nuk u gjet' });
+            res.json({ message: 'Produkti u fshi me sukses' });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
 }
 
 module.exports = ProduktiPorosiseController;

@@ -5,7 +5,7 @@ const app = express();
 
 const pagesaRoutes = require('./src/server/routes/pagesaRoutes');
 const menyraPagesesRoutes = require('./src/server/routes/menyraPagesesRoutes');
-const levizjaNeStokRoutes = require('./src/server/admin/routes/LevizjaNeStokRoutes');
+const levizjaNeStokRoutes = require('./src/server/routes/levizjaNeStokRoutes');
 const porosiaRoutes = require('./src/server/routes/porosiaRoutes');
 const cartRoutes = require('./src/server/routes/cartRoutes');
 const produktPorosiseRoutes = require('./src/server/routes/produktPorosiseRoutes');
@@ -46,6 +46,5 @@ app.use('/api/produkte', produktiRoutes);
 app.use('/api/variacione', produktVariacioniRoutes);
 app.use('/api/kategorite', kategoriaRoutes);
 
-// Start server
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server running on port ${port}`));

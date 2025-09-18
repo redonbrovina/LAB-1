@@ -2,10 +2,13 @@ const express = require("express");
 const router = express.Router();
 const ProduktVariacioniController = require("../controllers/ProduktVariacioniController");
 
-router.get("/", ProduktVariacioniController.getAll);
-router.get("/:id", ProduktVariacioniController.getById);
-router.post("/", ProduktVariacioniController.create);
-router.put("/:id", ProduktVariacioniController.update);
-router.delete("/:id", ProduktVariacioniController.delete);
+const controller = new ProduktVariacioniController();
+
+router.get("/", controller.getAll.bind(controller));
+router.get("/te-plota", controller.getVariacioneTePlota.bind(controller));
+router.get("/:id", controller.getById.bind(controller));
+router.post("/", controller.create.bind(controller));
+router.put("/:id", controller.update.bind(controller));
+router.delete("/:id", controller.delete.bind(controller));
 
 module.exports = router;

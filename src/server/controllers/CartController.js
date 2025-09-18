@@ -1,34 +1,66 @@
 const CartService = require('../services/CartService');
-const service = new CartService();
 
 class CartController {
+    constructor() {
+        this.service = new CartService();
+    }
+
     async getAll(req, res) {
-        const carts = await service.getAllCarts();
-        res.json(carts);
+        try {
+            const carts = await this.service.getAllCarts();
+            res.json(carts);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
     }
 
     async getById(req, res) {
-        const cart = await service.getCartById(req.params.id);
-        if (!cart) return res.status(404).json({ message: 'Cart nuk u gjet' });
-        res.json(cart);
+        try {
+            const cart = await this.service.getCartById(req.params.id);
+            if (!cart) return res.status(404).json({ message: 'Cart nuk u gjet' });
+            res.json(cart);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
+    async getCartByKlientiID(req, res) {
+        try {
+            const carts = await this.service.getCartByKlientiID(req.params.klientiID);
+            res.json(carts);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
     }
 
     async create(req, res) {
-        const newCart = await service.createCart(req.body);
-        res.status(201).json(newCart);
+        try {
+            const newCart = await this.service.createCart(req.body);
+            res.status(201).json(newCart);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
     }
 
     async update(req, res) {
-        const updated = await service.updateCart(req.params.id, req.body);
-        if (!updated) return res.status(404).json({ message: 'Cart nuk u gjet' });
-        res.json(updated);
+        try {
+            const updated = await this.service.updateCart(req.params.id, req.body);
+            if (!updated) return res.status(404).json({ message: 'Cart nuk u gjet' });
+            res.json(updated);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
     }
 
     async delete(req, res) {
-        const deleted = await service.deleteCart(req.params.id);
-        if (!deleted) return res.status(404).json({ message: 'Cart nuk u gjet' });
-        res.json({ message: 'Cart u fshi me sukses' });
+        try {
+            const deleted = await this.service.deleteCart(req.params.id);
+            if (!deleted) return res.status(404).json({ message: 'Cart nuk u gjet' });
+            res.json({ message: 'Cart u fshi me sukses' });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
     }
 }
 
-module.exports = new CartController();
+module.exports = CartController;

@@ -40,7 +40,7 @@ export default function AdminLogin() {
         try{
             const data = await publicApiPost('/admin/login', {email, password, kodi_personal: kodiPersonal})
             login(data.token)
-            navigate('/admin-dashboard')
+            navigate('/admin')
         }catch(err){
             setErrorMessage(err.message || 'Admin login failed')
         }

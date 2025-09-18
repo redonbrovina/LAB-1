@@ -2,18 +2,27 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../database/Database");
 
 const Kategoria = sequelize.define("Kategoria", {
-  KategoriaID: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  emri: {
-    type: DataTypes.STRING(100),
-    allowNull: false
-  }
+    kategoriaID: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
+    emri: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+    }
 }, {
-  tableName: "Kategoria",
-  timestamps: false
+    tableName: "kategoria",
+    timestamps: false
 });
+
+// Define relationships after model is created
+Kategoria.associate = function(models) {
+    Kategoria.hasMany(models.Produkti, { 
+        foreignKey: 'kategoriaID',
+        as: 'produktet'
+    });
+};
 
 module.exports = Kategoria;

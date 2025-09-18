@@ -1,29 +1,37 @@
 const ProduktVariacioniRepository = require("../repositories/ProduktVariacioniRepository");
 
 class ProduktVariacioniService {
-  async getAll() {
-    return await ProduktVariacioniRepository.getAll();
-  }
+    constructor() {
+        this.variacioniRepo = new ProduktVariacioniRepository();
+    }
 
-  async getById(id) {
-    const variacioni = await ProduktVariacioniRepository.getById(id);
-    if (!variacioni) throw new Error("Variacioni i produktit nuk u gjet");
-    return variacioni;
-  }
+    async getAll() {
+        return await this.variacioniRepo.getAllVariacione();
+    }
 
-  async create(data) {
-    return await ProduktVariacioniRepository.create(data);
-  }
+    async getVariacioneTePlota() {
+        return await this.variacioniRepo.getVariacioneTePlota();
+    }
 
-  async update(id, data) {
-    await this.getById(id);
-    return await ProduktVariacioniRepository.update(id, data);
-  }
+    async getById(id) {
+        const variacioni = await this.variacioniRepo.getVariacioniById(id);
+        if (!variacioni) throw new Error("Variacioni i produktit nuk u gjet");
+        return variacioni;
+    }
 
-  async delete(id) {
-    await this.getById(id);
-    return await ProduktVariacioniRepository.delete(id);
-  }
+    async create(data) {
+        return await this.variacioniRepo.createVariacioni(data);
+    }
+
+    async update(id, data) {
+        await this.getById(id);
+        return await this.variacioniRepo.updateVariacioni(id, data);
+    }
+
+    async delete(id) {
+        await this.getById(id);
+        return await this.variacioniRepo.deleteVariacioni(id);
+    }
 }
 
-module.exports = new ProduktVariacioniService();
+module.exports = ProduktVariacioniService;

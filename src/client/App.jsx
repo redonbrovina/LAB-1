@@ -20,6 +20,12 @@ import SignupSuccess from './pages/SignupSuccess';
 import Payments from "./pages/Payments";
 import StockMovement from "./pages/StockMovement";
 import PaymentMethods from "./pages/PaymentMethods";
+import Applications from "./pages/Applications";
+import AdminUsers from "./pages/AdminUsers";
+import AdminSettings from "./pages/AdminSettings";
+import Orders from "./components/Orders";
+import CartManagement from "./components/CartManagement";
+import ProductsAdmin from "./components/ProductsAdmin";
 import { AuthProvider } from './utils/AuthContext';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -76,10 +82,16 @@ export default function App() {
             <Route path="/payment-methods" element={<PaymentMethods />} />
           </Route>
 
-          {/* Admin Only Pages*/}
-          <Route path="/" element={<AdminProtectedLayout />}>
-            <Route path="admin-dashboard" element={<AdminDashboard />} />
-            <Route path="admin-payments" element={<AdminPayments />} />
+          {/* Admin Only Pages - aligned with AdminNavbar links */}
+          <Route path="/admin" element={<AdminProtectedLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="payments" element={<AdminPayments />} />
+            <Route path="applications" element={<Applications />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="carts" element={<CartManagement />} />
+            <Route path="products" element={<ProductsAdmin />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
         </Routes>
       </BrowserRouter>

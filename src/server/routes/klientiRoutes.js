@@ -1,14 +1,18 @@
-const controller = require('../controllers/KlientiController')
+const KlientiController = require('../controllers/KlientiController')
 const express = require('express')
 const router = express.Router()
 const { authenticateToken, authorizeRoles } = require('../middleware/auth')
 
-router.use(authenticateToken)
+const controller = new KlientiController()
 
-router.get('/:klientiID', controller.getKlientiById)
-router.get('/', controller.getAllKlientet)
-router.post('/', controller.createKlienti)
-router.put('/:klientiID', controller.updateKlienti)
-router.delete('/:klientiID', controller.deleteKlienti)
+//router.use(authenticateToken)
+
+router.get('/', controller.getAllKlientet.bind(controller))
+router.get('/search/:emri_kompanise', controller.getKlientiByEmri.bind(controller))
+router.get('/shteti/:shtetiID', controller.getShtetiById.bind(controller))
+router.get('/:klientiID', controller.getKlientiById.bind(controller))
+router.post('/', controller.createKlienti.bind(controller))
+router.put('/:klientiID', controller.updateKlienti.bind(controller))
+router.delete('/:klientiID', controller.deleteKlienti.bind(controller))
 
 module.exports = router
