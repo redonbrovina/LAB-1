@@ -5,24 +5,28 @@ class ProduktiPorosiseService {
         this.repo = new ProduktiPorosiseRepository();
     }
 
-    getAll() {
-        return this.repo.getAll();
+    async getAll() {
+        return await this.repo.getAll();
     }
 
-    getById(id) {
-        return this.repo.getById(id);
+    async getById(id) {
+        const item = await this.repo.getById(id);
+        if (!item) throw new Error("Produkti nuk u gjet");
+        return item;
     }
 
-    create(data) {
-        return this.repo.insert(data);
+    async create(data) {
+        return await this.repo.insert(data);
     }
 
-    update(id, data) {
-        return this.repo.updateById(id, data);
+    async update(id, data) {
+        await this.getById(id);
+        return await this.repo.updateById(id, data);
     }
 
-    delete(id) {
-        return this.repo.deleteById(id);
+    async delete(id) {
+        await this.getById(id);
+        return await this.repo.deleteById(id);
     }
 }
 

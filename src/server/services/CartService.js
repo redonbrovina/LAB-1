@@ -6,23 +6,30 @@ class CartService {
     }
 
     async getAllCarts() {
-        return await this.cartRepo.getAll({ orderBy: 'koha_krijimit DESC' });
+        console.log('CartService.getAllCarts called');
+        const result = await this.cartRepo.getAllCarts();
+        console.log('CartService.getAllCarts result:', result);
+        return result;
     }
 
     async getCartById(id) {
-        return await this.cartRepo.getById(id);
+        return await this.cartRepo.getCartById(id);
+    }
+
+    async getCartByKlientiID(klientiID) {
+        return await this.cartRepo.getCartByKlientiID(klientiID);
     }
 
     async createCart(data) {
-        return await this.cartRepo.insert(data);
+        return await this.cartRepo.createCart(data);
     }
 
     async updateCart(id, data) {
-        return await this.cartRepo.updateById(id, data);
+        return await this.cartRepo.updateCart(id, data);
     }
 
     async deleteCart(id) {
-        return await this.cartRepo.deleteById(id);
+        return await this.cartRepo.deleteCart(id);
     }
 }
 
