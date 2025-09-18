@@ -4,13 +4,7 @@ import { useAuth } from "../utils/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
+  const { user } = useAuth();
 
   return (
     <div className="flex h-screen" style={{ backgroundColor: "#ECFAEA" }}>
@@ -27,12 +21,6 @@ export default function Dashboard() {
             </button>
             <button className="p-2 rounded-full bg-white shadow">
               <span role="img" aria-label="user">👤</span>
-            </button>
-            <button 
-              onClick={handleLogout}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-            >
-              Logout
             </button>
           </div>
         </div>
