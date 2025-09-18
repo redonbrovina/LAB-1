@@ -7,6 +7,8 @@ export default function StockMovement() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingMovement, setEditingMovement] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState("");
 
   const [formData, setFormData] = useState({
     produktiID: "",
@@ -33,6 +35,9 @@ export default function StockMovement() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
+    setMessage("");
+    
     try {
       const url = editingMovement 
         ? `http://localhost:5000/api/levizje-stok/${editingMovement.id}`
@@ -49,7 +54,13 @@ export default function StockMovement() {
       });
 
       if (response.ok) {
-        fetchMovements();
+        const result = await response.json();
+        console.log('Stock movement saved:', result);
+        
+        // Refresh the movements list
+        await fetchMovements();
+        
+        // Close modal and reset form
         setShowForm(false);
         setEditingMovement(null);
         setFormData({
@@ -58,9 +69,21 @@ export default function StockMovement() {
           lloji: "in",
           data: new Date().toISOString().split('T')[0]
         });
+        
+        // Show success message
+        setMessage(editingMovement ? 'Stock movement updated successfully!' : 'Stock movement created successfully!');
+        setTimeout(() => setMessage(""), 3000);
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        setMessage(errorData.message || 'Failed to save stock movement');
+        setTimeout(() => setMessage(""), 3000);
       }
     } catch (error) {
       console.error('Error saving stock movement:', error);
+      setMessage('Network error. Please try again.');
+      setTimeout(() => setMessage(""), 3000);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -78,14 +101,34 @@ export default function StockMovement() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this stock movement?')) {
       try {
+        console.log('Attempting to delete stock movement with ID:', id);
+        
         const response = await fetch(`http://localhost:5000/api/levizje-stok/${id}`, {
           method: 'DELETE',
         });
+        
+        console.log('Delete response status:', response.status);
+        
         if (response.ok) {
-          fetchMovements();
+          const result = await response.json();
+          console.log('Stock movement deleted successfully:', result);
+          
+          // Refresh the movements list
+          await fetchMovements();
+          
+          // Show success message
+          setMessage('Stock movement deleted successfully!');
+          setTimeout(() => setMessage(""), 3000);
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          console.error('Delete failed:', errorData);
+          setMessage(errorData.message || `Failed to delete stock movement (Status: ${response.status})`);
+          setTimeout(() => setMessage(""), 3000);
         }
       } catch (error) {
         console.error('Error deleting stock movement:', error);
+        setMessage('Network error. Please try again.');
+        setTimeout(() => setMessage(""), 3000);
       }
     }
   };
@@ -123,13 +166,33 @@ export default function StockMovement() {
             Stock Movement Management
           </h1>
           <button
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              setEditingMovement(null);
+              setFormData({
+                produktiID: "",
+                sasia: "",
+                lloji: "in",
+                data: new Date().toISOString().split('T')[0]
+              });
+              setShowForm(true);
+            }}
             className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700"
           >
             <Plus size={20} />
             Add Movement
           </button>
         </div>
+
+        {/* Success/Error Message */}
+        {message && (
+          <div className={`mb-4 p-3 rounded-lg ${
+            message.includes('successfully') 
+              ? 'bg-green-100 text-green-800 border border-green-200' 
+              : 'bg-red-100 text-red-800 border border-red-200'
+          }`}>
+            {message}
+          </div>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-4 gap-6 mb-8">
@@ -230,21 +293,41 @@ export default function StockMovement() {
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-              <h2 className="text-xl font-semibold mb-4">
-                {editingMovement ? 'Edit Stock Movement' : 'Add New Stock Movement'}
-              </h2>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">
+                  {editingMovement ? 'Edit Stock Movement' : 'Add New Stock Movement'}
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowForm(false);
+                    setEditingMovement(null);
+                    setFormData({
+                      produktiID: "",
+                      sasia: "",
+                      lloji: "in",
+                      data: new Date().toISOString().split('T')[0]
+                    });
+                    setMessage("");
+                  }}
+                  className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                  disabled={submitting}
+                >
+                  ×
+                </button>
+              </div>
               
               <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Product ID</label>
+                    <label className="block text-sm font-medium mb-2">Product ID (Optional)</label>
                     <input
                       type="text"
                       value={formData.produktiID}
                       onChange={(e) => setFormData({...formData, produktiID: e.target.value})}
                       className="w-full border rounded-lg px-3 py-2"
-                      required
+                      placeholder="Enter product ID (optional)"
                     />
+                    <p className="text-xs text-gray-500 mt-1">Note: Product ID is optional for stock movements</p>
                   </div>
 
                   <div>
@@ -286,12 +369,21 @@ export default function StockMovement() {
                 <div className="flex gap-3 mt-6">
                   <button
                     type="submit"
-                    className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
+                    disabled={submitting}
+                    className={`flex-1 py-2 rounded-lg text-white ${
+                      submitting 
+                        ? 'bg-gray-400 cursor-not-allowed' 
+                        : 'bg-green-600 hover:bg-green-700'
+                    }`}
                   >
-                    {editingMovement ? 'Update' : 'Create'} Movement
+                    {submitting 
+                      ? (editingMovement ? 'Updating...' : 'Creating...') 
+                      : (editingMovement ? 'Update' : 'Create') + ' Movement'
+                    }
                   </button>
                   <button
                     type="button"
+                    disabled={submitting}
                     onClick={() => {
                       setShowForm(false);
                       setEditingMovement(null);
@@ -301,8 +393,13 @@ export default function StockMovement() {
                         lloji: "in",
                         data: new Date().toISOString().split('T')[0]
                       });
+                      setMessage("");
                     }}
-                    className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
+                    className={`flex-1 py-2 rounded-lg ${
+                      submitting 
+                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                        : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+                    }`}
                   >
                     Cancel
                   </button>
