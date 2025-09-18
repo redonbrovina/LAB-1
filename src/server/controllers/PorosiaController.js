@@ -1,34 +1,66 @@
 const PorosiaService = require('../services/PorosiaService');
-const service = new PorosiaService();
 
 class PorosiaController {
+    constructor() {
+        this.service = new PorosiaService();
+    }
+
     async getAll(req, res) {
-        const porosite = await service.getAllPorosite();
-        res.json(porosite);
+        try {
+            const porosite = await this.service.getAllPorosite();
+            res.json(porosite);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
     }
 
     async getById(req, res) {
-        const porosia = await service.getPorosiaById(req.params.id);
-        if (!porosia) return res.status(404).json({ message: 'Porosia nuk u gjet' });
-        res.json(porosia);
+        try {
+            const porosia = await this.service.getPorosiaById(req.params.id);
+            if (!porosia) return res.status(404).json({ message: 'Porosia nuk u gjet' });
+            res.json(porosia);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
+    async getPorositeByKlientiID(req, res) {
+        try {
+            const porosite = await this.service.getPorositeByKlientiID(req.params.klientiID);
+            res.json(porosite);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
     }
 
     async create(req, res) {
-        const newPorosia = await service.createPorosia(req.body);
-        res.status(201).json(newPorosia);
+        try {
+            const newPorosia = await this.service.createPorosia(req.body);
+            res.status(201).json(newPorosia);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
     }
 
     async update(req, res) {
-        const updated = await service.updatePorosia(req.params.id, req.body);
-        if (!updated) return res.status(404).json({ message: 'Porosia nuk u gjet' });
-        res.json(updated);
+        try {
+            const updated = await this.service.updatePorosia(req.params.id, req.body);
+            if (!updated) return res.status(404).json({ message: 'Porosia nuk u gjet' });
+            res.json(updated);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
     }
 
     async delete(req, res) {
-        const deleted = await service.deletePorosia(req.params.id);
-        if (!deleted) return res.status(404).json({ message: 'Porosia nuk u gjet' });
-        res.json({ message: 'Porosia u fshi me sukses' });
+        try {
+            const deleted = await this.service.deletePorosia(req.params.id);
+            if (!deleted) return res.status(404).json({ message: 'Porosia nuk u gjet' });
+            res.json({ message: 'Porosia u fshi me sukses' });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
     }
 }
 
-module.exports = new PorosiaController();
+module.exports = PorosiaController;
