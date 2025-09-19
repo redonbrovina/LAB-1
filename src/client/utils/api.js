@@ -237,6 +237,9 @@ export const cartItemsAPI = {
 export const productsAPI = {
   getAll: () => apiGet('/produkte'),
   getById: (id) => apiGet(`/produkte/${id}`),
+  getByCategory: (categoryId) => apiGet(`/produkte/kategoria/${categoryId}`),
+  getWithVariations: (id) => apiGet(`/produkte/${id}/variations`),
+  search: (query) => apiGet(`/produkte/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiPost('/produkte', data),
   update: (id, data) => apiPut(`/produkte/${id}`, data),
   delete: (id) => apiDelete(`/produkte/${id}`),
@@ -249,4 +252,13 @@ export const categoriesAPI = {
   create: (data) => apiPost('/kategorite', data),
   update: (id, data) => apiPut(`/kategorite/${id}`, data),
   delete: (id) => apiDelete(`/kategorite/${id}`),
+};
+
+// Suppliers API functions
+export const furnitoriAPI = {
+  getAll: () => apiGet('/furnitore'),
+  getById: (id) => apiGet(`/furnitore/${id}`),
+  create: (data) => apiPost('/furnitore', data),
+  update: (id, data) => apiPut(`/furnitore/${id}`, data),
+  delete: (id) => apiDelete(`/furnitore/${id}`),
 };

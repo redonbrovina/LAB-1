@@ -70,6 +70,32 @@ class ProduktiController {
             }
         }
     }
+
+    async search(req, res) {
+        try {
+            const { q } = req.query;
+            if (!q) {
+                return res.status(400).json({ error: "Search query is required" });
+            }
+            const data = await this.produktiService.search(q);
+            res.json(data);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
+    async getWithVariations(req, res) {
+        try {
+            const data = await this.produktiService.getProductWithVariations(req.params.id);
+            res.json(data);
+        } catch (err) {
+            if (err.message === "Produkti nuk u gjet") {
+                res.status(404).json({ message: err.message });
+            } else {
+                res.status(500).json({ error: err.message });
+            }
+        }
+    }
 }
 
 module.exports = ProduktiController;

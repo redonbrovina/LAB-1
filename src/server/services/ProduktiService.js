@@ -32,6 +32,21 @@ class ProduktiService {
         await this.getById(id);
         return await this.produktiRepo.deleteProdukti(id);
     }
+
+    // Search products by name or description
+    async search(query) {
+        return await this.produktiRepo.searchProduktet(query);
+    }
+
+    // Get products with category details
+    async getAllWithCategory() {
+        return await this.produktiRepo.getAllProduktet();
+    }
+
+    // Get product with full details including variations
+    async getProductWithVariations(productId) {
+        return await this.produktiRepo.getProduktiById(productId);
+    }
 }
 
 module.exports = ProduktiService;

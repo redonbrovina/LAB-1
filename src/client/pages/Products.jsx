@@ -1,5 +1,8 @@
 import ClientNavBar from "../components/ClientNavBar";
-import { ShoppingCart, DollarSign } from "lucide-react";
+import ProductCard from "../components/ProductCard";
+import ProductSearch from "../components/ProductSearch";
+import ProductFilter from "../components/ProductFilter";
+import { ShoppingCart, DollarSign, Grid, List } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { productsAPI, categoriesAPI, cartAPI, cartItemsAPI } from "../utils/api";
 import { useAuth } from "../utils/AuthContext";
@@ -11,6 +14,14 @@ export default function Products() {
   const [error, setError] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [addingToCart, setAddingToCart] = useState(null);
+  const [searchResults, setSearchResults] = useState(null);
+  const [filters, setFilters] = useState({
+    category: '',
+    priceRange: '',
+    inStock: false,
+    sortBy: 'name'
+  });
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const { user } = useAuth();
 
   useEffect(() => {
@@ -122,9 +133,72 @@ export default function Products() {
     }
   };
 
-  const filteredProducts = selectedCategory 
-    ? products.filter(p => p.kategoriaID == selectedCategory)
-    : products;
+  const handleSearchResults = (results, query) => {
+    setSearchResults(results);
+  };
+
+  const handleSearchClear = () => {
+    setSearchResults(null);
+  };
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+  };
+
+  const applyFilters = (productList) => {
+    let filtered = [...productList];
+
+    // Category filter
+    if (filters.category) {
+      filtered = filtered.filter(p => p.kategoriaID == filters.category);
+    }
+
+    // Price range filter
+    if (filters.priceRange) {
+      filtered = filtered.filter(p => {
+        if (!p.variacionet || p.variacionet.length === 0) return false;
+        const price = p.variacionet[0].cmimi;
+        const [min, max] = filters.priceRange.split('-').map(Number);
+        if (max) {
+          return price >= min && price <= max;
+        } else {
+          return price >= min;
+        }
+      });
+    }
+
+    // In stock filter
+    if (filters.inStock) {
+      filtered = filtered.filter(p => {
+        return p.variacionet && p.variacionet.length > 0 && p.variacionet[0].sasia_ne_stok > 0;
+      });
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      switch (filters.sortBy) {
+        case 'name':
+          return a.emri.localeCompare(b.emri);
+        case 'name-desc':
+          return b.emri.localeCompare(a.emri);
+        case 'price-low':
+          const priceA = a.variacionet && a.variacionet.length > 0 ? a.variacionet[0].cmimi : 0;
+          const priceB = b.variacionet && b.variacionet.length > 0 ? b.variacionet[0].cmimi : 0;
+          return priceA - priceB;
+        case 'price-high':
+          const priceA2 = a.variacionet && a.variacionet.length > 0 ? a.variacionet[0].cmimi : 0;
+          const priceB2 = b.variacionet && b.variacionet.length > 0 ? b.variacionet[0].cmimi : 0;
+          return priceB2 - priceA2;
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  };
+
+  const displayProducts = searchResults ? searchResults : products;
+  const filteredProducts = applyFilters(displayProducts);
 
   return (
     <div className="flex h-screen" style={{ backgroundColor: "#ECFAEA" }}>
@@ -135,13 +209,31 @@ export default function Products() {
       <div className="flex-1 p-8 overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold" style={{ color: "#808080" }}>Shop</h1>
+          <h1 className="text-2xl font-bold" style={{ color: "#808080" }}>
+            {searchResults ? `Rezultatet e kërkimit (${searchResults.length})` : 'Shop'}
+          </h1>
           <div className="flex items-center gap-4">
+            {/* View Mode Toggle */}
+            <div className="flex border rounded-lg bg-white">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-l-lg ${viewMode === 'grid' ? 'bg-green-500 text-white' : 'text-gray-600'}`}
+              >
+                <Grid size={18} />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-r-lg ${viewMode === 'list' ? 'bg-green-500 text-white' : 'text-gray-600'}`}
+              >
+                <List size={18} />
+              </button>
+            </div>
+            
             <button 
               onClick={loadProducts}
               className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
             >
-              🔄 Refresh Products
+              🔄 Refresh
             </button>
             <button className="p-2 rounded-full bg-white shadow">
               <span role="img" aria-label="bell">🔔</span>
@@ -152,21 +244,29 @@ export default function Products() {
           </div>
         </div>
 
-        {/* Category Filter */}
+        {/* Search Bar */}
         <div className="mb-6">
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-4 py-2 border rounded-lg bg-white"
-          >
-            <option value="">Të gjitha kategoritë</option>
-            {categories.map(category => (
-              <option key={category.kategoriaID} value={category.kategoriaID}>
-                {category.emri}
-              </option>
-            ))}
-          </select>
+          <ProductSearch
+            onSearchResults={handleSearchResults}
+            onSearchClear={handleSearchClear}
+            placeholder="Kërko produkte sipas emrit ose përshkrimit..."
+          />
         </div>
+
+        {/* Filters and Products Layout */}
+        <div className="flex gap-6">
+          {/* Filters Sidebar */}
+          <div className="w-64 flex-shrink-0">
+            <ProductFilter
+              categories={categories}
+              onFilterChange={handleFilterChange}
+              currentFilters={filters}
+              showAdvanced={true}
+            />
+          </div>
+
+          {/* Products Section */}
+          <div className="flex-1">
 
         {/* Error Message */}
         {error && (
@@ -175,34 +275,6 @@ export default function Products() {
           </div>
         )}
 
-               {/* Debug Information */}
-               <div className="mb-4 p-3 bg-gray-100 rounded-lg text-sm">
-                 <p><strong>Debug Info:</strong></p>
-                 <p>Products: {products.length} | Categories: {categories.length}</p>
-                 <p>Authentication: {localStorage.getItem('token') ? 'Token present' : 'No token'}</p>
-                 <p>Products with variations: {products.filter(p => p.variacionet && p.variacionet.length > 0).length}</p>
-                 <p>User: {user ? 'Logged in' : 'Not logged in'}</p>
-                 {user && (
-                   <div>
-                     <p>User fields: {Object.keys(user).join(', ')}</p>
-                     <p>Client ID: {user.klientiID || user.id || user.clientId || user.userId || 'Not found'}</p>
-                   </div>
-                 )}
-                 <button 
-                   onClick={() => {
-                     console.log('=== MANUAL DEBUG ===');
-                     console.log('User:', user);
-                     console.log('Token:', localStorage.getItem('token'));
-                     if (user) {
-                       console.log('User fields:', Object.keys(user));
-                       console.log('Client ID:', user.klientiID || user.id || user.clientId || user.userId);
-                     }
-                   }}
-                   className="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-xs"
-                 >
-                   Debug User
-                 </button>
-               </div>
                
                {/* Variation Warning */}
                {products.length > 0 && products.filter(p => p.variacionet && p.variacionet.length > 0).length === 0 && (
@@ -220,41 +292,34 @@ export default function Products() {
                  </div>
                )}
 
-        {/* Loading State */}
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="text-gray-500">Duke ngarkuar produktet...</div>
-          </div>
-        ) : (
-          /* Products Grid */
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <div key={product.produktiID} className="bg-white shadow rounded-2xl p-4 flex flex-col items-center">
-                <div className="w-32 h-32 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
-                  <span className="text-gray-400 text-sm">No Image</span>
-                </div>
-                <h2 className="font-semibold text-gray-700 text-center mb-2">{product.emri}</h2>
-                <p className="text-gray-600 text-sm text-center mb-2">{product.pershkrimi || 'Nuk ka përshkrim'}</p>
-                <p className="text-green-600 font-bold mb-3">
-                  {product.variacionet && product.variacionet.length > 0 
-                    ? `€${product.variacionet[0].cmimi}` 
-                    : 'Nuk ka çmim'
-                  }
-                </p>
-                       <button 
-                         onClick={() => addToCart(product)}
-                         disabled={addingToCart === product.produktiID || !product.variacionet || product.variacionet.length === 0}
-                         className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                         title={!product.variacionet || product.variacionet.length === 0 ? 'Produkti nuk ka variacion - shtoni variacion në admin' : ''}
-                       >
-                         <ShoppingCart size={16} /> 
-                         {addingToCart === product.produktiID ? 'Adding...' : 
-                          (!product.variacionet || product.variacionet.length === 0) ? 'No Variations' : 'Add to Cart'}
-                       </button>
+            {/* Loading State */}
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="text-gray-500">Duke ngarkuar produktet...</div>
               </div>
-            ))}
+            ) : (
+              /* Products Display */
+              <div className={viewMode === 'grid' 
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                : "space-y-4"
+              }>
+                {filteredProducts.map((product) => (
+                  <ProductCard
+                    key={product.produktiID}
+                    product={product}
+                    onAddToCart={addToCart}
+                    onViewDetails={(product) => {
+                      console.log('View details for:', product);
+                      // You can add navigation to product details here
+                    }}
+                    addingToCart={addingToCart === product.produktiID}
+                    showAddToCart={true}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* No Products Message */}
         {!loading && filteredProducts.length === 0 && (
