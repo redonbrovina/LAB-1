@@ -9,7 +9,7 @@ export default function ProductsAdmin() {
   const [error, setError] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState('');
-  const [form, setForm] = useState({ emri: '', pershkrimi: '', KategoriaID: '' });
+  const [form, setForm] = useState({ emri: '', pershkrimi: '', kategoriaID: '' });
 
   const categoryMap = useMemo(() => {
     const map = new Map();
@@ -38,7 +38,7 @@ export default function ProductsAdmin() {
 
   const resetForm = () => {
     setEditingId(null);
-    setForm({ emri: '', pershkrimi: '', KategoriaID: '' });
+    setForm({ emri: '', pershkrimi: '', kategoriaID: '' });
   };
 
   const handleSubmit = async (e) => {
@@ -48,9 +48,9 @@ export default function ProductsAdmin() {
       const payload = {
         emri: form.emri,
         pershkrimi: form.pershkrimi || null,
-        KategoriaID: Number(form.KategoriaID),
+        kategoriaID: Number(form.kategoriaID),
       };
-      if (!payload.emri || !payload.KategoriaID) {
+      if (!payload.emri || !payload.kategoriaID) {
         setError('Emri dhe Kategoria janë të detyrueshme');
         return;
       }
@@ -74,7 +74,7 @@ export default function ProductsAdmin() {
       setNewCategoryName('');
       await loadAll();
       const cid = created?.KategoriaID ?? created?.kategoriaID ?? created?.id;
-      if (cid) setForm(f => ({ ...f, KategoriaID: cid }));
+      if (cid) setForm(f => ({ ...f, kategoriaID: cid }));
     } catch (e) {
       setError(e?.message || 'Deshtoi krijimi i kategorisë');
     }
@@ -85,7 +85,7 @@ export default function ProductsAdmin() {
     setForm({
       emri: p.emri || '',
       pershkrimi: p.pershkrimi || '',
-      KategoriaID: p.KategoriaID ?? p.kategoriaID ?? '',
+      kategoriaID: p.KategoriaID ?? p.kategoriaID ?? '',
     });
   };
 
@@ -119,8 +119,8 @@ export default function ProductsAdmin() {
             <label className="block text-sm text-gray-600 mb-1">Kategoria</label>
             <select
               className="w-full border rounded-lg px-3 py-2"
-              value={form.KategoriaID}
-              onChange={e => setForm({ ...form, KategoriaID: e.target.value })}
+              value={form.kategoriaID}
+              onChange={e => setForm({ ...form, kategoriaID: e.target.value })}
             >
               <option value="">Zgjidh kategorinë</option>
               {categories.map(c => (
