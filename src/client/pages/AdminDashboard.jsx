@@ -1,9 +1,8 @@
-import { DollarSign, TrendingUp, Users, Settings, ShoppingCart } from "lucide-react";
+import { DollarSign, TrendingUp, Users, Settings } from "lucide-react";
 import { useAuth } from "../utils/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { apiGet } from "../utils/api";
 import { useState, useEffect } from "react";
-import AdminNavbar from "../admin/AdminNavbar";
 
 
 export default function AdminDashboard() {
@@ -30,9 +29,7 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-      <div className="min-h-screen" style={{ backgroundColor: "#FEF2F2" }}>
-        <AdminNavbar />
-        <div className="ml-64 p-8">
+      <div>
           <div className="flex justify-between items-center mb-8">
 
             <div className="flex items-center gap-4">
@@ -125,7 +122,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </div>
-          </div>
       </div>
-  );
+    );
 }

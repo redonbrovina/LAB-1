@@ -24,7 +24,7 @@ import Applications from "./pages/Applications";
 import AdminUsers from "./pages/AdminUsers";
 import AdminSettings from "./pages/AdminSettings";
 import Orders from "./components/Orders";
-import CartManagement from "./components/CartManagement";
+import SuppliersAdmin from "./components/SuppliersAdmin";
 import ProductsAdmin from "./components/ProductsAdmin";
 import { AuthProvider } from './utils/AuthContext';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -89,7 +89,7 @@ export default function App() {
             <Route path="payments" element={<AdminPayments />} />
             <Route path="applications" element={<Applications />} />
             <Route path="orders" element={<Orders />} />
-            <Route path="carts" element={<CartManagement />} />
+            <Route path="suppliers" element={<SuppliersAdmin />} />
             <Route path="products" element={<ProductsAdmin />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="users/create" element={<AdminCreateClient />} />

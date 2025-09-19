@@ -1,4 +1,3 @@
-import AdminNavbar from "../admin/AdminNavbar";
 import EditUserModal from "../admin/EditUserModal";
 import { useState, useEffect } from "react";
 import { apiGet, apiDelete } from "../utils/api";
@@ -80,10 +79,7 @@ export default function AdminUsers() {
 
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FEF2F2" }}>
-      <AdminNavbar />
-      
-      <div className="ml-64 p-8">
+    <div>
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -217,7 +213,6 @@ export default function AdminUsers() {
             </button>
           </div>
         </div>
-      </div>
 
       {/* Edit User Modal */}
       <EditUserModal
