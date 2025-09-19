@@ -12,29 +12,59 @@ class AdminController {
     async adminLogin(req, res) {
         try {
             const { email, password, kodi_personal } = req.body;
-            const admin = await this.adminService.getAdminByEmail(email);
+            console.log('Admin login attempt:', { email, password, kodi_personal });
             
-            const isPasswordValid = await PasswordUtils.comparePassword(password, admin.pass);
+            const admin = await this.adminService.getAdminByEmail(email);
+            console.log('Found admin:', { adminID: admin.adminID, email: admin.email, hasPassword: !!admin.pass });
+            
+            // Check if password is hashed or plain text
+            let isPasswordValid = false;
+            
+            // First try bcrypt comparison (for hashed passwords)
+            if (admin.pass && (admin.pass.startsWith('$2b$') || admin.pass.startsWith('$2a$') || admin.pass.startsWith('$2y$'))) {
+                isPasswordValid = await PasswordUtils.comparePassword(password, admin.pass);
+                console.log('Used bcrypt comparison:', isPasswordValid);
+            } else {
+                // For plain text passwords (legacy support)
+                isPasswordValid = password === admin.pass;
+                console.log('Used plain text comparison:', isPasswordValid, 'Expected:', admin.pass, 'Got:', password);
+            }
+            
+            // Also check personal code if provided
+            const isPersonalCodeValid = !kodi_personal || admin.kodi_personal == kodi_personal;
+            console.log('Personal code check:', isPersonalCodeValid, 'Expected:', admin.kodi_personal, 'Got:', kodi_personal);
                 
-            if (isPasswordValid) {
-                // Generate access token (15 minutes)
-                const accessToken = this.refreshTokenService.generateAccessToken(admin.adminID, 'admin');
+            if (isPasswordValid && isPersonalCodeValid) {
+                // For now, create a simple JWT token without refresh token complexity
+                const jwt = require('jsonwebtoken');
+                const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
                 
-                // Generate refresh token (7 days)
-                const refreshTokenData = await this.refreshTokenService.createRefreshToken(admin.adminID, 'admin');
+                const accessToken = jwt.sign(
+                    { 
+                        adminID: admin.adminID, 
+                        email: admin.email, 
+                        role: 'admin' 
+                    },
+                    JWT_SECRET,
+                    { expiresIn: '24h' }
+                );
+                
+                console.log('Login successful for admin:', admin.adminID);
                 
                 return res.status(200).json({ 
                     accessToken,
-                    refreshToken: refreshTokenData.token,
                     role: 'admin',
-                    expiresIn: 900 // 15 minutes in seconds
+                    adminID: admin.adminID,
+                    email: admin.email,
+                    expiresIn: 86400 // 24 hours in seconds
                 });
             } else {
+                console.log('Login failed - invalid credentials');
                 return res.status(401).json({ message: 'Invalid email, password, or personal code' });
             }
         } catch (error) {
             console.error('Error in adminLogin:', error);
-            return res.status(500).json({ message: 'Admin login failed' });
+            return res.status(500).json({ message: 'Admin login failed: ' + error.message });
         }
     }
 

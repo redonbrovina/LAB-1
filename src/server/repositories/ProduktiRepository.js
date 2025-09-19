@@ -98,6 +98,32 @@ class ProduktiRepository extends BaseRepository {
     async deleteProdukti(produktiID) {
         return await this.deleteById(produktiID);
     }
+
+    // Search products by name or description
+    async searchProduktet(query) {
+        const { Op } = require('sequelize');
+        return await this.getAll({
+            where: {
+                [Op.or]: [
+                    { emri: { [Op.like]: `%${query}%` } },
+                    { pershkrimi: { [Op.like]: `%${query}%` } }
+                ]
+            },
+            include: [
+                {
+                    model: Kategoria,
+                    as: 'kategoria',
+                    attributes: ['emri']
+                },
+                {
+                    model: ProduktVariacioni,
+                    as: 'variacionet',
+                    attributes: ['produkt_variacioniID', 'cmimi', 'sasia_ne_stok']
+                }
+            ],
+            order: [['emri', 'ASC']]
+        });
+    }
 }
 
 module.exports = ProduktiRepository;

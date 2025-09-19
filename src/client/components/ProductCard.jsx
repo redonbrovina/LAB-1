@@ -1,0 +1,145 @@
+import { ShoppingCart, Heart, Eye } from 'lucide-react';
+import { useState } from 'react';
+
+export default function ProductCard({ 
+  product, 
+  onAddToCart, 
+  onViewDetails, 
+  addingToCart = false,
+  showAddToCart = true 
+}) {
+  const [isLiked, setIsLiked] = useState(false);
+  
+  const handleAddToCart = () => {
+    if (onAddToCart) {
+      onAddToCart(product);
+    }
+  };
+
+  const handleViewDetails = () => {
+    if (onViewDetails) {
+      onViewDetails(product);
+    }
+  };
+
+  const toggleLike = () => {
+    setIsLiked(!isLiked);
+  };
+
+  const hasVariations = product.variacionet && product.variacionet.length > 0;
+  const price = hasVariations ? product.variacionet[0].cmimi : null;
+  const stock = hasVariations ? product.variacionet[0].sasia_ne_stok : 0;
+
+  return (
+    <div className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
+      {/* Product Image */}
+      <div className="relative h-48 bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-20 h-24 mx-auto mb-2">
+            <img 
+              src={(product && product.imazhi) ? product.imazhi : '/src/client/assets/images/default-pill-bottle.svg'} 
+              alt={product?.emri || 'Product'}
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                e.target.src = '/src/client/assets/images/default-pill-bottle.svg';
+              }}
+            />
+          </div>
+          <span className="text-orange-600 text-xs font-medium">Pharmaceutical Product</span>
+        </div>
+        
+        {/* Like Button */}
+        <button
+          onClick={toggleLike}
+          className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
+        >
+          <Heart 
+            size={16} 
+            className={isLiked ? 'text-red-500 fill-current' : 'text-gray-400'} 
+          />
+        </button>
+
+        {/* Quick View Button */}
+        <button
+          onClick={handleViewDetails}
+          className="absolute top-3 left-3 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all opacity-0 group-hover:opacity-100"
+        >
+          <Eye size={16} className="text-gray-600" />
+        </button>
+      </div>
+
+      {/* Product Info */}
+      <div className="p-4">
+        {/* Category */}
+        {product.kategoria && (
+          <div className="text-xs text-gray-500 mb-1">
+            {product.kategoria.emri || 'Uncategorized'}
+          </div>
+        )}
+
+        {/* Product Name */}
+        <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2">
+          {product.emri}
+        </h3>
+
+        {/* Description */}
+        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+          {product.pershkrimi || 'Nuk ka përshkrim të disponueshëm'}
+        </p>
+
+        {/* Price and Stock */}
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            {price ? (
+              <span className="text-lg font-bold text-green-600">
+                €{parseFloat(price).toFixed(2)}
+              </span>
+            ) : (
+              <span className="text-sm text-gray-500">Nuk ka çmim</span>
+            )}
+          </div>
+          <div className="text-xs text-gray-500">
+            {stock > 0 ? `${stock} në stok` : 'Jashtë stokut'}
+          </div>
+        </div>
+
+        {/* Variations Info */}
+        {hasVariations && product.variacionet.length > 1 && (
+          <div className="text-xs text-blue-600 mb-3">
+            {product.variacionet.length} variacione të disponueshme
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex gap-2">
+          {showAddToCart && (
+            <button
+              onClick={handleAddToCart}
+              disabled={addingToCart || !hasVariations || stock === 0}
+              className="flex-1 bg-green-500 text-white py-2 px-3 rounded-lg hover:bg-green-600 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+              title={
+                !hasVariations ? 'Produkti nuk ka variacione' :
+                stock === 0 ? 'Produkti është jashtë stokut' :
+                'Shto në cart'
+              }
+            >
+              <ShoppingCart size={14} />
+              {addingToCart ? 'Shtim...' : 
+               !hasVariations ? 'Nuk ka variacione' :
+               stock === 0 ? 'Jashtë stokut' : 
+               'Shto në Cart'}
+            </button>
+          )}
+          
+          <button
+            onClick={handleViewDetails}
+            className="px-3 py-2 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center"
+            title="Shiko detajet"
+          >
+            <Eye size={14} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

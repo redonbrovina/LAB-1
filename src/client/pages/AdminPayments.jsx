@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { DollarSign, Plus, Edit, Trash2, CreditCard, Banknote } from "lucide-react";
 import { paymentAPI, paymentMethodsAPI, ordersAPI } from "../utils/api";
-import AdminNavbar from "../admin/AdminNavbar";
 
 export default function AdminPayments() {
   const [payments, setPayments] = useState([]);
@@ -135,19 +134,14 @@ export default function AdminPayments() {
 
   if (loading) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: "#FEF2F2" }}>
-        <AdminNavbar />
-        <div className="ml-64 flex items-center justify-center h-screen">
-          <div className="text-lg">Loading payments...</div>
-        </div>
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-lg">Loading payments...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FEF2F2" }}>
-      <AdminNavbar />
-      <div className="ml-64 p-8 overflow-y-auto">
+    <div>
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold" style={{ color: "#808080" }}>
             Admin Payments
@@ -349,7 +343,6 @@ export default function AdminPayments() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }

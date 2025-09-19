@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { categoriesAPI, productsAPI } from '../utils/api';
-import AdminNavbar from '../admin/AdminNavbar';
 
 export default function ProductsAdmin() {
   const [products, setProducts] = useState([]);
@@ -15,7 +14,8 @@ export default function ProductsAdmin() {
     pershkrimi: '', 
     kategoriaID: '',
     cmimi: '',
-    sasia_ne_stok: ''
+    sasia_ne_stok: '',
+    imazhi: '/src/client/assets/images/default-pill-bottle.svg'
   });
 
   const categoryMap = useMemo(() => {
@@ -45,7 +45,7 @@ export default function ProductsAdmin() {
 
   const resetForm = () => {
     setEditingId(null);
-    setForm({ emri: '', pershkrimi: '', kategoriaID: '', cmimi: '', sasia_ne_stok: '' });
+    setForm({ emri: '', pershkrimi: '', kategoriaID: '', cmimi: '', sasia_ne_stok: '', imazhi: '/src/client/assets/images/default-pill-bottle.svg' });
   };
 
   const handleSubmit = async (e) => {
@@ -62,6 +62,7 @@ export default function ProductsAdmin() {
         kategoriaID: Number(form.kategoriaID),
         cmimi: Number(form.cmimi) || 0,
         sasia_ne_stok: Number(form.sasia_ne_stok) || 0,
+        imazhi: form.imazhi || '/src/client/assets/images/default-pill-bottle.svg',
       };
       
       console.log('Payload:', payload);
@@ -126,6 +127,7 @@ export default function ProductsAdmin() {
       kategoriaID: p.KategoriaID ?? p.kategoriaID ?? '',
       cmimi: p.variacionet?.[0]?.cmimi || '',
       sasia_ne_stok: p.variacionet?.[0]?.sasia_ne_stok || '',
+      imazhi: (p && p.imazhi) ? p.imazhi : '/src/client/assets/images/default-pill-bottle.svg',
     });
   };
 
@@ -141,8 +143,7 @@ export default function ProductsAdmin() {
 
   return (
     <div className="space-y-6">
-      <AdminNavbar />
-      <div className="bg-white shadow rounded-2xl p-6 ml-64">
+      <div className="bg-white shadow rounded-2xl p-6">
         <h3 className="font-semibold mb-4 text-red-600">{editingId ? 'Përditëso Produktin' : 'Shto Produkt të Ri'}</h3>
         {error && <div className="mb-3 text-sm text-red-600">{error}</div>}
         {success && <div className="mb-3 text-sm text-green-600">{success}</div>}
@@ -213,6 +214,16 @@ export default function ProductsAdmin() {
               placeholder="Opsionale"
             />
           </div>
+          <div className="md:col-span-3">
+            <label className="block text-sm text-gray-600 mb-1">Imazhi (URL ose path)</label>
+            <input
+              className="w-full border rounded-lg px-3 py-2"
+              value={form.imazhi}
+              onChange={e => setForm({ ...form, imazhi: e.target.value })}
+              placeholder="/src/client/assets/images/default-pill-bottle.svg"
+            />
+            <p className="text-xs text-gray-500 mt-1">Lëreni bosh për të përdorur imazhin e paracaktuar</p>
+          </div>
           <div className="md:col-span-3 flex gap-3">
             <button 
               type="submit" 
@@ -231,7 +242,7 @@ export default function ProductsAdmin() {
         </form>
       </div>
 
-      <div className="bg-white shadow rounded-2xl p-6 ml-64">
+      <div className="bg-white shadow rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-red-600">Lista e Produkteve</h3>
           <button className="px-3 py-2 text-sm bg-gray-100 rounded-lg" onClick={loadAll}>Refresh</button>
@@ -244,6 +255,7 @@ export default function ProductsAdmin() {
               <thead>
                 <tr className="text-left text-gray-600 border-b">
                   <th className="py-2 pr-4">ID</th>
+                  <th className="py-2 pr-4">Imazhi</th>
                   <th className="py-2 pr-4">Emri</th>
                   <th className="py-2 pr-4">Kategoria</th>
                   <th className="py-2 pr-4">Çmimi</th>
@@ -259,6 +271,18 @@ export default function ProductsAdmin() {
                   return (
                     <tr key={id} className="border-b hover:bg-gray-50">
                       <td className="py-2 pr-4">{id}</td>
+                      <td className="py-2 pr-4">
+                        <div className="w-12 h-12">
+                          <img 
+                            src={(p && p.imazhi) ? p.imazhi : '/src/client/assets/images/default-pill-bottle.svg'} 
+                            alt={p?.emri || 'Product'}
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              e.target.src = '/src/client/assets/images/default-pill-bottle.svg';
+                            }}
+                          />
+                        </div>
+                      </td>
                       <td className="py-2 pr-4">{p.emri}</td>
                       <td className="py-2 pr-4">{categoryMap.get(catId) || catId || '-'}</td>
                       <td className="py-2 pr-4">€{p.variacionet?.[0]?.cmimi || '0.00'}</td>
@@ -273,7 +297,7 @@ export default function ProductsAdmin() {
                 })}
                 {products.length === 0 && (
                   <tr>
-                    <td className="py-4 text-center text-gray-500" colSpan={7}>Nuk ka produkte</td>
+                    <td className="py-4 text-center text-gray-500" colSpan={8}>Nuk ka produkte</td>
                   </tr>
                 )}
               </tbody>

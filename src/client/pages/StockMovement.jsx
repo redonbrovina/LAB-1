@@ -1,4 +1,3 @@
-import AdminNavbar from "../admin/AdminNavbar";
 import { Package, TrendingUp, TrendingDown, Plus, Edit, Trash2, ArrowUpDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import ClientNavBar from "../components/ClientNavBar";
@@ -114,10 +113,7 @@ export default function StockMovement() {
   }
 
   return (
-    <div className="flex h-screen" style={{ backgroundColor: "#ECFAEA" }}>
-      <AdminNavbar />
-
-      <div className="flex-1 p-8 overflow-y-auto">
+    <div>
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold" style={{ color: "#808080" }}>
@@ -312,7 +308,6 @@ export default function StockMovement() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }
