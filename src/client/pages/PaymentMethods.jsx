@@ -33,7 +33,7 @@ export default function PaymentMethods() {
     e.preventDefault();
     try {
       const url = editingMethod 
-        ? `http://localhost:5000/api/menyra-pageses/${editingMethod.id}`
+        ? `http://localhost:5000/api/menyra-pageses/${editingMethod.menyra_pagesesID}`
         : 'http://localhost:5000/api/menyra-pageses';
       
       const method = editingMethod ? 'PUT' : 'POST';
@@ -77,9 +77,34 @@ export default function PaymentMethods() {
         });
         if (response.ok) {
           fetchPaymentMethods();
+        } else {
+          const errorData = await response.json();
+          alert(`Error: ${errorData.error || 'Failed to delete payment method'}`);
         }
       } catch (error) {
         console.error('Error deleting payment method:', error);
+        alert('Error deleting payment method. Please try again.');
+      }
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    if (window.confirm('Are you sure you want to delete ALL payment methods? This action cannot be undone!')) {
+      try {
+        const response = await fetch('http://localhost:5000/api/menyra-pageses', {
+          method: 'DELETE',
+        });
+        if (response.ok) {
+          const result = await response.json();
+          alert(result.message || 'All payment methods deleted successfully');
+          fetchPaymentMethods();
+        } else {
+          const errorData = await response.json();
+          alert(`Error: ${errorData.error || 'Failed to delete all payment methods'}`);
+        }
+      } catch (error) {
+        console.error('Error deleting all payment methods:', error);
+        alert('Error deleting all payment methods. Please try again.');
       }
     }
   };
@@ -117,13 +142,24 @@ export default function PaymentMethods() {
           <h1 className="text-3xl font-bold" style={{ color: "#808080" }}>
             Payment Methods
           </h1>
-          <button
-            onClick={() => setShowForm(true)}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700"
-          >
-            <Plus size={20} />
-            Add Method
-          </button>
+          <div className="flex gap-3">
+            {paymentMethods.length > 0 && (
+              <button
+                onClick={handleDeleteAll}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700"
+              >
+                <Trash2 size={20} />
+                Delete All
+              </button>
+            )}
+            <button
+              onClick={() => setShowForm(true)}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700"
+            >
+              <Plus size={20} />
+              Add Method
+            </button>
+          </div>
         </div>
 
         {/* Stats Card */}
@@ -150,7 +186,7 @@ export default function PaymentMethods() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {paymentMethods.map((method, index) => (
-                <div key={method.id || index} className="border rounded-2xl p-6 hover:shadow-lg transition-shadow">
+                <div key={method.menyra_pagesesID || index} className="border rounded-2xl p-6 hover:shadow-lg transition-shadow">
                   <div className="flex items-center justify-between mb-4">
                     {getPaymentMethodIcon(method.emri || 'Default')}
                     <div className="flex gap-2">
@@ -161,7 +197,7 @@ export default function PaymentMethods() {
                         <Edit size={16} />
                       </button>
                       <button
-                        onClick={() => handleDelete(method.id || index)}
+                        onClick={() => handleDelete(method.menyra_pagesesID)}
                         className="p-2 text-red-600 hover:bg-red-100 rounded-lg"
                       >
                         <Trash2 size={16} />

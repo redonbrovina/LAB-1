@@ -6,7 +6,15 @@ class ProduktCartService {
     }
 
     async getAll() {
-        return await this.produktCartRepository.getAllCartItems();
+        console.log('ProduktCartService.getAll called');
+        try {
+            const result = await this.produktCartRepository.getAllCartItems();
+            console.log('ProduktCartService.getAll result:', result);
+            return result;
+        } catch (error) {
+            console.error('Error in ProduktCartService.getAll:', error);
+            throw error;
+        }
     }
 
     async getById(cartItemID) {
@@ -34,7 +42,15 @@ class ProduktCartService {
     }
 
     async insert(data) {
-        return await this.produktCartRepository.createCartItem(data);
+        console.log('ProduktCartService.insert called with data:', data);
+        try {
+            const result = await this.produktCartRepository.createCartItem(data);
+            console.log('ProduktCartService.insert result:', result);
+            return result;
+        } catch (error) {
+            console.error('Error in ProduktCartService.insert:', error);
+            throw error;
+        }
     }
 }
 

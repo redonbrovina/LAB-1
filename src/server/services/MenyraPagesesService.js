@@ -26,7 +26,34 @@ class MenyraPagesesService {
 
     async delete(id) {
         await this.getById(id);
+        
+        // First delete all associated payments
+        await this.menyraPagesesRepo.deleteAssociatedPayments(id);
+        
+        // Then delete the payment method
         return await this.menyraPagesesRepo.deleteMenyraPageses(id);
+    }
+
+    async deleteAll() {
+        try {
+            // Get all payment methods first
+            const allMenyraPageses = await this.getAll();
+            
+            if (!allMenyraPageses || allMenyraPageses.length === 0) {
+                return 0; // Nothing to delete
+            }
+            
+            // Delete all associated payments first
+            for (const menyraPageses of allMenyraPageses) {
+                await this.menyraPagesesRepo.deleteAssociatedPayments(menyraPageses.menyra_pagesesID);
+            }
+            
+            // Then delete all payment methods
+            const deletedCount = await this.menyraPagesesRepo.deleteAllMenyraPageses();
+            return deletedCount;
+        } catch (error) {
+            throw new Error(`Gabim gjatë fshirjes së të gjitha mënyrave të pagesës: ${error.message}`);
+        }
     }
 }
 

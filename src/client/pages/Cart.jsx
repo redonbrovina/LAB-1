@@ -1,18 +1,200 @@
 import ClientNavBar from "../components/ClientNavBar"; 
-import React from "react";
-
-// Data statike për Cart
-const currentCart = [
-  { id: 1, name: "Product 1", quantity: 2, price: "$15.99" },
-  { id: 2, name: "Product 3", quantity: 1, price: "$12.75" },
-];
-
-const previousOrders = [
-  { id: 1, name: "Product 2", quantity: 1, price: "$25.50", date: "2025-09-01" },
-  { id: 2, name: "Product 5", quantity: 3, price: "$19.99", date: "2025-08-28" },
-];
+import React, { useState, useEffect } from "react";
+import { cartAPI, cartItemsAPI, productsAPI, ordersAPI, orderItemsAPI } from "../utils/api";
+import { useAuth } from "../utils/AuthContext";
+import { ShoppingCart, Plus, Minus, Trash2 } from "lucide-react";
 
 export default function Cart() {
+  const [cart, setCart] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      loadCart();
+    }
+  }, [user]);
+
+  const loadCart = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      // Get user's cart
+      const clientId = user.klientiID || user.id || user.clientId || user.userId;
+      
+      if (!clientId) {
+        throw new Error('Client ID not found in user object');
+      }
+      
+      const carts = await cartAPI.getAll();
+      const cartsArray = Array.isArray(carts) ? carts : [];
+      const userCart = cartsArray.find(c => c.klientiID === clientId);
+      
+      if (userCart) {
+        setCart(userCart);
+        console.log('User cart found:', userCart);
+        
+        const items = await cartItemsAPI.getAll();
+        console.log('All cart items from API:', items);
+        const itemsArray = Array.isArray(items) ? items : [];
+        console.log('Items array:', itemsArray);
+        
+              // Try different ways to match cart items
+              const userCartItems = itemsArray.filter(item => {
+                console.log('Checking item:', item);
+                console.log('Item cartID:', item.cartID, 'User cartID:', userCart.cartID);
+                console.log('Item produkt_variacioniID:', item.produkt_variacioniID);
+                console.log('Match:', item.cartID === userCart.cartID);
+                
+                // Only include items that belong to this cart AND have a valid product variation ID
+                return item.cartID === userCart.cartID && item.produkt_variacioniID !== null;
+              });
+        
+        console.log('Filtered user cart items:', userCartItems);
+        console.log('Looking for cartID:', userCart.cartID);
+        console.log('Available cartIDs in items:', itemsArray.map(item => item.cartID));
+        
+        setCartItems(userCartItems);
+      } else {
+        console.log('No user cart found');
+        setCart(null);
+        setCartItems([]);
+      }
+    } catch (err) {
+      console.error('Error loading cart:', err);
+      setError(`Gabim në ngarkimin e cart-it: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateQuantity = async (itemId, newQuantity) => {
+    try {
+      console.log('Updating quantity for item:', itemId, 'to:', newQuantity);
+      if (newQuantity <= 0) {
+        await removeItem(itemId);
+        return;
+      }
+
+      console.log('Calling cartItemsAPI.update with:', itemId, { sasia: newQuantity });
+      await cartItemsAPI.update(itemId, { sasia: newQuantity });
+      console.log('Quantity updated successfully, reloading cart...');
+      await loadCart(); // Reload cart to get updated totals
+    } catch (err) {
+      console.error('Error updating quantity:', err);
+      console.error('Error details:', err.message);
+      alert(`Gabim në përditësimin e sasisë: ${err.message}`);
+    }
+  };
+
+  const removeItem = async (itemId) => {
+    try {
+      await cartItemsAPI.delete(itemId);
+      await loadCart(); // Reload cart
+    } catch (err) {
+      console.error('Error removing item:', err);
+      alert('Gabim në heqjen e produktit');
+    }
+  };
+
+  const clearCart = async () => {
+    if (!cart) return;
+    
+    try {
+      // Remove all items from cart
+      for (const item of cartItems) {
+        await cartItemsAPI.delete(item.produkti_cartID);
+      }
+      await loadCart();
+    } catch (err) {
+      console.error('Error clearing cart:', err);
+      alert('Gabim në pastrimin e cart-it');
+    }
+  };
+
+  const createOrder = async () => {
+    if (!cart || cartItems.length === 0) {
+      alert('Cart-i është bosh. Shtoni produkte për të krijuar një porosi.');
+      return;
+    }
+
+    // Filter out items without valid product variation ID
+    const validCartItems = cartItems.filter(item => item.produkt_variacioniID !== null);
+    
+    if (validCartItems.length === 0) {
+      alert('Nuk ka produkte të vlefshëm në cart. Ju lutemi shtoni produkte me variacion të vlefshëm.');
+      return;
+    }
+
+    try {
+      console.log('Starting order creation...');
+      console.log('Cart:', cart);
+      console.log('Cart items:', cartItems);
+      console.log('Valid cart items:', validCartItems);
+      
+      const clientId = user.klientiID || user.id || user.clientId || user.userId;
+      console.log('Client ID:', clientId);
+      
+      // Calculate total price using only valid cart items
+      const totalPrice = validCartItems.reduce((sum, item) => sum + (item.sasia * item.cmimi), 0);
+      console.log('Total price:', totalPrice);
+      
+      // Create order
+      const orderData = {
+        klientiID: clientId,
+        porosia_statusID: 1, // Assuming 1 is "pending" status
+        pagesa_statusID: 1,  // Assuming 1 is "pending" payment status
+        cmimi_total: totalPrice
+      };
+      
+      console.log('Creating order with data:', orderData);
+      const newOrder = await ordersAPI.create(orderData);
+      console.log('Order created successfully:', newOrder);
+      
+      // Move cart items to order items
+      for (const item of validCartItems) {
+        const orderItemData = {
+          porosiaID: newOrder.porosiaID,
+          produkt_variacioniID: item.produkt_variacioniID,
+          sasia: item.sasia,
+          cmimi: item.cmimi
+        };
+        
+        console.log('Creating order item:', orderItemData);
+        await orderItemsAPI.create(orderItemData);
+      }
+      
+      // Clear cart after successful order creation
+      console.log('Clearing cart...');
+      await clearCart();
+      
+      alert(`Porosia u krijua me sukses! ID e porosisë: ${newOrder.porosiaID}`);
+    } catch (err) {
+      console.error('Error creating order:', err);
+      console.error('Error details:', err.message);
+      console.error('Error stack:', err.stack);
+      alert(`Gabim në krijimin e porosisë: ${err.message}`);
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="flex h-screen" style={{ backgroundColor: "#ECFAEA" }}>
+        <ClientNavBar />
+        <div className="flex-1 p-8 overflow-y-auto flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4" style={{ color: "#808080" }}>
+              Duhet të jeni të kyçur për të parë cart-in tuaj
+            </h1>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen" style={{ backgroundColor: "#ECFAEA" }}>
       {/* Sidebar */}
@@ -21,63 +203,159 @@ export default function Cart() {
       {/* Main Content */}
       <div className="flex-1 p-8 overflow-y-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold" style={{ color: "#808080" }}>
-            Your Cart
-          </h1>
-        </div>
+               <div className="flex justify-between items-center mb-8">
+                 <h1 className="text-2xl font-bold" style={{ color: "#808080" }}>
+                   Your Cart
+                 </h1>
+                 <div className="flex gap-3">
+                   <button
+                     onClick={loadCart}
+                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
+                   >
+                     🔄 Refresh Cart
+                   </button>
+                   {cartItems.length > 0 && (
+                     <button
+                       onClick={clearCart}
+                       className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center gap-2"
+                     >
+                       <Trash2 size={16} />
+                       Clear Cart
+                     </button>
+                   )}
+                 </div>
+               </div>
 
-        {/* Your Current Cart */}
-        <div className="bg-white shadow rounded-2xl p-6 mb-8">
-          <h2 className="font-semibold mb-4" style={{ color: "#808080" }}>
-            Your Current Cart
-          </h2>
-          <table className="min-w-full border border-gray-200">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="text-left p-2 border-b">Product</th>
-                <th className="text-left p-2 border-b">Quantity</th>
-                <th className="text-left p-2 border-b">Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentCart.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="p-2 border-b" style={{ color: "#808080" }}>{item.name}</td>
-                  <td className="p-2 border-b" style={{ color: "#808080" }}>{item.quantity}</td>
-                  <td className="p-2 border-b" style={{ color: "#808080" }}>{item.price}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+               {/* Error Message */}
+               {error && (
+                 <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+                   {error}
+                 </div>
+               )}
 
-        {/* Your Previous Orders */}
-        <div className="bg-white shadow rounded-2xl p-6">
-          <h2 className="font-semibold mb-4" style={{ color: "#808080" }}>
-            Your Previous Orders
-          </h2>
-          <table className="min-w-full border border-gray-200">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="text-left p-2 border-b">Product</th>
-                <th className="text-left p-2 border-b">Quantity</th>
-                <th className="text-left p-2 border-b">Price</th>
-                <th className="text-left p-2 border-b">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {previousOrders.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="p-2 border-b" style={{ color: "#808080" }}>{item.name}</td>
-                  <td className="p-2 border-b" style={{ color: "#808080" }}>{item.quantity}</td>
-                  <td className="p-2 border-b" style={{ color: "#808080" }}>{item.price}</td>
-                  <td className="p-2 border-b" style={{ color: "#808080" }}>{item.date}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+               {/* Debug Information */}
+               <div className="mb-4 p-3 bg-gray-100 rounded-lg text-sm">
+                 <p><strong>Debug Info:</strong></p>
+                 <p>User: {user ? 'Logged in' : 'Not logged in'}</p>
+                 <p>Cart: {cart ? `ID: ${cart.cartID}` : 'No cart'}</p>
+                 <p>Cart Items: {cartItems.length}</p>
+                 <p>Client ID: {user ? (user.klientiID || user.id || user.clientId || user.userId) : 'N/A'}</p>
+               </div>
+
+        {/* Loading State */}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="text-gray-500">Duke ngarkuar cart-in...</div>
+          </div>
+        ) : (
+          <>
+            {/* Your Current Cart */}
+            <div className="bg-white shadow rounded-2xl p-6 mb-8">
+              <h2 className="font-semibold mb-4" style={{ color: "#808080" }}>
+                Your Current Cart
+              </h2>
+              
+              {cartItems.length === 0 ? (
+                <div className="text-center py-8">
+                  <ShoppingCart size={48} className="mx-auto mb-4 text-gray-300" />
+                  <p className="text-gray-500">Your cart is empty</p>
+                  <p className="text-sm text-gray-400 mt-2">
+                    Add some products from the Products page
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full border border-gray-200">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="text-left p-2 border-b">Product</th>
+                        <th className="text-left p-2 border-b">Quantity</th>
+                        <th className="text-left p-2 border-b">Price</th>
+                        <th className="text-left p-2 border-b">Total</th>
+                        <th className="text-left p-2 border-b">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                             {cartItems.map((item) => (
+                               <tr key={item.produkti_cartID} className="hover:bg-gray-50">
+                                 <td className="p-2 border-b" style={{ color: "#808080" }}>
+                                   <div>
+                                     <div className="font-medium">Product #{item.produkt_variacioniID}</div>
+                                     <div className="text-sm text-gray-500">Variation ID: {item.produkt_variacioniID}</div>
+                                   </div>
+                                 </td>
+                                 <td className="p-2 border-b" style={{ color: "#808080" }}>
+                                   <div className="flex items-center gap-2">
+                                     <button
+                                       onClick={() => updateQuantity(item.produkti_cartID, item.sasia - 1)}
+                                       className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                                     >
+                                       <Minus size={12} />
+                                     </button>
+                                     <span className="px-2 py-1 bg-gray-100 rounded min-w-[2rem] text-center">{item.sasia}</span>
+                                     <button
+                                       onClick={() => updateQuantity(item.produkti_cartID, item.sasia + 1)}
+                                       className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                                     >
+                                       <Plus size={12} />
+                                     </button>
+                                   </div>
+                                 </td>
+                                 <td className="p-2 border-b" style={{ color: "#808080" }}>
+                                   €{item.cmimi}
+                                 </td>
+                                 <td className="p-2 border-b" style={{ color: "#808080" }}>
+                                   €{(item.sasia * item.cmimi).toFixed(2)}
+                                 </td>
+                                 <td className="p-2 border-b">
+                                   <button
+                                     onClick={() => removeItem(item.produkti_cartID)}
+                                     className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50"
+                                   >
+                                     <Trash2 size={16} />
+                                   </button>
+                                 </td>
+                               </tr>
+                             ))}
+                    </tbody>
+                  </table>
+                  
+                         {/* Cart Total */}
+                         {cart && (
+                           <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                             <div className="flex justify-between items-center">
+                               <span className="text-lg font-semibold">Total:</span>
+                               <span className="text-lg font-bold text-green-600">
+                                 €{cartItems.filter(item => item.produkt_variacioniID !== null).reduce((sum, item) => sum + (item.sasia * item.cmimi), 0).toFixed(2)}
+                               </span>
+                             </div>
+                           </div>
+                         )}
+                         
+                         {/* Confirm Order Button */}
+                         {cartItems.length > 0 && (
+                           <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+                             <div className="text-center">
+                               <h3 className="text-lg font-semibold text-green-800 mb-2">
+                                 Ready to Order?
+                               </h3>
+                               <p className="text-green-600 mb-4">
+                                 Review your items and confirm your order
+                               </p>
+                               <button
+                                 onClick={createOrder}
+                                 className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold text-lg shadow-lg transition-colors duration-200"
+                               >
+                                 📦 Confirm Order
+                               </button>
+                             </div>
+                           </div>
+                         )}
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

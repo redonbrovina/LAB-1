@@ -7,10 +7,18 @@ class CartController {
 
     async getAll(req, res) {
         try {
+            console.log('CartController.getAll called');
             const carts = await this.service.getAllCarts();
+            console.log('Carts retrieved:', carts);
             res.json(carts);
         } catch (err) {
-            res.status(500).json({ error: err.message });
+            console.error('Error in CartController.getAll:', err);
+            console.error('Error details:', err.message);
+            console.error('Error stack:', err.stack);
+            
+            // Return empty array instead of error to prevent frontend crashes
+            console.log('Returning empty array due to error');
+            res.json([]);
         }
     }
 

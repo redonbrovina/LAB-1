@@ -1,8 +1,6 @@
-const LevizjaNeStokServiceModule = require('../services/LevizjaNeStokService');
+const LevizjaNeStokService = require('../services/LevizjaNeStokService');
 
-const service = typeof LevizjaNeStokServiceModule === 'function'
-    ? new LevizjaNeStokServiceModule()
-    : LevizjaNeStokServiceModule;
+const service = new LevizjaNeStokService();
 
 const LevizjaNeStokController = {
     async getAllLevizjet(req, res) {
@@ -74,6 +72,45 @@ const LevizjaNeStokController = {
                     error: error.message
                 });
             }
+        }
+    },
+
+    async getLevizjetByProduktVariacioni(req, res) {
+        try {
+            const { produktVariacioniID } = req.params;
+            const levizjet = await service.getByProduktVariacioni(produktVariacioniID);
+            return res.status(200).json(levizjet);
+        } catch (error) {
+            res.status(500).json({
+                message: 'Error fetching stock movements by product variation',
+                error: error.message
+            });
+        }
+    },
+
+    async getLevizjetByPorosia(req, res) {
+        try {
+            const { porosiaID } = req.params;
+            const levizjet = await service.getByPorosia(porosiaID);
+            return res.status(200).json(levizjet);
+        } catch (error) {
+            res.status(500).json({
+                message: 'Error fetching stock movements by order',
+                error: error.message
+            });
+        }
+    },
+
+    async getLevizjetByAdmin(req, res) {
+        try {
+            const { adminID } = req.params;
+            const levizjet = await service.getByAdmin(adminID);
+            return res.status(200).json(levizjet);
+        } catch (error) {
+            res.status(500).json({
+                message: 'Error fetching stock movements by admin',
+                error: error.message
+            });
         }
     }
 };

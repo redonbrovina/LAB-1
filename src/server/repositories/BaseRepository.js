@@ -29,7 +29,18 @@ class BaseRepository {
     }
   
     async insert(data) {
-      return await this.model.create(data);
+      console.log('BaseRepository.insert called with data:', data);
+      console.log('Model name:', this.model.name);
+      try {
+        const result = await this.model.create(data);
+        console.log('BaseRepository.insert result:', result);
+        return result;
+      } catch (error) {
+        console.error('Error in BaseRepository.insert:', error);
+        console.error('Error details:', error.message);
+        console.error('Error stack:', error.stack);
+        throw error;
+      }
     }
   
     async updateById(id, data) {
@@ -56,7 +67,20 @@ class BaseRepository {
     getPrimaryKey() {
       // Get the primary key field name from the model
       const primaryKeys = this.model.primaryKeyAttributes;
-      return primaryKeys[0] || 'id';
+      if (primaryKeys && primaryKeys.length > 0) {
+        return primaryKeys[0];
+      }
+      
+      // Fallback: try to get the primary key from the model definition
+      const attributes = this.model.rawAttributes;
+      for (const [key, attr] of Object.entries(attributes)) {
+        if (attr.primaryKey) {
+          return key;
+        }
+      }
+      
+      // Last fallback
+      return 'id';
     }
 }
   

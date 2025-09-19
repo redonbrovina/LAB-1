@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { DollarSign, Plus, Edit, Trash2, CreditCard, Banknote } from "lucide-react";
-import { paymentAPI } from "../utils/api";
+import { paymentAPI, paymentMethodsAPI, ordersAPI } from "../utils/api";
 import AdminNavbar from "../admin/AdminNavbar";
 
 export default function AdminPayments() {
   const [payments, setPayments] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
@@ -12,13 +14,56 @@ export default function AdminPayments() {
   const [formData, setFormData] = useState({
     porosiaID: "",
     menyra_pagesesID: "",
-    shuma: "",
-    status: "pending"
+    shuma_pageses: "",
+    numri_llogarise: ""
   });
 
   useEffect(() => {
-    fetchPayments();
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      console.log("Fetching data for admin payments...");
+      
+      // Try to fetch each data type separately to identify which one is failing
+      let paymentsData = [];
+      let paymentMethodsData = [];
+      let ordersData = [];
+      
+      try {
+        paymentsData = await paymentAPI.getAll();
+        console.log("Payments data:", paymentsData);
+      } catch (error) {
+        console.error("Error fetching payments:", error);
+      }
+      
+      try {
+        paymentMethodsData = await paymentMethodsAPI.getAll();
+        console.log("Payment methods data:", paymentMethodsData);
+      } catch (error) {
+        console.error("Error fetching payment methods:", error);
+      }
+      
+      try {
+        ordersData = await ordersAPI.getAll();
+        console.log("Orders data:", ordersData);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        // If orders fail, show a message but don't block the page
+        alert("Warning: Could not fetch orders. You may need to create some orders first or check your authentication.");
+      }
+      
+      setPayments(Array.isArray(paymentsData) ? paymentsData : []);
+      setPaymentMethods(Array.isArray(paymentMethodsData) ? paymentMethodsData : []);
+      setOrders(Array.isArray(ordersData) ? ordersData : []);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      alert(`Error fetching data: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchPayments = async () => {
     try {
@@ -34,17 +79,19 @@ export default function AdminPayments() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (editingPayment && editingPayment.id) {
-        await paymentAPI.update(editingPayment.id, formData);
+      if (editingPayment && editingPayment.pagesaID) {
+        await paymentAPI.update(editingPayment.pagesaID, formData);
       } else {
         await paymentAPI.create(formData);
       }
-      await fetchPayments();
+      await fetchData();
       setShowForm(false);
       setEditingPayment(null);
-      setFormData({ porosiaID: "", menyra_pagesesID: "", shuma: "", status: "pending" });
+      setFormData({ porosiaID: "", menyra_pagesesID: "", shuma_pageses: "", numri_llogarise: "" });
+      alert("Payment saved successfully!");
     } catch (error) {
       console.error("Error saving payment:", error);
+      alert(`Error saving payment: ${error.message}`);
     }
   };
 
@@ -53,8 +100,8 @@ export default function AdminPayments() {
     setFormData({
       porosiaID: payment.porosiaID || "",
       menyra_pagesesID: payment.menyra_pagesesID || "",
-      shuma: payment.shuma || "",
-      status: payment.status || "pending",
+      shuma_pageses: payment.shuma_pageses || "",
+      numri_llogarise: payment.numri_llogarise || "",
     });
     setShowForm(true);
   };
@@ -64,9 +111,11 @@ export default function AdminPayments() {
     if (window.confirm("Delete this payment?")) {
       try {
         await paymentAPI.delete(id);
-        await fetchPayments();
+        await fetchData();
+        alert("Payment deleted successfully!");
       } catch (error) {
         console.error("Error deleting payment:", error);
+        alert(`Error deleting payment: ${error.message}`);
       }
     }
   };
@@ -103,13 +152,21 @@ export default function AdminPayments() {
           <h1 className="text-3xl font-bold" style={{ color: "#808080" }}>
             Admin Payments
           </h1>
-          <button
-            onClick={() => setShowForm(true)}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700"
-          >
-            <Plus size={20} />
-            Add Payment
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={fetchData}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
+            >
+              🔄 Refresh Data
+            </button>
+            <button
+              onClick={() => setShowForm(true)}
+              className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700"
+            >
+              <Plus size={20} />
+              Add Payment
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-6 mb-8">
@@ -122,28 +179,37 @@ export default function AdminPayments() {
           </div>
 
           <div className="bg-white shadow rounded-2xl p-6">
-            <div className="flex items-center gap-3 text-green-600 font-semibold">
+            <div className="flex items-center gap-3 text-blue-600 font-semibold">
               <CreditCard size={24} />
-              Completed
+              Payment Methods
             </div>
-            <p className="text-2xl font-bold mt-2">
-              {payments.filter((p) => p.status === "completed").length}
-            </p>
+            <p className="text-2xl font-bold mt-2">{paymentMethods.length}</p>
+            {paymentMethods.length === 0 && (
+              <p className="text-xs text-red-600 mt-1">Create payment methods first</p>
+            )}
           </div>
 
           <div className="bg-white shadow rounded-2xl p-6">
-            <div className="flex items-center gap-3 text-yellow-600 font-semibold">
+            <div className="flex items-center gap-3 text-green-600 font-semibold">
               <Banknote size={24} />
-              Pending
+              Orders Available
             </div>
-            <p className="text-2xl font-bold mt-2">
-              {payments.filter((p) => p.status === "pending").length}
-            </p>
+            <p className="text-2xl font-bold mt-2">{orders.length}</p>
+            {orders.length === 0 && (
+              <p className="text-xs text-red-600 mt-1">Create orders first</p>
+            )}
           </div>
         </div>
 
         <div className="bg-white shadow rounded-2xl p-6">
           <h2 className="text-xl font-semibold mb-4">Payment History</h2>
+          
+          {/* Debug Information */}
+          <div className="mb-4 p-3 bg-gray-100 rounded-lg text-sm">
+            <p><strong>Debug Info:</strong></p>
+            <p>Payments: {payments.length} | Payment Methods: {paymentMethods.length} | Orders: {orders.length}</p>
+            <p>Authentication: {localStorage.getItem('token') ? 'Token present' : 'No token'}</p>
+          </div>
 
           {payments.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
@@ -158,28 +224,26 @@ export default function AdminPayments() {
                     <th className="text-left py-3 px-4">Order ID</th>
                     <th className="text-left py-3 px-4">Method ID</th>
                     <th className="text-left py-3 px-4">Amount</th>
-                    <th className="text-left py-3 px-4">Status</th>
+                    <th className="text-left py-3 px-4">Account Number</th>
+                    <th className="text-left py-3 px-4">Payment Date</th>
                     <th className="text-left py-3 px-4">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {payments.map((payment, index) => (
-                    <tr key={payment.id || index} className="border-b hover:bg-gray-50">
-                      <td className="py-3 px-4">{payment.id || index + 1}</td>
-                      <td className="py-3 px-4">{payment.porosiaID}</td>
-                      <td className="py-3 px-4">{payment.menyra_pagesesID}</td>
-                      <td className="py-3 px-4 font-semibold">${payment.shuma}</td>
-                      <td className="py-3 px-4">
-                        <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(payment.status)}`}>
-                          {payment.status}
-                        </span>
-                      </td>
+                    <tr key={payment.pagesaID || index} className="border-b hover:bg-gray-50">
+                      <td className="py-3 px-4">{payment.pagesaID || index + 1}</td>
+                      <td className="py-3 px-4">{payment.porosiaID || 'N/A'}</td>
+                      <td className="py-3 px-4">{payment.menyra_pagesesID || 'N/A'}</td>
+                      <td className="py-3 px-4 font-semibold">${payment.shuma_pageses || '0.00'}</td>
+                      <td className="py-3 px-4">{payment.numri_llogarise || 'N/A'}</td>
+                      <td className="py-3 px-4">{payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}</td>
                       <td className="py-3 px-4">
                         <div className="flex gap-2">
                           <button onClick={() => handleEdit(payment)} className="p-1 text-blue-600 hover:bg-blue-100 rounded">
                             <Edit size={16} />
                           </button>
-                          <button onClick={() => handleDelete(payment.id)} className="p-1 text-red-600 hover:bg-red-100 rounded">
+                          <button onClick={() => handleDelete(payment.pagesaID)} className="p-1 text-red-600 hover:bg-red-100 rounded">
                             <Trash2 size={16} />
                           </button>
                         </div>
@@ -200,25 +264,45 @@ export default function AdminPayments() {
               <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Order ID</label>
-                    <input
-                      type="text"
+                    <label className="block text-sm font-medium mb-2">Order</label>
+                    <select
                       value={formData.porosiaID}
                       onChange={(e) => setFormData({ ...formData, porosiaID: e.target.value })}
                       className="w-full border rounded-lg px-3 py-2"
                       required
-                    />
+                    >
+                      <option value="">Select an order</option>
+                      {orders.length === 0 ? (
+                        <option value="" disabled>No orders available - Create orders first</option>
+                      ) : (
+                        orders.map((order) => (
+                          <option key={order.porosiaID} value={order.porosiaID}>
+                            Order #{order.porosiaID} - ${order.cmimi_total || '0.00'}
+                          </option>
+                        ))
+                      )}
+                    </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Payment Method ID</label>
-                    <input
-                      type="text"
+                    <label className="block text-sm font-medium mb-2">Payment Method</label>
+                    <select
                       value={formData.menyra_pagesesID}
                       onChange={(e) => setFormData({ ...formData, menyra_pagesesID: e.target.value })}
                       className="w-full border rounded-lg px-3 py-2"
                       required
-                    />
+                    >
+                      <option value="">Select a payment method</option>
+                      {paymentMethods.length === 0 ? (
+                        <option value="" disabled>No payment methods available - Create payment methods first</option>
+                      ) : (
+                        paymentMethods.map((method) => (
+                          <option key={method.menyra_pagesesID} value={method.menyra_pagesesID}>
+                            {method.menyra_pageses}
+                          </option>
+                        ))
+                      )}
+                    </select>
                   </div>
 
                   <div>
@@ -226,24 +310,22 @@ export default function AdminPayments() {
                     <input
                       type="number"
                       step="0.01"
-                      value={formData.shuma}
-                      onChange={(e) => setFormData({ ...formData, shuma: e.target.value })}
+                      value={formData.shuma_pageses}
+                      onChange={(e) => setFormData({ ...formData, shuma_pageses: e.target.value })}
                       className="w-full border rounded-lg px-3 py-2"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text sm font-medium mb-2">Status</label>
-                    <select
-                      value={formData.status}
-                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    <label className="block text-sm font-medium mb-2">Account Number</label>
+                    <input
+                      type="text"
+                      value={formData.numri_llogarise}
+                      onChange={(e) => setFormData({ ...formData, numri_llogarise: e.target.value })}
                       className="w-full border rounded-lg px-3 py-2"
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="completed">Completed</option>
-                      <option value="failed">Failed</option>
-                    </select>
+                      placeholder="Optional account number"
+                    />
                   </div>
                 </div>
 
@@ -256,7 +338,7 @@ export default function AdminPayments() {
                     onClick={() => {
                       setShowForm(false);
                       setEditingPayment(null);
-                      setFormData({ porosiaID: "", menyra_pagesesID: "", shuma: "", status: "pending" });
+                      setFormData({ porosiaID: "", menyra_pagesesID: "", shuma_pageses: "", numri_llogarise: "" });
                     }}
                     className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
                   >

@@ -7,10 +7,18 @@ class ProduktCartController {
 
     async getAll(req, res) {
         try {
+            console.log('ProduktCartController.getAll called');
             const items = await this.repo.getAll();
+            console.log('Cart items retrieved:', items);
             res.json(items);
         } catch (err) {
-            res.status(500).json({ error: err.message });
+            console.error('Error in ProduktCartController.getAll:', err);
+            console.error('Error details:', err.message);
+            console.error('Error stack:', err.stack);
+            
+            // Return empty array instead of error to prevent frontend crashes
+            console.log('Returning empty array due to error');
+            res.json([]);
         }
     }
 
@@ -26,9 +34,12 @@ class ProduktCartController {
 
     async create(req, res) {
         try {
+            console.log('ProduktCartController.create called with data:', req.body);
             const newItem = await this.repo.insert(req.body);
+            console.log('Cart item created successfully:', newItem);
             res.status(201).json(newItem);
         } catch (err) {
+            console.error('Error in ProduktCartController.create:', err);
             res.status(500).json({ error: err.message });
         }
     }
