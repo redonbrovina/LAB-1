@@ -1,8 +1,11 @@
 const AplikimiService = require('../services/AplikimiService');
+const KlientiService = require('../services/KlientiService');
+const PasswordUtils = require('../utils/PasswordUtils');
 
 class AplikimiController {
     constructor() {
         this.aplikimiService = new AplikimiService();
+        this.klientiService = new KlientiService();
     }
 
     async getAllAplikimet(req, res) {
@@ -60,6 +63,21 @@ class AplikimiController {
     async updateAplikimi(req, res) {
         try {
             const updatedAplikimi = await this.aplikimiService.updateAplikimi(req.params.aplikimiID, req.body);
+            const currentAplikimi = await this.aplikimiService.getAplikimiById(req.params.aplikimiID);
+            const hashedPassword = await PasswordUtils.hashPassword(currentAplikimi.password);
+
+            if (currentAplikimi.statusi.statusi == "pranuar") {
+                await this.klientiService.createKlienti({
+                    "adresa": currentAplikimi.adresa,
+                    "qyteti": currentAplikimi.qyteti,
+                    "kodi_postal": currentAplikimi.kodi_postal,
+                    "shtetiID": currentAplikimi.shtetiID,
+                    "aplikimiID": currentAplikimi.aplikimiID,
+                    "email": currentAplikimi.email,
+                    "emri_kompanise": currentAplikimi.emri_kompanise,
+                    "password": hashedPassword
+            });
+            }
             return res.status(200).json(updatedAplikimi);
         } catch (error) {
             if (error.message === "Aplikimi nuk u gjet") {

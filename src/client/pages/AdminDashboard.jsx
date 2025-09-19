@@ -1,14 +1,33 @@
 import { DollarSign, TrendingUp, Users, Settings, ShoppingCart } from "lucide-react";
 import { useAuth } from "../utils/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { apiGet } from "../utils/api";
+import { useState, useEffect } from "react";
 import AdminNavbar from "../admin/AdminNavbar";
-import Orders from "../components/Orders";
-import CartManagement from "../components/CartManagement";
-import ProductsAdmin from "../components/ProductsAdmin";
+
 
 export default function AdminDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [applications, setApplications] = useState([]);
+  const [trueApps, setTrueApps] = useState([]);
+
+  const fetchApplications = async () => {
+    try{
+      const response = await apiGet("/aplikimi");
+      const data = response.filter((application) => application.statusi?.statusi === "pending");
+      const limitedData = data.slice(0, 2);
+      setTrueApps(data);
+      setApplications(limitedData);
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+      setApplications([]);
+    }
+  }
+
+  useEffect(() => {
+    fetchApplications();
+  }, []);
 
   return (
       <div className="min-h-screen" style={{ backgroundColor: "#FEF2F2" }}>
@@ -39,7 +58,7 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-2 text-red-600 font-semibold">
               <TrendingUp size={18} /> Pending Applications
             </div>
-            <p className="text-2xl font-bold">23</p>
+            <p className="text-2xl font-bold">{trueApps.length}</p>
             <p className="text-xs text-orange-500">Needs review</p>
           </div>
 
@@ -64,20 +83,23 @@ export default function AdminDashboard() {
               <div className="bg-white shadow rounded-2xl p-6">
                 <h2 className="font-semibold mb-4 text-red-600">Recent Applications</h2>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium">Albania Foods Shpk</p>
-                      <p className="text-sm text-gray-500">contact@albaniafoods.com</p>
+                  {applications.length > 0 ? (
+                    applications.map((application, index) => (
+                      <div key={application.aplikimiID || index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="font-medium">{application.emri_kompanise}</p>
+                          <p className="text-sm text-gray-500">{application.email}</p>
+                        </div>
+                        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">
+                          Pending
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex justify-between items-center p-3 rounded-lg">
+                      <p className="text-sm">No pending applications</p>
                     </div>
-                    <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">Pending</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium">Pharma Plus</p>
-                      <p className="text-sm text-gray-500">info@pharmaplus.com</p>
-                    </div>
-                    <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Approved</span>
-                  </div>
+                  )}
                 </div>
               </div>
 
