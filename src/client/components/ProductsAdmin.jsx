@@ -7,9 +7,16 @@ export default function ProductsAdmin() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState('');
-  const [form, setForm] = useState({ emri: '', pershkrimi: '', kategoriaID: '' });
+  const [form, setForm] = useState({ 
+    emri: '', 
+    pershkrimi: '', 
+    kategoriaID: '',
+    cmimi: '',
+    sasia_ne_stok: ''
+  });
 
   const categoryMap = useMemo(() => {
     const map = new Map();
@@ -38,31 +45,62 @@ export default function ProductsAdmin() {
 
   const resetForm = () => {
     setEditingId(null);
-    setForm({ emri: '', pershkrimi: '', kategoriaID: '' });
+    setForm({ emri: '', pershkrimi: '', kategoriaID: '', cmimi: '', sasia_ne_stok: '' });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
+    console.log('Form submission started...');
+    console.log('Form data:', form);
+    
     try {
       const payload = {
         emri: form.emri,
         pershkrimi: form.pershkrimi || null,
         kategoriaID: Number(form.kategoriaID),
+        cmimi: Number(form.cmimi) || 0,
+        sasia_ne_stok: Number(form.sasia_ne_stok) || 0,
       };
+      
+      console.log('Payload:', payload);
+      
       if (!payload.emri || !payload.kategoriaID) {
         setError('Emri dhe Kategoria janë të detyrueshme');
         return;
       }
+      if (payload.cmimi < 0) {
+        setError('Çmimi nuk mund të jetë negative');
+        return;
+      }
+      if (payload.sasia_ne_stok < 0) {
+        setError('Sasia në stok nuk mund të jetë negative');
+        return;
+      }
 
+      console.log('Validation passed, calling API...');
+      
       if (editingId) {
+        console.log('Updating product with ID:', editingId);
         await productsAPI.update(editingId, payload);
       } else {
+        console.log('Creating new product...');
         await productsAPI.create(payload);
       }
+      
+      console.log('API call successful, reloading data...');
       await loadAll();
       resetForm();
+      setSuccess(editingId ? 'Produkti u përditësua me sukses!' : 'Produkti u shtua me sukses!');
+      console.log('Product added/updated successfully!');
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSuccess('');
+      }, 3000);
     } catch (e) {
+      console.error('Error in handleSubmit:', e);
       setError(e?.message || 'Deshtoi ruajtja');
     }
   };
@@ -86,6 +124,8 @@ export default function ProductsAdmin() {
       emri: p.emri || '',
       pershkrimi: p.pershkrimi || '',
       kategoriaID: p.KategoriaID ?? p.kategoriaID ?? '',
+      cmimi: p.variacionet?.[0]?.cmimi || '',
+      sasia_ne_stok: p.variacionet?.[0]?.sasia_ne_stok || '',
     });
   };
 
@@ -105,6 +145,7 @@ export default function ProductsAdmin() {
       <div className="bg-white shadow rounded-2xl p-6 ml-64">
         <h3 className="font-semibold mb-4 text-red-600">{editingId ? 'Përditëso Produktin' : 'Shto Produkt të Ri'}</h3>
         {error && <div className="mb-3 text-sm text-red-600">{error}</div>}
+        {success && <div className="mb-3 text-sm text-green-600">{success}</div>}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm text-gray-600 mb-1">Emri</label>
@@ -139,6 +180,29 @@ export default function ProductsAdmin() {
               <button type="button" className="px-3 py-2 bg-gray-200 rounded-lg" onClick={handleCreateCategory}>Shto</button>
             </div>
           </div>
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">Çmimi (€)</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              className="w-full border rounded-lg px-3 py-2"
+              value={form.cmimi}
+              onChange={e => setForm({ ...form, cmimi: e.target.value })}
+              placeholder="0.00"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">Sasia në Stok</label>
+            <input
+              type="number"
+              min="0"
+              className="w-full border rounded-lg px-3 py-2"
+              value={form.sasia_ne_stok}
+              onChange={e => setForm({ ...form, sasia_ne_stok: e.target.value })}
+              placeholder="0"
+            />
+          </div>
           <div className="md:col-span-3">
             <label className="block text-sm text-gray-600 mb-1">Përshkrimi</label>
             <textarea
@@ -150,7 +214,14 @@ export default function ProductsAdmin() {
             />
           </div>
           <div className="md:col-span-3 flex gap-3">
-            <button type="submit" className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+            <button 
+              type="submit" 
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+              onClick={(e) => {
+                console.log('Submit button clicked!');
+                console.log('Form state:', form);
+              }}
+            >
               {editingId ? 'Ruaj Ndryshimet' : 'Shto Produktin'}
             </button>
             {editingId && (
@@ -175,6 +246,8 @@ export default function ProductsAdmin() {
                   <th className="py-2 pr-4">ID</th>
                   <th className="py-2 pr-4">Emri</th>
                   <th className="py-2 pr-4">Kategoria</th>
+                  <th className="py-2 pr-4">Çmimi</th>
+                  <th className="py-2 pr-4">Stok</th>
                   <th className="py-2 pr-4">Përshkrimi</th>
                   <th className="py-2 pr-4">Veprimet</th>
                 </tr>
@@ -188,6 +261,8 @@ export default function ProductsAdmin() {
                       <td className="py-2 pr-4">{id}</td>
                       <td className="py-2 pr-4">{p.emri}</td>
                       <td className="py-2 pr-4">{categoryMap.get(catId) || catId || '-'}</td>
+                      <td className="py-2 pr-4">€{p.variacionet?.[0]?.cmimi || '0.00'}</td>
+                      <td className="py-2 pr-4">{p.variacionet?.[0]?.sasia_ne_stok || '0'}</td>
                       <td className="py-2 pr-4 max-w-xl truncate" title={p.pershkrimi || ''}>{p.pershkrimi || '-'}</td>
                       <td className="py-2 pr-4 space-x-2">
                         <button className="px-3 py-1 text-xs bg-blue-500 text-white rounded" onClick={() => handleEdit(p)}>Edito</button>
@@ -198,7 +273,7 @@ export default function ProductsAdmin() {
                 })}
                 {products.length === 0 && (
                   <tr>
-                    <td className="py-4 text-center text-gray-500" colSpan={5}>Nuk ka produkte</td>
+                    <td className="py-4 text-center text-gray-500" colSpan={7}>Nuk ka produkte</td>
                   </tr>
                 )}
               </tbody>

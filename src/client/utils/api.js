@@ -124,6 +124,9 @@ export const formAPI = {
 export const apiRequest = async (endpoint, options = {}) => {
   const token = localStorage.getItem('token');
   
+  console.log(`Making API request to: ${API_BASE_URL}${endpoint}`);
+  console.log('Token available:', !!token);
+  
   const config = {
     headers: {
       'Content-Type': 'application/json',
@@ -136,6 +139,8 @@ export const apiRequest = async (endpoint, options = {}) => {
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     
+    console.log(`Response status: ${response.status} for ${endpoint}`);
+    
     if (response.status === 401) {
       // Token expired or invalid
       localStorage.removeItem('token');
@@ -145,10 +150,13 @@ export const apiRequest = async (endpoint, options = {}) => {
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error(`API error for ${endpoint}:`, errorData);
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
     
-    return await response.json();
+    const data = await response.json();
+    console.log(`API response for ${endpoint}:`, data);
+    return data;
   } catch (error) {
     console.error('API request failed:', error);
     throw error;
@@ -181,6 +189,15 @@ export const ordersAPI = {
   create: (data) => apiPost('/porosite', data),
   update: (id, data) => apiPut(`/porosite/${id}`, data),
   delete: (id) => apiDelete(`/porosite/${id}`),
+};
+
+// Order Items API functions
+export const orderItemsAPI = {
+  getAll: () => apiGet('/produkt-porosise'),
+  getById: (id) => apiGet(`/produkt-porosise/${id}`),
+  create: (data) => apiPost('/produkt-porosise', data),
+  update: (id, data) => apiPut(`/produkt-porosise/${id}`, data),
+  delete: (id) => apiDelete(`/produkt-porosise/${id}`),
 };
 
 // Cart API functions

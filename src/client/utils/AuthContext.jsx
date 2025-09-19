@@ -13,6 +13,8 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       try {
         const decoded = parseJwt(token);
+        console.log('Decoded JWT token:', decoded);
+        console.log('Available fields in token:', Object.keys(decoded));
         // Check if token is expired
         if (decoded.exp && decoded.exp < Date.now() / 1000) {
           localStorage.removeItem('token');
@@ -29,7 +31,10 @@ export const AuthProvider = ({ children }) => {
 
   const login = (token) => {
     localStorage.setItem('token', token);
-    setUser(parseJwt(token));
+    const decoded = parseJwt(token);
+    console.log('Login - Decoded JWT token:', decoded);
+    console.log('Login - Available fields in token:', Object.keys(decoded));
+    setUser(decoded);
   };
 
   const logout = async () => {

@@ -42,6 +42,35 @@ class MenyraPagesesRepository extends BaseRepository {
     async deleteMenyraPageses(menyraPagesesID) {
         return await this.deleteById(menyraPagesesID);
     }
+
+    async deleteAssociatedPayments(menyraPagesesID) {
+        // Delete all payments that reference this payment method
+        const { Pagesa } = require("../models");
+        return await Pagesa.destroy({
+            where: { menyra_pagesesID: menyraPagesesID }
+        });
+    }
+
+    async deleteAllMenyraPageses() {
+        // Delete all payment methods
+        try {
+            const deletedCount = await this.model.destroy({
+                where: {} // Delete all records
+            });
+            return deletedCount;
+        } catch (error) {
+            // If destroy fails, try truncate as fallback
+            try {
+                await this.model.destroy({
+                    where: {},
+                    truncate: true
+                });
+                return 1; // Truncate doesn't return count
+            } catch (truncateError) {
+                throw new Error(`Gabim gjatë fshirjes: ${error.message}`);
+            }
+        }
+    }
 }
 
 module.exports = MenyraPagesesRepository;

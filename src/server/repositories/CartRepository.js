@@ -9,6 +9,13 @@ class CartRepository extends BaseRepository {
     async getAllCarts() {
         console.log('🔍 CartRepository.getAllCarts called');
         try {
+            // First try without includes to see if basic query works
+            console.log('Testing basic cart query...');
+            const basicResult = await this.getAll();
+            console.log('Basic cart query result:', basicResult);
+            
+            // If basic query works, try with includes
+            console.log('Testing cart query with includes...');
             const result = await this.getAll({
                 include: [
                     {
@@ -32,6 +39,8 @@ class CartRepository extends BaseRepository {
             return result;
         } catch (error) {
             console.error('Error in CartRepository.getAllCarts:', error);
+            console.error('Error details:', error.message);
+            console.error('Error stack:', error.stack);
             throw error;
         }
     }

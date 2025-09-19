@@ -37,7 +37,8 @@ const ProduktCart = sequelize.define("ProduktCart", {
     }
 }, {
     tableName: "produkti_cart",
-    timestamps: false
+    timestamps: false,
+    freezeTableName: true
 });
 
 ProduktCart.associate = function(models) {

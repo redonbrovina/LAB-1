@@ -17,7 +17,7 @@ class ProduktiRepository extends BaseRepository {
                 {
                     model: ProduktVariacioni,
                     as: 'variacionet',
-                    attributes: ['cmimi', 'sasia_ne_stok']
+                    attributes: ['produkt_variacioniID', 'cmimi', 'sasia_ne_stok']
                 }
             ],
             order: [['emri', 'ASC']]
@@ -35,7 +35,7 @@ class ProduktiRepository extends BaseRepository {
                 {
                     model: ProduktVariacioni,
                     as: 'variacionet',
-                    attributes: ['cmimi', 'sasia_ne_stok']
+                    attributes: ['produkt_variacioniID', 'cmimi', 'sasia_ne_stok']
                 }
             ]
         });
@@ -52,14 +52,43 @@ class ProduktiRepository extends BaseRepository {
                 {
                     model: ProduktVariacioni,
                     as: 'variacionet',
-                    attributes: ['cmimi', 'sasia_ne_stok']
+                    attributes: ['produkt_variacioniID', 'cmimi', 'sasia_ne_stok']
                 }
             ]
         });
     }
 
     async createProdukti(data) {
-        return await this.insert(data);
+        console.log('Creating product with data:', data);
+        const { cmimi, sasia_ne_stok, ...productData } = data;
+        console.log('Product data:', productData);
+        console.log('Price:', cmimi, 'Stock:', sasia_ne_stok);
+        
+        // Create the product first
+        const produkti = await this.insert(productData);
+        console.log('Product created:', produkti);
+        
+        // If price and stock are provided, create a product variation
+        if (cmimi !== undefined && sasia_ne_stok !== undefined) {
+            console.log('Creating product variation...');
+            const ProduktVariacioniRepository = require("./ProduktVariacioniRepository");
+            const produktVariacioniRepo = new ProduktVariacioniRepository();
+            
+            const variationData = {
+                produktiID: produkti.produktiID,
+                cmimi: cmimi,
+                sasia_ne_stok: sasia_ne_stok
+            };
+            console.log('Variation data:', variationData);
+            
+            await produktVariacioniRepo.createVariacioni(variationData);
+            console.log('Product variation created successfully');
+        }
+        
+        // Return the product with its variations
+        const result = await this.getProduktiById(produkti.produktiID);
+        console.log('Final result:', result);
+        return result;
     }
 
     async updateProdukti(produktiID, data) {

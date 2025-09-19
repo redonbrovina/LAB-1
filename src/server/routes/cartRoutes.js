@@ -8,6 +8,9 @@ const controller = new CartController();
 //router.use(authenticateToken);
 
 router.get('/', controller.getAll.bind(controller));
+router.get('/test', (req, res) => {
+    res.json({ message: 'Cart API is working', timestamp: new Date().toISOString() });
+});
 router.get('/klienti/:klientiID', controller.getCartByKlientiID.bind(controller));
 router.get('/:id', controller.getById.bind(controller));
 router.post('/', controller.create.bind(controller));

@@ -1,9 +1,12 @@
 import ClientNavBar from "../components/ClientNavBar";
 import { DollarSign, Plus, Edit, Trash2, CreditCard, Banknote } from "lucide-react";
 import { useState, useEffect } from "react";
+import { paymentAPI, paymentMethodsAPI, ordersAPI } from "../utils/api";
 
 export default function Payments() {
   const [payments, setPayments] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
@@ -11,21 +14,39 @@ export default function Payments() {
   const [formData, setFormData] = useState({
     porosiaID: "",
     menyra_pagesesID: "",
-    shuma: "",
-    status: "pending"
+    shuma_pageses: "",
+    numri_llogarise: ""
   });
 
   useEffect(() => {
-    fetchPayments();
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      const [paymentsData, paymentMethodsData, ordersData] = await Promise.all([
+        paymentAPI.getAll(),
+        paymentMethodsAPI.getAll(),
+        ordersAPI.getAll()
+      ]);
+      setPayments(Array.isArray(paymentsData) ? paymentsData : []);
+      setPaymentMethods(Array.isArray(paymentMethodsData) ? paymentMethodsData : []);
+      setOrders(Array.isArray(ordersData) ? ordersData : []);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      alert('Error fetching data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchPayments = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/pagesa');
-      const data = await response.json();
-      setPayments(data);
+      const data = await paymentAPI.getAll();
+      setPayments(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching payments:', error);
+      alert('Error fetching payments. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -34,33 +55,24 @@ export default function Payments() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = editingPayment 
-        ? `http://localhost:5000/api/pagesa/${editingPayment.id}`
-        : 'http://localhost:5000/api/pagesa';
-      
-      const method = editingPayment ? 'PUT' : 'POST';
-      
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        fetchPayments();
-        setShowForm(false);
-        setEditingPayment(null);
-        setFormData({
-          porosiaID: "",
-          menyra_pagesesID: "",
-          shuma: "",
-          status: "pending"
-        });
+      if (editingPayment && editingPayment.pagesaID) {
+        await paymentAPI.update(editingPayment.pagesaID, formData);
+      } else {
+        await paymentAPI.create(formData);
       }
+      await fetchData();
+      setShowForm(false);
+      setEditingPayment(null);
+      setFormData({
+        porosiaID: "",
+        menyra_pagesesID: "",
+        shuma_pageses: "",
+        numri_llogarise: ""
+      });
+      alert("Payment saved successfully!");
     } catch (error) {
       console.error('Error saving payment:', error);
+      alert(`Error saving payment: ${error.message}`);
     }
   };
 
@@ -69,8 +81,8 @@ export default function Payments() {
     setFormData({
       porosiaID: payment.porosiaID || "",
       menyra_pagesesID: payment.menyra_pagesesID || "",
-      shuma: payment.shuma || "",
-      status: payment.status || "pending"
+      shuma_pageses: payment.shuma_pageses || "",
+      numri_llogarise: payment.numri_llogarise || ""
     });
     setShowForm(true);
   };
@@ -78,14 +90,12 @@ export default function Payments() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this payment?')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/pagesa/${id}`, {
-          method: 'DELETE',
-        });
-        if (response.ok) {
-          fetchPayments();
-        }
+        await paymentAPI.delete(id);
+        await fetchData();
+        alert("Payment deleted successfully!");
       } catch (error) {
         console.error('Error deleting payment:', error);
+        alert(`Error deleting payment: ${error.message}`);
       }
     }
   };
@@ -173,24 +183,24 @@ export default function Payments() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
+                    <th className="text-left py-3 px-4">ID</th>
                     <th className="text-left py-3 px-4">Order ID</th>
                     <th className="text-left py-3 px-4">Payment Method</th>
                     <th className="text-left py-3 px-4">Amount</th>
-                    <th className="text-left py-3 px-4">Status</th>
+                    <th className="text-left py-3 px-4">Account Number</th>
+                    <th className="text-left py-3 px-4">Payment Date</th>
                     <th className="text-left py-3 px-4">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {payments.map((payment, index) => (
-                    <tr key={payment.id || index} className="border-b hover:bg-gray-50">
-                      <td className="py-3 px-4">{payment.porosiaID || `#${index + 1}`}</td>
-                      <td className="py-3 px-4">{payment.menyra_pagesesID || 'Credit Card'}</td>
-                      <td className="py-3 px-4 font-semibold">${payment.shuma || '0.00'}</td>
-                      <td className="py-3 px-4">
-                        <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(payment.status)}`}>
-                          {payment.status || 'pending'}
-                        </span>
-                      </td>
+                    <tr key={payment.pagesaID || index} className="border-b hover:bg-gray-50">
+                      <td className="py-3 px-4">{payment.pagesaID || index + 1}</td>
+                      <td className="py-3 px-4">{payment.porosiaID || 'N/A'}</td>
+                      <td className="py-3 px-4">{payment.menyra_pagesesID || 'N/A'}</td>
+                      <td className="py-3 px-4 font-semibold">${payment.shuma_pageses || '0.00'}</td>
+                      <td className="py-3 px-4">{payment.numri_llogarise || 'N/A'}</td>
+                      <td className="py-3 px-4">{payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}</td>
                       <td className="py-3 px-4">
                         <div className="flex gap-2">
                           <button
@@ -200,7 +210,7 @@ export default function Payments() {
                             <Edit size={16} />
                           </button>
                           <button
-                            onClick={() => handleDelete(payment.id || index)}
+                            onClick={() => handleDelete(payment.pagesaID)}
                             className="p-1 text-red-600 hover:bg-red-100 rounded"
                           >
                             <Trash2 size={16} />
@@ -226,25 +236,37 @@ export default function Payments() {
               <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Order ID</label>
-                    <input
-                      type="text"
+                    <label className="block text-sm font-medium mb-2">Order</label>
+                    <select
                       value={formData.porosiaID}
                       onChange={(e) => setFormData({...formData, porosiaID: e.target.value})}
                       className="w-full border rounded-lg px-3 py-2"
                       required
-                    />
+                    >
+                      <option value="">Select an order</option>
+                      {orders.map((order) => (
+                        <option key={order.porosiaID} value={order.porosiaID}>
+                          Order #{order.porosiaID} - ${order.cmimi_total || '0.00'}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Payment Method ID</label>
-                    <input
-                      type="text"
+                    <label className="block text-sm font-medium mb-2">Payment Method</label>
+                    <select
                       value={formData.menyra_pagesesID}
                       onChange={(e) => setFormData({...formData, menyra_pagesesID: e.target.value})}
                       className="w-full border rounded-lg px-3 py-2"
                       required
-                    />
+                    >
+                      <option value="">Select a payment method</option>
+                      {paymentMethods.map((method) => (
+                        <option key={method.menyra_pagesesID} value={method.menyra_pagesesID}>
+                          {method.menyra_pageses}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div>
@@ -252,24 +274,22 @@ export default function Payments() {
                     <input
                       type="number"
                       step="0.01"
-                      value={formData.shuma}
-                      onChange={(e) => setFormData({...formData, shuma: e.target.value})}
+                      value={formData.shuma_pageses}
+                      onChange={(e) => setFormData({...formData, shuma_pageses: e.target.value})}
                       className="w-full border rounded-lg px-3 py-2"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Status</label>
-                    <select
-                      value={formData.status}
-                      onChange={(e) => setFormData({...formData, status: e.target.value})}
+                    <label className="block text-sm font-medium mb-2">Account Number</label>
+                    <input
+                      type="text"
+                      value={formData.numri_llogarise}
+                      onChange={(e) => setFormData({...formData, numri_llogarise: e.target.value})}
                       className="w-full border rounded-lg px-3 py-2"
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="completed">Completed</option>
-                      <option value="failed">Failed</option>
-                    </select>
+                      placeholder="Optional account number"
+                    />
                   </div>
                 </div>
 
@@ -288,8 +308,8 @@ export default function Payments() {
                       setFormData({
                         porosiaID: "",
                         menyra_pagesesID: "",
-                        shuma: "",
-                        status: "pending"
+                        shuma_pageses: "",
+                        numri_llogarise: ""
                       });
                     }}
                     className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
