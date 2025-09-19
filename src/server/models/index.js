@@ -17,6 +17,7 @@ const ProduktCart = require('./PrdouktCart');
 const Produkti = require('./Produkti');
 const ProduktPorosise = require('./ProduktPorosise');
 const ProduktVariacioni = require('./ProduktVariacioni');
+const RefreshToken = require('./RefreshToken');
 const Shteti = require('./Shteti');
 
 // Define all models
@@ -40,6 +41,7 @@ const models = {
     Produkti,
     ProduktPorosise,
     ProduktVariacioni,
+    RefreshToken,
     Shteti
 };
 

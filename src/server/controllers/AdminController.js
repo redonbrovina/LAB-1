@@ -1,9 +1,12 @@
 const jwt = require('jsonwebtoken');
 const AdminService = require('../services/AdminService');
+const PasswordUtils = require('../utils/PasswordUtils');
+const RefreshTokenService = require('../services/RefreshTokenService');
 
 class AdminController {
     constructor() {
         this.adminService = new AdminService();
+        this.refreshTokenService = new RefreshTokenService();
     }
 
     async adminLogin(req, res) {
@@ -11,13 +14,21 @@ class AdminController {
             const { email, password, kodi_personal } = req.body;
             const admin = await this.adminService.getAdminByEmail(email);
             
-            if (admin && admin.pass === password && admin.kodi_personal == kodi_personal) {
-                const token = jwt.sign(
-                    { id: admin.adminID, role: 'admin' },
-                    process.env.JWT_SECRET,
-                    { expiresIn: '1h' }
-                );
-                return res.status(200).json({ token, role: 'admin' });
+            const isPasswordValid = await PasswordUtils.comparePassword(password, admin.pass);
+                
+            if (isPasswordValid) {
+                // Generate access token (15 minutes)
+                const accessToken = this.refreshTokenService.generateAccessToken(admin.adminID, 'admin');
+                
+                // Generate refresh token (7 days)
+                const refreshTokenData = await this.refreshTokenService.createRefreshToken(admin.adminID, 'admin');
+                
+                return res.status(200).json({ 
+                    accessToken,
+                    refreshToken: refreshTokenData.token,
+                    role: 'admin',
+                    expiresIn: 900 // 15 minutes in seconds
+                });
             } else {
                 return res.status(401).json({ message: 'Invalid email, password, or personal code' });
             }

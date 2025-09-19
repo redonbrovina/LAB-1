@@ -36,7 +36,7 @@ export default function Login() {
 
         try{
             const data = await publicApiPost('/form/login', {email, password})
-            login(data.token)
+            login(data.accessToken, data.refreshToken)
             navigate('/dashboard')
         }catch(err){
             setErrorMessage(err.message || 'Login failed')

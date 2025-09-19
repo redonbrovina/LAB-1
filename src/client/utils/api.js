@@ -122,7 +122,7 @@ export const formAPI = {
 
 
 export const apiRequest = async (endpoint, options = {}) => {
-  const token = localStorage.getItem('token');
+  let token = localStorage.getItem('accessToken');
   
   console.log(`Making API request to: ${API_BASE_URL}${endpoint}`);
   console.log('Token available:', !!token);
@@ -142,10 +142,25 @@ export const apiRequest = async (endpoint, options = {}) => {
     console.log(`Response status: ${response.status} for ${endpoint}`);
     
     if (response.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem('token');
-      window.location.href = '/login';
-      throw new Error('Authentication required');
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (refreshToken) {
+        try {
+          const refreshResponse = await publicApiPost('/form/refresh-token', { refreshToken });
+          localStorage.setItem('accessToken', refreshResponse.accessToken);
+          
+          config.headers['Authorization'] = `Bearer ${refreshResponse.accessToken}`;
+          return await fetch(`${API_BASE_URL}${endpoint}`, config).then(res => res.json());
+        } catch (refreshError) {
+
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          window.location.href = '/login';
+          throw new Error('Authentication required');
+        }
+      } else {
+        window.location.href = '/login';
+        throw new Error('Authentication required');
+      }
     }
     
     if (!response.ok) {
