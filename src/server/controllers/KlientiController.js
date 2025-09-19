@@ -1,5 +1,6 @@
 const KlientiService = require('../services/KlientiService');
 const ShtetiService = require('../services/ShtetiService');
+const PasswordUtils = require('../utils/PasswordUtils');
 
 class KlientiController {
     constructor() {
@@ -49,7 +50,26 @@ class KlientiController {
 
     async createKlienti(req, res) {
         try {
-            const newKlienti = await this.klientiService.createKlienti(req.body);
+            const { password, ...otherData } = req.body;
+            
+            // Validate password strength
+            const passwordValidation = PasswordUtils.validatePasswordStrength(password);
+            if (!passwordValidation.isValid) {
+                return res.status(400).json({
+                    message: passwordValidation.message
+                });
+            }
+            
+            // Hash the password
+            const hashedPassword = await PasswordUtils.hashPassword(password);
+            
+            // Create client with hashed password
+            const clientData = {
+                ...otherData,
+                password: hashedPassword
+            };
+            
+            const newKlienti = await this.klientiService.createKlienti(clientData);
             return res.status(201).json(newKlienti);
         } catch (error) {
             res.status(500).json({
