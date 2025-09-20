@@ -36,6 +36,22 @@ const Pagesa = sequelize.define("Pagesa", {
     numri_llogarise: {
         type: DataTypes.STRING(20),
         allowNull: true
+    },
+    klientiID: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'Klienti',
+            key: 'klientiID'
+        }
+    },
+    adminID: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'Admin',
+            key: 'adminID'
+        }
     }
 }, {
     tableName: "pagesa",
@@ -51,6 +67,14 @@ Pagesa.associate = function(models) {
     Pagesa.belongsTo(models.MenyraPageses, { 
         foreignKey: 'menyra_pagesesID',
         as: 'menyraPageses'
+    });
+    Pagesa.belongsTo(models.Klienti, { 
+        foreignKey: 'klientiID',
+        as: 'klienti'
+    });
+    Pagesa.belongsTo(models.Admin, { 
+        foreignKey: 'adminID',
+        as: 'admin'
     });
 };
 
