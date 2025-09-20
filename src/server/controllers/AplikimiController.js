@@ -1,11 +1,13 @@
 const AplikimiService = require('../services/AplikimiService');
 const KlientiService = require('../services/KlientiService');
 const PasswordUtils = require('../utils/PasswordUtils');
+const EmailService = require('../services/EmailService');
 
 class AplikimiController {
     constructor() {
         this.aplikimiService = new AplikimiService();
         this.klientiService = new KlientiService();
+        this.emailService = new EmailService();
     }
 
     async getAllAplikimet(req, res) {
@@ -50,7 +52,26 @@ class AplikimiController {
 
     async createAplikimi(req, res) {
         try {
-            const newAplikimi = await this.aplikimiService.createAplikimi(req.body);
+            const { email, password, ...otherData } = req.body;
+            const existingClient = await this.klientiService.getKlientiByEmail(email);
+            
+            if (existingClient && existingClient.length > 0) {
+                return res.status(400).json({ message: 'Email already in use' });
+            }
+
+            const passwordValidation = PasswordUtils.validatePasswordStrength(password);
+            if (!passwordValidation.isValid) {
+                return res.status(400).json({
+                    message: passwordValidation.message
+                });
+            }
+
+            // Store password in plain text for applications (will be hashed when creating client)
+            const newAplikimi = await this.aplikimiService.createAplikimi({
+                ...otherData,
+                email: email,
+                password: password
+            });
             return res.status(201).json(newAplikimi);
         } catch (error) {
             res.status(500).json({
@@ -64,20 +85,33 @@ class AplikimiController {
         try {
             const updatedAplikimi = await this.aplikimiService.updateAplikimi(req.params.aplikimiID, req.body);
             const currentAplikimi = await this.aplikimiService.getAplikimiById(req.params.aplikimiID);
-            const hashedPassword = await PasswordUtils.hashPassword(currentAplikimi.password);
 
-            if (currentAplikimi.statusi.statusi == "pranuar") {
-                await this.klientiService.createKlienti({
-                    "adresa": currentAplikimi.adresa,
-                    "qyteti": currentAplikimi.qyteti,
-                    "kodi_postal": currentAplikimi.kodi_postal,
-                    "shtetiID": currentAplikimi.shtetiID,
-                    "aplikimiID": currentAplikimi.aplikimiID,
-                    "email": currentAplikimi.email,
-                    "emri_kompanise": currentAplikimi.emri_kompanise,
-                    "password": hashedPassword
-            });
+            try {
+                if (currentAplikimi.statusi.statusi === "pranuar") {
+                    const hashedPassword = await PasswordUtils.hashPassword(currentAplikimi.password);
+                    
+                    const newKlienti = await this.klientiService.createKlienti({
+                        "adresa": currentAplikimi.adresa,
+                        "qyteti": currentAplikimi.qyteti,
+                        "kodi_postal": currentAplikimi.kodi_postal,
+                        "shtetiID": currentAplikimi.shtetiID,
+                        "aplikimiID": currentAplikimi.aplikimiID,
+                        "email": currentAplikimi.email,
+                        "emri_kompanise": currentAplikimi.emri_kompanise,
+                        "password": hashedPassword
+                    });
+                    
+                    await this.emailService.sendApplicationApprovedEmail(currentAplikimi);
+                    console.log('Email sent for application approval with credentials');
+                } else if (currentAplikimi.statusi.statusi === "refuzuar") {
+                    const reason = req.body.Arsyeja || '';
+                    await this.emailService.sendApplicationRejectedEmail(currentAplikimi, reason);
+                    console.log('Rejection email sent');
+                }
+            } catch (emailError) {
+                console.error('Error sending email:', emailError);
             }
+            
             return res.status(200).json(updatedAplikimi);
         } catch (error) {
             if (error.message === "Aplikimi nuk u gjet") {

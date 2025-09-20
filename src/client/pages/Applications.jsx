@@ -30,10 +30,17 @@ export default function Applications() {
     const fetchApplications = async () => {
         try {
             const response = await apiGet("/aplikimi");
-            const filteredApplications = response.filter((application) => 
-                application.statusi?.statusi === status
-            );
-            setApplications(Array.isArray(filteredApplications) ? filteredApplications : []);
+            
+            const allApplications = Array.isArray(response) ? response : [];
+            const filteredApplications = allApplications.filter((application) => {
+                if (status === 'pending') {
+                    return !application.statusi || application.statusi?.statusi === 'pending';
+                }
+                return application.statusi?.statusi === status;
+            });
+            
+            console.log('Filtered applications:', filteredApplications);
+            setApplications(filteredApplications);
         } catch (error) {
             console.error('Error fetching applications:', error);
             setApplications([]);
@@ -75,6 +82,12 @@ export default function Applications() {
                         <option value='refuzuar'>Rejected</option>
                     </select>
                 </div>
+                <button 
+                    onClick={fetchApplications}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
+                >
+                    🔄 Refresh
+                </button>
             </div>
 
             {/* Applications Table */}
@@ -124,7 +137,7 @@ export default function Applications() {
                                             <div className="text-sm text-gray-500">{application.adresa}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {application.data_aplikimit ? new Date(application.data_aplikimit).toLocaleDateString() : 'N/A'}
+                                            {application.koha_aplikimit ? new Date(application.koha_aplikimit).toLocaleDateString() : 'N/A'}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusStyles[application.statusi?.statusi]?.bgColor || 'bg-gray-100'} ${statusStyles[application.statusi?.statusi]?.textColor || 'text-gray-800'}`}>

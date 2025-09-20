@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const ShtetiService = require('../services/ShtetiService');
 const KlientiService = require('../services/KlientiService');
-const AplikimiService = require('../services/AplikimiService');
+const AplikimiController = require('./AplikimiController');
 const PasswordUtils = require('../utils/PasswordUtils');
 const RefreshTokenService = require('../services/RefreshTokenService');
 
@@ -9,7 +9,7 @@ class FormController {
     constructor() {
         this.shtetiService = new ShtetiService();
         this.klientiService = new KlientiService();
-        this.aplikimiService = new AplikimiService();
+        this.aplikimiController = new AplikimiController();
         this.refreshTokenService = new RefreshTokenService();
     }
 
@@ -60,23 +60,6 @@ class FormController {
         } catch (error) {
             console.error('Error in checkLogin:', error);
             return res.status(500).json({ message: 'Authentication check failed: ' + error.message });
-        }
-    }
-
-    async checkApplication(req, res) {
-        try {
-            const { email } = req.body;
-            const existingClient = await this.klientiService.getKlientiByEmail(email);
-            
-            if (existingClient && existingClient.length > 0) {
-                return res.status(400).json({ message: 'Email already in use' });
-            } else {
-                await this.aplikimiService.createAplikimi(req.body);
-                return res.status(200).json({ message: 'Application created successfully' });
-            }
-        } catch (error) {
-            console.error('Error in checkApplication middleware:', error);
-            return res.status(500).json({ message: 'Application check failed' });
         }
     }
 

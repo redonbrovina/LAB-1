@@ -23,6 +23,10 @@ class KlientiService {
         return await this.klientiRepository.getKlientiByEmri(emri_kompanise);
     }
 
+    async getKlientiByAplikimiID(aplikimiID) {
+        return await this.klientiRepository.getKlientiByAplikimiID(aplikimiID);
+    }
+
     async createKlienti(data) {
         return await this.klientiRepository.createKlienti(data);
     }

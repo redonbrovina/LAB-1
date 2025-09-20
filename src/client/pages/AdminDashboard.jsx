@@ -13,10 +13,14 @@ export default function AdminDashboard() {
 
   const fetchApplications = async () => {
     try{
+      console.log('Fetching applications...');
       const response = await apiGet("/aplikimi");
-      const data = response.filter((application) => application.statusi?.statusi === "pending");
-      const limitedData = data.slice(0, 2);
-      setTrueApps(data);
+      console.log('All applications:', response);
+
+      const pendingApplications = response.filter((application) => application.statusi?.statusi === "pending");
+      const limitedData = pendingApplications.slice(0, 2);
+
+      setTrueApps(pendingApplications);
       setApplications(limitedData);
     } catch (error) {
       console.error('Error fetching applications:', error);
@@ -31,8 +35,14 @@ export default function AdminDashboard() {
   return (
       <div>
           <div className="flex justify-between items-center mb-8">
-
+            <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
             <div className="flex items-center gap-4">
+              <button 
+                onClick={fetchApplications}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
+              >
+                🔄 Refresh Applications
+              </button>
               <button className="p-2 rounded-full bg-white shadow">
                 <span role="img" aria-label="bell">🔔</span>
               </button>

@@ -93,7 +93,7 @@ export default function Signup() {
 
         try{
             const {emri_kompanise, email, adresa, shtetiID, qyteti, kodi_postal, password} = formData
-            await publicApiPost('/form/signup', {emri_kompanise, email, adresa, shtetiID, qyteti, kodi_postal, password})
+            await publicApiPost('/aplikimi/', {emri_kompanise, email, adresa, shtetiID, qyteti, kodi_postal, password})
             navigate('/signup-success')
         }catch(err){
             setErrorMessage(err.message || 'Signup Failed')

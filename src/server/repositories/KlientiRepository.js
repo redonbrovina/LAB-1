@@ -25,6 +25,10 @@ class KlientiRepository extends BaseRepository {
         return await this.getByField('email', email);
     }
 
+    async getKlientiByAplikimiID(aplikimiID) {
+        return await this.getOneByField('aplikimiID', aplikimiID);
+    }
+
     async createKlienti(data) {
         return await this.insert(data);
     }
