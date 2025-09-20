@@ -18,7 +18,7 @@ class KlientiRepository extends BaseRepository {
     }
 
     async getKlientiById(klientiID) {
-        return await this.getByField('klientiID', klientiID);
+        return await this.getOneByField('klientiID', klientiID);
     }
 
     async getKlientiByEmail(email) {

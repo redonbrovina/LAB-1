@@ -262,3 +262,14 @@ export const furnitoriAPI = {
   update: (id, data) => apiPut(`/furnitore/${id}`, data),
   delete: (id) => apiDelete(`/furnitore/${id}`),
 };
+
+// Client API functions
+export const clientAPI = {
+  getAll: () => apiGet('/klienti'),
+  getById: (id) => apiGet(`/klienti/${id}`),
+  getByCompanyName: (companyName) => apiGet(`/klienti/search/${companyName}`),
+  create: (data) => apiPost('/klienti', data),
+  update: (id, data) => apiPut(`/klienti/${id}`, data),
+  changePassword: (id, data) => apiPut(`/klienti/${id}/change-password`, data),
+  delete: (id) => apiDelete(`/klienti/${id}`),
+};

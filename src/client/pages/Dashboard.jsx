@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className="flex h-screen" style={{ backgroundColor: "#ECFAEA" }}>
@@ -19,7 +20,10 @@ export default function Dashboard() {
             <button className="p-2 rounded-full bg-white shadow">
               <span role="img" aria-label="bell">🔔</span>
             </button>
-            <button className="p-2 rounded-full bg-white shadow">
+            <button 
+              onClick={() => navigate('/profile')}
+              className="p-2 rounded-full bg-white shadow hover:bg-gray-50 transition-colors"
+            >
               <span role="img" aria-label="user">👤</span>
             </button>
           </div>
