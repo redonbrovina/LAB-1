@@ -6,8 +6,6 @@ const controller = new FormController()
 
 router.post('/login', controller.checkLogin.bind(controller))
 
-router.post('/signup', controller.checkApplication.bind(controller))
-
 router.post('/logout', controller.logout.bind(controller))
 
 router.post('/refresh-token', controller.refreshToken.bind(controller))

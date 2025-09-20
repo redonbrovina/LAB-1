@@ -16,16 +16,10 @@ export default function AdminDashboard() {
       console.log('Fetching applications...');
       const response = await apiGet("/aplikimi");
       console.log('All applications:', response);
-      
-      // Merr të gjitha aplikimet, jo vetëm pending
-      const allApplications = Array.isArray(response) ? response : [];
-      const pendingApplications = allApplications.filter((application) => 
-        application.statusi?.statusi === "pending" || !application.statusi
-      );
-      
-      console.log('Pending applications:', pendingApplications);
-      
+
+      const pendingApplications = response.filter((application) => application.statusi?.statusi === "pending");
       const limitedData = pendingApplications.slice(0, 2);
+
       setTrueApps(pendingApplications);
       setApplications(limitedData);
     } catch (error) {

@@ -29,13 +29,10 @@ export default function Applications() {
 
     const fetchApplications = async () => {
         try {
-            console.log('Fetching applications with status:', status);
             const response = await apiGet("/aplikimi");
-            console.log('All applications:', response);
             
             const allApplications = Array.isArray(response) ? response : [];
             const filteredApplications = allApplications.filter((application) => {
-                // Nëse statusi është 'pending', merr aplikimet pa status ose me status pending
                 if (status === 'pending') {
                     return !application.statusi || application.statusi?.statusi === 'pending';
                 }
@@ -140,7 +137,7 @@ export default function Applications() {
                                             <div className="text-sm text-gray-500">{application.adresa}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {application.data_aplikimit ? new Date(application.data_aplikimit).toLocaleDateString() : 'N/A'}
+                                            {application.koha_aplikimit ? new Date(application.koha_aplikimit).toLocaleDateString() : 'N/A'}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusStyles[application.statusi?.statusi]?.bgColor || 'bg-gray-100'} ${statusStyles[application.statusi?.statusi]?.textColor || 'text-gray-800'}`}>

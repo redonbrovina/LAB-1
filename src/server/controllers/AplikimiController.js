@@ -52,17 +52,26 @@ class AplikimiController {
 
     async createAplikimi(req, res) {
         try {
-            const newAplikimi = await this.aplikimiService.createAplikimi(req.body);
+            const { email, password, ...otherData } = req.body;
+            const existingClient = await this.klientiService.getKlientiByEmail(email);
             
-            // Dërgo email për admin kur ka aplikim të ri
-            try {
-                await this.emailService.sendAdminNotificationEmail(newAplikimi);
-                console.log('Email i dërguar për admin për aplikim të ri');
-            } catch (emailError) {
-                console.error('Gabim në dërgimin e email-it për admin:', emailError);
-                // Mos e ndal operacionin nëse email-i dështon
+            if (existingClient && existingClient.length > 0) {
+                return res.status(400).json({ message: 'Email already in use' });
             }
-            
+
+            const passwordValidation = PasswordUtils.validatePasswordStrength(password);
+            if (!passwordValidation.isValid) {
+                return res.status(400).json({
+                    message: passwordValidation.message
+                });
+            }
+
+            // Store password in plain text for applications (will be hashed when creating client)
+            const newAplikimi = await this.aplikimiService.createAplikimi({
+                ...otherData,
+                email: email,
+                password: password
+            });
             return res.status(201).json(newAplikimi);
         } catch (error) {
             res.status(500).json({
@@ -76,12 +85,11 @@ class AplikimiController {
         try {
             const updatedAplikimi = await this.aplikimiService.updateAplikimi(req.params.aplikimiID, req.body);
             const currentAplikimi = await this.aplikimiService.getAplikimiById(req.params.aplikimiID);
-            const hashedPassword = await PasswordUtils.hashPassword(currentAplikimi.password);
 
-            // Dërgo email bazuar në statusin e ri
             try {
                 if (currentAplikimi.statusi.statusi === "pranuar") {
-                    // Krijoni klientin së pari
+                    const hashedPassword = await PasswordUtils.hashPassword(currentAplikimi.password);
+                    
                     const newKlienti = await this.klientiService.createKlienti({
                         "adresa": currentAplikimi.adresa,
                         "qyteti": currentAplikimi.qyteti,
@@ -93,32 +101,15 @@ class AplikimiController {
                         "password": hashedPassword
                     });
                     
-                    // Dërgo email për pranim ME kredencialet
                     await this.emailService.sendApplicationApprovedEmail(currentAplikimi);
-                    console.log('Email i dërguar për pranim të aplikimit me kredencialet');
-                    
+                    console.log('Email sent for application approval with credentials');
                 } else if (currentAplikimi.statusi.statusi === "refuzuar") {
-                    // Fshi klientin nëse ekziston (për të parandaluar login)
-                    try {
-                        const existingKlienti = await this.klientiService.getKlientiByAplikimiID(currentAplikimi.aplikimiID);
-                        if (existingKlienti && existingKlienti.klientiID) {
-                            await this.klientiService.deleteKlienti(existingKlienti.klientiID);
-                            console.log('Klienti u fshi pas refuzimit të aplikimit');
-                        } else {
-                            console.log('Nuk ka klient për të fshirë për këtë aplikim');
-                        }
-                    } catch (deleteError) {
-                        console.log('Gabim në fshirjen e klientit:', deleteError.message);
-                    }
-                    
-                    // Dërgo email për refuzim
-                    const reason = req.body.arsyeja || '';
+                    const reason = req.body.Arsyeja || '';
                     await this.emailService.sendApplicationRejectedEmail(currentAplikimi, reason);
-                    console.log('Email i dërguar për refuzim të aplikimit');
+                    console.log('Rejection email sent');
                 }
             } catch (emailError) {
-                console.error('Gabim në dërgimin e email-it:', emailError);
-                // Mos e ndal operacionin nëse email-i dështon
+                console.error('Error sending email:', emailError);
             }
             
             return res.status(200).json(updatedAplikimi);

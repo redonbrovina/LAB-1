@@ -16,7 +16,7 @@ async function testApplicationFlow() {
         // Simuloj një aplikim të ri
         const testApplication = {
             aplikimiID: 999,
-            email: 'test@example.com',
+            email: 'redonbrovina@gmail.com',
             emri_kompanise: 'Test Company',
             adresa: 'Test Address',
             qyteti: 'Test City',
@@ -24,10 +24,6 @@ async function testApplicationFlow() {
             shtetiID: 1,
             password: 'testpassword123'
         };
-        
-        console.log('Sending admin notification email...');
-        await emailService.sendAdminNotificationEmail(testApplication);
-        console.log('✅ Admin notification email sent');
         
         console.log('Sending approval email...');
         await emailService.sendApplicationApprovedEmail(testApplication);
