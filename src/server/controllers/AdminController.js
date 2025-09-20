@@ -139,6 +139,19 @@ class AdminController {
             }
         }
     }
+
+    async getDashboardStats(req, res) {
+        try {
+            const stats = await this.adminService.getDashboardStats();
+            return res.status(200).json(stats);
+        } catch (error) {
+            console.error('Error getting dashboard stats:', error);
+            res.status(500).json({
+                message: 'Error fetching dashboard statistics',
+                error: error.message
+            });
+        }
+    }
 }
 
 module.exports = AdminController;

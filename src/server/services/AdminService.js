@@ -34,6 +34,10 @@ class AdminService {
         await this.getAdminById(adminID);
         return await this.adminRepository.deleteAdmin(adminID);
     }
+
+    async getDashboardStats() {
+        return await this.adminRepository.getDashboardStats();
+    }
 }
 
 module.exports = AdminService;
