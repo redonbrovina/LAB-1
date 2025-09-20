@@ -23,6 +23,30 @@ const Produkti = sequelize.define("Produkti", {
             model: "Kategoria",
             key: "kategoriaID"
         }
+    },
+    furnitoriID: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: "Furnitori",
+            key: "furnitoriID"
+        }
+    },
+    sasia_ne_stok: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+        validate: {
+            min: 0
+        }
+    },
+    dozaID: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: "Doza",
+            key: "dozaID"
+        }
     }
 }, {
     tableName: "produkti",
@@ -34,6 +58,14 @@ Produkti.associate = function(models) {
     Produkti.belongsTo(models.Kategoria, { 
         foreignKey: 'kategoriaID',
         as: 'kategoria'
+    });
+    Produkti.belongsTo(models.Furnitori, { 
+        foreignKey: 'furnitoriID',
+        as: 'furnitori'
+    });
+    Produkti.belongsTo(models.Doza, { 
+        foreignKey: 'dozaID',
+        as: 'doza'
     });
     Produkti.hasMany(models.ProduktVariacioni, { 
         foreignKey: 'produktiID',

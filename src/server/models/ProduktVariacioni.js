@@ -12,35 +12,12 @@ const ProduktVariacioni = sequelize.define("ProduktVariacioni", {
         type: DataTypes.DECIMAL(8, 2),
         allowNull: true
     },
-    sasia_ne_stok: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        validate: {
-            min: 0
-        }
-    },
     formaID: {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
             model: "Forma",
             key: "formaID"
-        }
-    },
-    dozaID: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-            model: "Doza",
-            key: "dozaID"
-        }
-    },
-    furnitoriID: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-            model: "Furnitori",
-            key: "furnitoriID"
         }
     },
     produktiID: {
@@ -61,14 +38,6 @@ ProduktVariacioni.associate = function(models) {
     ProduktVariacioni.belongsTo(models.Forma, { 
         foreignKey: 'formaID',
         as: 'forma'
-    });
-    ProduktVariacioni.belongsTo(models.Doza, { 
-        foreignKey: 'dozaID',
-        as: 'doza'
-    });
-    ProduktVariacioni.belongsTo(models.Furnitori, { 
-        foreignKey: 'furnitoriID',
-        as: 'furnitori'
     });
     ProduktVariacioni.belongsTo(models.Produkti, { 
         foreignKey: 'produktiID',
