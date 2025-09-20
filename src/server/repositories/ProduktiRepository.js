@@ -17,7 +17,7 @@ class ProduktiRepository extends BaseRepository {
                 {
                     model: ProduktVariacioni,
                     as: 'variacionet',
-                    attributes: ['produkt_variacioniID', 'cmimi', 'sasia_ne_stok']
+                    attributes: ['produkt_variacioniID', 'cmimi']
                 }
             ],
             order: [['emri', 'ASC']]
@@ -35,7 +35,7 @@ class ProduktiRepository extends BaseRepository {
                 {
                     model: ProduktVariacioni,
                     as: 'variacionet',
-                    attributes: ['produkt_variacioniID', 'cmimi', 'sasia_ne_stok']
+                    attributes: ['produkt_variacioniID', 'cmimi']
                 }
             ]
         });
@@ -52,7 +52,7 @@ class ProduktiRepository extends BaseRepository {
                 {
                     model: ProduktVariacioni,
                     as: 'variacionet',
-                    attributes: ['produkt_variacioniID', 'cmimi', 'sasia_ne_stok']
+                    attributes: ['produkt_variacioniID', 'cmimi']
                 }
             ]
         });
@@ -76,8 +76,7 @@ class ProduktiRepository extends BaseRepository {
             
             const variationData = {
                 produktiID: produkti.produktiID,
-                cmimi: cmimi,
-                sasia_ne_stok: sasia_ne_stok
+                cmimi: cmimi
             };
             console.log('Variation data:', variationData);
             
@@ -118,7 +117,7 @@ class ProduktiRepository extends BaseRepository {
                 {
                     model: ProduktVariacioni,
                     as: 'variacionet',
-                    attributes: ['produkt_variacioniID', 'cmimi', 'sasia_ne_stok']
+                    attributes: ['produkt_variacioniID', 'cmimi']
                 }
             ],
             order: [['emri', 'ASC']]

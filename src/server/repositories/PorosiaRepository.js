@@ -53,7 +53,7 @@ class PorosiaRepository extends BaseRepository {
                     include: [{
                         model: ProduktVariacioni,
                         as: 'produktVariacioni',
-                        attributes: ['cmimi', 'sasia_ne_stok']
+                        attributes: ['cmimi']
                     }]
                 }
             ]

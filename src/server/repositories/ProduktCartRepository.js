@@ -35,7 +35,7 @@ class ProduktCartRepository extends BaseRepository {
                 {
                     model: ProduktVariacioni,
                     as: 'produktVariacioni',
-                    attributes: ['produkt_variacioniID', 'cmimi', 'sasia_ne_stok']
+                    attributes: ['produkt_variacioniID', 'cmimi']
                 }
             ]
         });
@@ -47,7 +47,7 @@ class ProduktCartRepository extends BaseRepository {
                 {
                     model: ProduktVariacioni,
                     as: 'produktVariacioni',
-                    attributes: ['produkt_variacioniID', 'cmimi', 'sasia_ne_stok']
+                    attributes: ['produkt_variacioniID', 'cmimi']
                 }
             ]
         });

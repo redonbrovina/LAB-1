@@ -1,5 +1,5 @@
 const BaseRepository = require("./BaseRepository");
-const { Furnitori, Shteti, ProduktVariacioni } = require("../models");
+const { Furnitori, Shteti, Produkti } = require("../models");
 
 class FurnitoriRepository extends BaseRepository {
     constructor() {
@@ -15,9 +15,9 @@ class FurnitoriRepository extends BaseRepository {
                     attributes: ['emri_shtetit']
                 },
                 {
-                    model: ProduktVariacioni,
+                    model: Produkti,
                     as: 'produktet',
-                    attributes: ['cmimi', 'sasia_ne_stok']
+                    attributes: ['emri', 'sasia_ne_stok']
                 }
             ],
             order: [['emri', 'ASC']]
@@ -33,9 +33,9 @@ class FurnitoriRepository extends BaseRepository {
                     attributes: ['emri_shtetit']
                 },
                 {
-                    model: ProduktVariacioni,
+                    model: Produkti,
                     as: 'produktet',
-                    attributes: ['cmimi', 'sasia_ne_stok']
+                    attributes: ['emri', 'sasia_ne_stok']
                 }
             ]
         });

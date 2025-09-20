@@ -31,7 +31,7 @@ Furnitori.associate = function(models) {
         foreignKey: 'shtetiID',
         as: 'shteti'
     });
-    Furnitori.hasMany(models.ProduktVariacioni, { 
+    Furnitori.hasMany(models.Produkti, { 
         foreignKey: 'furnitoriID',
         as: 'produktet'
     });

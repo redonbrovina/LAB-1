@@ -12,7 +12,7 @@ class FormaRepository extends BaseRepository {
                 {
                     model: ProduktVariacioni,
                     as: 'variacionet',
-                    attributes: ['cmimi', 'sasia_ne_stok']
+                    attributes: ['cmimi']
                 }
             ],
             order: [['lloji_formes', 'ASC']]
@@ -25,7 +25,7 @@ class FormaRepository extends BaseRepository {
                 {
                     model: ProduktVariacioni,
                     as: 'variacionet',
-                    attributes: ['cmimi', 'sasia_ne_stok']
+                    attributes: ['cmimi']
                 }
             ]
         });
