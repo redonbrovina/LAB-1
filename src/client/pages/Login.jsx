@@ -78,6 +78,7 @@ export default function Login() {
                     )}
                 </form>
                 <p className="pt-3 text-[#808080] text-sm ml-3">Don't have an account? <Link className="underline text-[#7ED957] text-sm" to="/signup">Sign Up!</Link></p>
+                <p className="pt-3 text-[#808080] text-sm ml-3">Are you an Administrator? <Link className="underline text-[#7ED957] text-sm" to="/admin-login">Login here!</Link></p>
             </div>
         </div>
         </>
