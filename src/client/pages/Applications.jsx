@@ -29,11 +29,21 @@ export default function Applications() {
 
     const fetchApplications = async () => {
         try {
+            console.log('Fetching applications with status:', status);
             const response = await apiGet("/aplikimi");
-            const filteredApplications = response.filter((application) => 
-                application.statusi?.statusi === status
-            );
-            setApplications(Array.isArray(filteredApplications) ? filteredApplications : []);
+            console.log('All applications:', response);
+            
+            const allApplications = Array.isArray(response) ? response : [];
+            const filteredApplications = allApplications.filter((application) => {
+                // Nëse statusi është 'pending', merr aplikimet pa status ose me status pending
+                if (status === 'pending') {
+                    return !application.statusi || application.statusi?.statusi === 'pending';
+                }
+                return application.statusi?.statusi === status;
+            });
+            
+            console.log('Filtered applications:', filteredApplications);
+            setApplications(filteredApplications);
         } catch (error) {
             console.error('Error fetching applications:', error);
             setApplications([]);
@@ -75,6 +85,12 @@ export default function Applications() {
                         <option value='refuzuar'>Rejected</option>
                     </select>
                 </div>
+                <button 
+                    onClick={fetchApplications}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
+                >
+                    🔄 Refresh
+                </button>
             </div>
 
             {/* Applications Table */}

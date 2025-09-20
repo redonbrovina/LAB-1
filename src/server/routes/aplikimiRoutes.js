@@ -5,12 +5,15 @@ const { authenticateToken, authorizeRoles } = require('../middleware/auth')
 
 const controller = new AplikimiController()
 
+// POST (create) nuk kërkon authentication - për signup
+router.post('/', controller.createAplikimi.bind(controller))
+
+// Të gjitha routes tjera kërkojnë authentication
 router.use(authenticateToken)
 
 router.get('/', controller.getAllAplikimet.bind(controller))
 router.get('/status/:aplikimiStatusID', controller.getAplikimiByAplikimiStatusID.bind(controller))
 router.get('/:aplikimiID', controller.getAplikimiById.bind(controller))
-router.post('/', controller.createAplikimi.bind(controller))
 router.put('/:aplikimiID', controller.updateAplikimi.bind(controller))
 router.delete('/:aplikimiID', controller.deleteAplikimi.bind(controller))
 
