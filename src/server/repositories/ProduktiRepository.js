@@ -91,7 +91,35 @@ class ProduktiRepository extends BaseRepository {
     }
 
     async updateProdukti(produktiID, data) {
-        return await this.updateById(produktiID, data);
+        // Update the product
+        const result = await this.updateById(produktiID, data);
+        
+        // If price is provided, update the first variation's price
+        if (data.cmimi !== undefined) {
+            const ProduktVariacioniRepository = require("./ProduktVariacioniRepository");
+            const produktVariacioniRepo = new ProduktVariacioniRepository();
+            
+            // Get all variations for this product
+            const variations = await produktVariacioniRepo.getByField('produktiID', produktiID);
+            
+            if (variations && variations.length > 0) {
+                // Update the first variation's price
+                const firstVariation = variations[0];
+                await produktVariacioniRepo.updateVariacioni(firstVariation.produkt_variacioniID, {
+                    cmimi: data.cmimi
+                });
+            } else {
+                // Create a new variation if none exists
+                const variationData = {
+                    produktiID: produktiID,
+                    cmimi: data.cmimi
+                };
+                await produktVariacioniRepo.createVariacioni(variationData);
+            }
+        }
+        
+        // Return the updated product with its variations
+        return await this.getProduktiById(produktiID);
     }
 
     async deleteProdukti(produktiID) {

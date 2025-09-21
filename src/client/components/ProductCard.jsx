@@ -141,12 +141,7 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Variations Info */}
-        {hasVariations && product.variacionet.length > 1 && (
-          <div className="text-xs text-blue-600 mb-3">
-            {product.variacionet.length} variacione të disponueshme
-          </div>
-        )}
+        {/* Variations Info - Hidden since we only want one variation per product */}
 
         {/* Action Buttons */}
         <div className="flex gap-2">

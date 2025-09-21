@@ -1,5 +1,5 @@
 import { Filter, X, ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ProductFilter({ 
   categories = [], 
@@ -14,6 +14,16 @@ export default function ProductFilter({
     inStock: currentFilters.inStock || false,
     sortBy: currentFilters.sortBy || 'name'
   });
+
+  // Sync with parent filters
+  useEffect(() => {
+    setFilters({
+      category: currentFilters.category || '',
+      priceRange: currentFilters.priceRange || '',
+      inStock: currentFilters.inStock || false,
+      sortBy: currentFilters.sortBy || 'name'
+    });
+  }, [currentFilters]);
 
   const priceRanges = [
     { value: '', label: 'Të gjitha çmimet' },
