@@ -1,8 +1,12 @@
 const PorosiaService = require('../services/PorosiaService');
+const KlientiService = require('../services/KlientiService');
+const EmailService = require('../services/EmailService');
 
 class PorosiaController {
     constructor() {
         this.service = new PorosiaService();
+        this.klientiService = new KlientiService();
+        this.emailService = new EmailService();
     }
 
     async getAll(req, res) {
@@ -35,9 +39,29 @@ class PorosiaController {
 
     async create(req, res) {
         try {
+            console.log('📦 PorosiaController.create called with data:', req.body);
             const newPorosia = await this.service.createPorosia(req.body);
+            console.log('📦 New order created:', newPorosia);
+            
+            // Send confirmation email
+            try {
+                console.log('📧 Fetching client data for klientiID:', req.body.klientiID);
+                const clientData = await this.klientiService.getKlientiById(req.body.klientiID);
+                console.log('👤 Client data retrieved:', clientData);
+                
+                console.log('📧 Sending order confirmation email...');
+                await this.emailService.sendOrderConfirmationEmail(newPorosia, clientData);
+                console.log('✅ Order confirmation email sent successfully');
+            } catch (emailError) {
+                console.error('❌ Error sending order confirmation email:', emailError);
+                console.error('❌ Email error details:', emailError.message);
+                console.error('❌ Email error stack:', emailError.stack);
+                // Don't fail the order if email fails
+            }
+            
             res.status(201).json(newPorosia);
         } catch (err) {
+            console.error('❌ Error in PorosiaController.create:', err);
             res.status(500).json({ error: err.message });
         }
     }

@@ -52,7 +52,7 @@ export default function Products() {
     }
   };
 
-  const addToCart = async (product) => {
+  const addToCart = async (product, quantity = 1) => {
     console.log('=== ADD TO CART DEBUG ===');
     console.log('User object:', user);
     console.log('Product:', product);
@@ -116,7 +116,7 @@ export default function Products() {
       const cartItemData = {
         cartID: userCart.cartID,
         produkt_variacioniID: productVariation.produkt_variacioniID,
-        sasia: 1,
+        sasia: quantity,
         cmimi: productVariation.cmimi
       };
       
@@ -124,7 +124,7 @@ export default function Products() {
       const createdItem = await cartItemsAPI.create(cartItemData);
       console.log('Cart item created successfully:', createdItem);
 
-      alert(`Produkti "${product.emri}" u shtua në cart!`);
+      alert(`Produkti "${product.emri}" (${quantity} copë) u shtua në cart!`);
     } catch (err) {
       console.error('Error adding to cart:', err);
       alert(`Gabim në shtimin e produktit në cart: ${err.message}`);
@@ -170,7 +170,7 @@ export default function Products() {
     // In stock filter
     if (filters.inStock) {
       filtered = filtered.filter(p => {
-        return p.variacionet && p.variacionet.length > 0 && p.variacionet[0].sasia_ne_stok > 0;
+        return p.sasia_ne_stok > 0;
       });
     }
 

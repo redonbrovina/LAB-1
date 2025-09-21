@@ -171,7 +171,7 @@ export default function Cart() {
       console.log('Clearing cart...');
       await clearCart();
       
-      alert(`Porosia u krijua me sukses! ID e porosisë: ${newOrder.porosiaID}`);
+      alert(`Porosia u krijua me sukses! ID e porosisë: ${newOrder.porosiaID}\nEmail-i i konfirmimit u dërgua në ${user.email || 'email-in tuaj'}`);
     } catch (err) {
       console.error('Error creating order:', err);
       console.error('Error details:', err.message);
@@ -233,14 +233,6 @@ export default function Cart() {
                  </div>
                )}
 
-               {/* Debug Information */}
-               <div className="mb-4 p-3 bg-gray-100 rounded-lg text-sm">
-                 <p><strong>Debug Info:</strong></p>
-                 <p>User: {user ? 'Logged in' : 'Not logged in'}</p>
-                 <p>Cart: {cart ? `ID: ${cart.cartID}` : 'No cart'}</p>
-                 <p>Cart Items: {cartItems.length}</p>
-                 <p>Client ID: {user ? (user.klientiID || user.id || user.clientId || user.userId) : 'N/A'}</p>
-               </div>
 
         {/* Loading State */}
         {loading ? (
