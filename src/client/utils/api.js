@@ -57,17 +57,17 @@ export const publicApiRequest = async (endpoint, options = {}) => {
 
 // Payment API functions
 export const paymentAPI = {
-  getAll: () => apiCall('/pagesa'),
-  getById: (id) => apiCall(`/pagesa/${id}`),
-  create: (data) => apiCall('/pagesa', {
+  getAll: () => apiRequest('/pagesa'),
+  getById: (id) => apiRequest(`/pagesa/${id}`),
+  create: (data) => apiRequest('/pagesa', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  update: (id, data) => apiCall(`/pagesa/${id}`, {
+  update: (id, data) => apiRequest(`/pagesa/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   }),
-  delete: (id) => apiCall(`/pagesa/${id}`, {
+  delete: (id) => apiRequest(`/pagesa/${id}`, {
     method: 'DELETE',
   }),
 };
@@ -91,34 +91,23 @@ export const stockMovementAPI = {
 
 // Payment Methods API functions
 export const paymentMethodsAPI = {
-  getAll: () => apiCall('/menyra-pageses'),
-  getById: (id) => apiCall(`/menyra-pageses/${id}`),
-  create: (data) => apiCall('/menyra-pageses', {
+  getAll: () => apiRequest('/menyra-pageses'),
+  getById: (id) => apiRequest(`/menyra-pageses/${id}`),
+  create: (data) => apiRequest('/menyra-pageses', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  update: (id, data) => apiCall(`/menyra-pageses/${id}`, {
+  update: (id, data) => apiRequest(`/menyra-pageses/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   }),
-  delete: (id) => apiCall(`/menyra-pageses/${id}`, {
+  delete: (id) => apiRequest(`/menyra-pageses/${id}`, {
+    method: 'DELETE',
+  }),
+  deleteAll: () => apiRequest('/menyra-pageses', {
     method: 'DELETE',
   }),
 };
-
-// Form API functions (login, signup, countries)
-export const formAPI = {
-  login: (data) => apiCall('/form/login', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
-  signup: (data) => apiCall('/form/signup', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
-  getCountries: () => apiCall('/form/shtetet'),
-};
-
 
 
 export const apiRequest = async (endpoint, options = {}) => {
@@ -140,27 +129,53 @@ export const apiRequest = async (endpoint, options = {}) => {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     
     console.log(`Response status: ${response.status} for ${endpoint}`);
+    console.log(`Response headers:`, Object.fromEntries(response.headers.entries()));
     
+    // Handle token expiration
     if (response.status === 401) {
+      console.log('Token expired, attempting refresh...');
       const refreshToken = localStorage.getItem('refreshToken');
+      
       if (refreshToken) {
         try {
+          console.log('Refresh token found, calling refresh endpoint...');
           const refreshResponse = await publicApiPost('/form/refresh-token', { refreshToken });
-          localStorage.setItem('accessToken', refreshResponse.accessToken);
+          const newAccessToken = refreshResponse.accessToken;
           
-          config.headers['Authorization'] = `Bearer ${refreshResponse.accessToken}`;
-          return await fetch(`${API_BASE_URL}${endpoint}`, config).then(res => res.json());
+          console.log('Token refreshed successfully, new token:', newAccessToken.substring(0, 20) + '...');
+          localStorage.setItem('accessToken', newAccessToken);
+          
+          // Retry the original request with new token
+          config.headers['Authorization'] = `Bearer ${newAccessToken}`;
+          console.log('Retrying original request with new token...');
+          const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, config);
+          
+          if (!retryResponse.ok) {
+            const errorData = await retryResponse.json().catch(() => ({}));
+            throw new Error(errorData.message || `HTTP error! status: ${retryResponse.status}`);
+          }
+          
+          return await retryResponse.json();
         } catch (refreshError) {
-
+          console.error('Token refresh failed:', refreshError);
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           window.location.href = '/login';
           throw new Error('Authentication required');
         }
       } else {
+        console.log('No refresh token available, redirecting to login');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         window.location.href = '/login';
         throw new Error('Authentication required');
       }
+    }
+    
+    // Handle 204 No Content responses first (before checking response.ok)
+    if (response.status === 204) {
+      console.log(`API response for ${endpoint}: 204 No Content`);
+      return null;
     }
     
     if (!response.ok) {
@@ -168,7 +183,7 @@ export const apiRequest = async (endpoint, options = {}) => {
       console.error(`API error for ${endpoint}:`, errorData);
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
-    
+
     const data = await response.json();
     console.log(`API response for ${endpoint}:`, data);
     return data;

@@ -67,10 +67,6 @@ Porosia.associate = function(models) {
         foreignKey: 'porosiaID',
         as: 'produktet'
     });
-    Porosia.hasMany(models.LevizjaNeStok, { 
-        foreignKey: 'porosiaID',
-        as: 'stockMovements'
-    });
 };
 
 module.exports = Porosia;

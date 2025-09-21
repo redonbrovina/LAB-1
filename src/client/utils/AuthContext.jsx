@@ -15,10 +15,9 @@ export const AuthProvider = ({ children }) => {
         const decoded = parseJwt(token);
         console.log('Decoded JWT token:', decoded);
         console.log('Available fields in token:', Object.keys(decoded));
-        // Check if token is expired
+        
         if (decoded.exp && decoded.exp < Date.now() / 1000) {
-          // Try to refresh token
-          refreshAccessToken();
+          // Token is expired, will be handled by API interceptor
           return null;
         }
         return decoded;
@@ -31,30 +30,39 @@ export const AuthProvider = ({ children }) => {
     return null;
   });
 
-  const login = (accessToken, refreshToken) => {
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-    const decoded = parseJwt(accessToken);
-    console.log('Login - Decoded JWT token:', decoded);
-    console.log('Login - Available fields in token:', Object.keys(decoded));
-    setUser(decoded);
-  };
-
   const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem('refreshToken');
+    console.log('AuthContext refreshAccessToken called, refresh token available:', !!refreshToken);
+    
     if (!refreshToken) {
+      console.log('No refresh token in AuthContext, calling logout');
       logout();
       return;
     }
 
     try {
+      console.log('AuthContext calling refresh endpoint...');
       const response = await publicApiPost('/form/refresh-token', { refreshToken });
       localStorage.setItem('accessToken', response.accessToken);
       setUser(parseJwt(response.accessToken));
+      console.log('AuthContext refresh successful');
+      return response.accessToken;
     } catch (error) {
-      console.error('Token refresh failed:', error);
+      console.error('AuthContext token refresh failed:', error);
       logout();
+      throw error;
     }
+  };
+
+  const login = (accessToken, refreshToken) => {
+    localStorage.setItem('accessToken', accessToken);
+    if (refreshToken) {
+      localStorage.setItem('refreshToken', refreshToken);
+    }
+    const decoded = parseJwt(accessToken);
+    console.log('Login - Decoded JWT token:', decoded);
+    console.log('Login - Available fields in token:', Object.keys(decoded));
+    setUser(decoded);
   };
 
   const logout = async () => {

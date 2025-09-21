@@ -1,6 +1,10 @@
 const RefreshTokenRepository = require('../repositories/RefreshTokenRepository');
 const jwt = require('jsonwebtoken');
 
+// Use fallback secrets if environment variables are not set
+const JWT_SECRET = process.env.JWT_SECRET || 'your-fallback-secret-key-change-in-production';
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-fallback-refresh-secret-key-change-in-production';
+
 class RefreshTokenService {
     constructor() {
         this.refreshTokenRepository = new RefreshTokenRepository();
@@ -15,14 +19,12 @@ class RefreshTokenService {
                 type: 'refresh',
                 iat: Math.floor(Date.now() / 1000)
             },
-            process.env.JWT_REFRESH_SECRET,
-            { expiresIn: '7d' }
+            JWT_REFRESH_SECRET,
+            { expiresIn: '1d' } // 1 day
         );
 
-        // Calculate expiration date
-        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+        const expiresAt = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000); 
 
-        // Store in database
         const tokenData = {
             token: refreshToken,
             userID,
@@ -36,18 +38,26 @@ class RefreshTokenService {
 
     async validateRefreshToken(token) {
         try {
+            console.log('=== VALIDATING REFRESH TOKEN ===');
+            console.log('Token (first 20 chars):', token.substring(0, 20) + '...');
+            
             // Verify JWT token
-            const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+            const decoded = jwt.verify(token, JWT_REFRESH_SECRET);
+            console.log('JWT verification successful, decoded:', decoded);
             
             // Check if token exists in database and is not revoked
             const storedToken = await this.refreshTokenRepository.getValidToken(token);
+            console.log('Database token check result:', storedToken ? 'FOUND' : 'NOT FOUND');
             
             if (!storedToken) {
+                console.log('❌ Token not found in database or revoked');
                 throw new Error('Invalid refresh token');
             }
 
+            console.log('✅ Refresh token validation successful');
             return decoded;
         } catch (error) {
+            console.error('❌ Refresh token validation error:', error.message);
             throw new Error('Invalid refresh token');
         }
     }
@@ -65,9 +75,10 @@ class RefreshTokenService {
     }
 
     generateAccessToken(userID, userType) {
+        console.log('=== GENERATING ACCESS TOKEN ===');
         return jwt.sign(
             { id: userID, role: userType },
-            process.env.JWT_SECRET,
+            JWT_SECRET,
             { expiresIn: '15m' } // 15 minutes
         );
     }

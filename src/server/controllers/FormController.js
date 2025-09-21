@@ -78,25 +78,33 @@ class FormController {
 
     async refreshToken(req, res) {
         try {
+            console.log('=== REFRESH TOKEN ENDPOINT CALLED ===');
             const { refreshToken } = req.body;
+            console.log('Refresh token provided:', refreshToken ? 'YES' : 'NO');
             
             if (!refreshToken) {
+                console.log('No refresh token provided');
                 return res.status(401).json({ message: 'Refresh token required' });
             }
             
             // Validate refresh token
+            console.log('Validating refresh token...');
             const decoded = await this.refreshTokenService.validateRefreshToken(refreshToken);
+            console.log('Refresh token validated successfully for user:', decoded.userID, 'type:', decoded.userType);
             
             // Generate new access token
+            console.log('Generating new access token...');
             const accessToken = this.refreshTokenService.generateAccessToken(decoded.userID, decoded.userType);
+            console.log('New access token generated successfully');
             
+            console.log('=== REFRESH TOKEN SUCCESS ===');
             return res.status(200).json({ 
                 accessToken,
-                expiresIn: 900 // 15 minutes in seconds
+                expiresIn: 10 // 10 seconds for testing
             });
             
         } catch (error) {
-            console.error('Refresh token error:', error);
+            console.error('=== REFRESH TOKEN ERROR ===', error);
             return res.status(401).json({ message: 'Invalid refresh token' });
         }
     }

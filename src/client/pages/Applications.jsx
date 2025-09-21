@@ -23,20 +23,41 @@ const statusStyles = {
 
 export default function Applications() {
     const [applications, setApplications] = useState([]);
+    const [allApplications, setAllApplications] = useState([]);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editingApplication, setEditingApplication] = useState(null);
-    const [status, setStatus] = useState('pending');
+    const [status, setStatus] = useState('all');
+    const [searchTerm, setSearchTerm] = useState('');
 
     const fetchApplications = async () => {
         try {
             const response = await apiGet("/aplikimi");
             
-            const allApplications = Array.isArray(response) ? response : [];
-            const filteredApplications = allApplications.filter((application) => {
-                if (status === 'pending') {
-                    return !application.statusi || application.statusi?.statusi === 'pending';
+            const allApps = Array.isArray(response) ? response : [];
+            setAllApplications(allApps);
+            
+            // Apply filters
+            const filteredApplications = allApps.filter((application) => {
+                // Status filter
+                let statusMatch = false;
+                if (status === 'all') {
+                    statusMatch = true;
+                } else if (status === 'pending') {
+                    statusMatch = !application.statusi || application.statusi?.statusi === 'pending';
+                } else {
+                    statusMatch = application.statusi?.statusi === status;
                 }
-                return application.statusi?.statusi === status;
+                
+                // Search filter (only company name and city)
+                let searchMatch = true;
+                if (searchTerm.trim()) {
+                    const searchLower = searchTerm.toLowerCase();
+                    searchMatch = 
+                        application.emri_kompanise?.toLowerCase().includes(searchLower) ||
+                        application.qyteti?.toLowerCase().includes(searchLower);
+                }
+                
+                return statusMatch && searchMatch;
             });
             
             console.log('Filtered applications:', filteredApplications);
@@ -44,12 +65,13 @@ export default function Applications() {
         } catch (error) {
             console.error('Error fetching applications:', error);
             setApplications([]);
+            setAllApplications([]);
         }
     };
 
     useEffect(() => {
         fetchApplications();
-    }, [status]);
+    }, [status, searchTerm]);
 
     const handleEditApplication = (application) => {
         setEditingApplication(application);
@@ -76,11 +98,34 @@ export default function Applications() {
                         Applications Management
                     </h1>
                     <p className="text-gray-600 mt-1">Manage client applications in the system</p>
-                    <select value={status} onChange={(e) => setStatus(e.target.value)} className="px-4 py-2 mt-2 border border-gray-300 rounded-lg hover:border-gray-500">
-                        <option value='pending'>Pending</option>
-                        <option value='pranuar'>Approved</option>
-                        <option value='refuzuar'>Rejected</option>
-                    </select>
+                    
+                    {/* Filters */}
+                    <div className="flex gap-4 mt-3">
+                        <select value={status} onChange={(e) => setStatus(e.target.value)} className="px-4 py-2 border border-gray-300 rounded-lg hover:border-gray-500">
+                            <option value='all'>All Applications</option>
+                            <option value='pending'>Pending</option>
+                            <option value='pranuar'>Approved</option>
+                            <option value='refuzuar'>Rejected</option>
+                        </select>
+                        
+                        <div className="relative">
+                            <input
+                                type="text"
+                                placeholder="Search by company name or city..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="px-4 py-2 pr-10 border border-gray-300 rounded-lg hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[400px] text-base"
+                            />
+                            {searchTerm && (
+                                <button
+                                    onClick={() => setSearchTerm('')}
+                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
+                    </div>
                 </div>
                 <button 
                     onClick={fetchApplications}
@@ -88,6 +133,15 @@ export default function Applications() {
                 >
                     🔄 Refresh
                 </button>
+            </div>
+
+            {/* Results Counter */}
+            <div className="mb-4">
+                <p className="text-gray-600">
+                    Showing {applications.length} application{applications.length !== 1 ? 's' : ''}
+                    {searchTerm && ` matching "${searchTerm}"`}
+                    {status !== 'all' && ` with status "${status}"`}
+                </p>
             </div>
 
             {/* Applications Table */}
@@ -135,6 +189,7 @@ export default function Applications() {
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm text-gray-900">{application.email}</div>
                                             <div className="text-sm text-gray-500">{application.adresa}</div>
+                                            <div className="text-sm text-blue-600 font-medium">{application.qyteti}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             {application.koha_aplikimit ? new Date(application.koha_aplikimit).toLocaleDateString() : 'N/A'}
@@ -168,23 +223,6 @@ export default function Applications() {
                 </div>
             </div>
 
-            {/* Pagination */}
-            <div className="flex items-center justify-between mt-6">
-                <div className="text-sm text-gray-700">
-                    Showing <span className="font-medium">1</span> to <span className="font-medium">{applications.length}</span> of <span className="font-medium">{applications.length}</span> results
-                </div>
-                <div className="flex gap-2">
-                    <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">
-                        Previous
-                    </button>
-                    <button className="px-3 py-1 text-sm bg-red-500 text-white rounded">
-                        1
-                    </button>
-                    <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">
-                        Next
-                    </button>
-                </div>
-            </div>
 
             {/* Application Edit Modal */}
             <ApplicationEditModal

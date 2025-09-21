@@ -2,8 +2,11 @@
 const express = require("express");
 const router = express.Router();
 const ProduktiController = require("../controllers/ProduktiController");
+const { authenticateToken } = require('../middleware/auth');
 
 const controller = new ProduktiController();
+
+router.use(authenticateToken);
 
 router.get("/", controller.getAll.bind(controller));
 router.get("/search", controller.search.bind(controller));

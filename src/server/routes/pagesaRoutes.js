@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const PagesaController = require("../controllers/PagesaController");
+const { authenticateToken } = require('../middleware/auth');
+
+router.use(authenticateToken);
 
 router.get("/", PagesaController.getAll);
 router.get("/:id", PagesaController.getById);

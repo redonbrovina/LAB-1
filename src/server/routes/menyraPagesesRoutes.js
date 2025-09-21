@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const MenyraPagesesController = require('../controllers/MenyraPagesesController');
+const { authenticateToken } = require('../middleware/auth');
+
+router.use(authenticateToken);
 
 router.get('/', MenyraPagesesController.getAll);
 router.get('/:id', MenyraPagesesController.getById);

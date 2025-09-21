@@ -1,8 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const ProduktVariacioniController = require("../controllers/ProduktVariacioniController");
+const { authenticateToken } = require('../middleware/auth');
 
 const controller = new ProduktVariacioniController();
+
+router.use(authenticateToken);
 
 router.get("/", controller.getAll.bind(controller));
 router.get("/te-plota", controller.getVariacioneTePlota.bind(controller));

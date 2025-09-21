@@ -5,7 +5,7 @@ const service = new MenyraPagesesService();
 const MenyraPagesesController = {
   async create(req, res) {
     try {
-      const { menyra_pageses } = req.body;
+      const { menyra_pageses, pershkrimi } = req.body;
       
       // Validate required fields
       if (!menyra_pageses || menyra_pageses.trim() === '') {
@@ -15,7 +15,8 @@ const MenyraPagesesController = {
       }
 
       const newMenyraPageses = await service.create({
-        menyra_pageses: menyra_pageses.trim()
+        menyra_pageses: menyra_pageses.trim(),
+        pershkrimi: pershkrimi ? pershkrimi.trim() : null
       });
       
       res.status(201).json(newMenyraPageses);
@@ -50,7 +51,7 @@ const MenyraPagesesController = {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { menyra_pageses } = req.body;
+      const { menyra_pageses, pershkrimi } = req.body;
       
       // Validate menyra_pageses if provided
       if (menyra_pageses !== undefined && menyra_pageses.trim() === '') {
@@ -59,9 +60,15 @@ const MenyraPagesesController = {
         });
       }
 
-      const updatedMenyraPageses = await service.update(id, {
-        menyra_pageses: menyra_pageses ? menyra_pageses.trim() : undefined
-      });
+      const updateData = {};
+      if (menyra_pageses !== undefined) {
+        updateData.menyra_pageses = menyra_pageses.trim();
+      }
+      if (pershkrimi !== undefined) {
+        updateData.pershkrimi = pershkrimi ? pershkrimi.trim() : null;
+      }
+
+      const updatedMenyraPageses = await service.update(id, updateData);
       
       res.json(updatedMenyraPageses);
     } catch (err) {

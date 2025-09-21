@@ -34,10 +34,6 @@ Admin.associate = function(models) {
         foreignKey: 'adminID',
         as: 'aplikimet'
     });
-    Admin.hasMany(models.LevizjaNeStok, { 
-        foreignKey: 'adminID',
-        as: 'levizjet'
-    });
 };
 
 module.exports = Admin;

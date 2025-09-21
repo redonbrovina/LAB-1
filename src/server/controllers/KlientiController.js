@@ -20,6 +20,22 @@ class KlientiController {
         }
     }
 
+    async getPaginatedKlientet(req, res) {
+        try {
+            const { page = 1, limit = 5 } = req.query;
+            const result = await this.klientiService.getPaginatedKlientet({ 
+                page: parseInt(page), 
+                limit: parseInt(limit) 
+            });
+            return res.status(200).json(result);
+        } catch (error) {
+            res.status(500).json({
+                message: 'Error fetching paginated clients',
+                error: error.message
+            });
+        }
+    }
+
     async getKlientiById(req, res) {
         try {
             const klienti = await this.klientiService.getKlientiById(req.params.klientiID);
@@ -43,6 +59,26 @@ class KlientiController {
         } catch (error) {
             res.status(500).json({
                 message: 'Error fetching client by name',
+                error: error.message
+            });
+        }
+    }
+
+    async searchKlientet(req, res) {
+        try {
+            const { q } = req.query;
+            if (!q || q.trim() === '') {
+                return res.status(400).json({
+                    message: 'Search query is required',
+                    error: 'MISSING_QUERY'
+                });
+            }
+            
+            const klientet = await this.klientiService.searchKlientet(q.trim());
+            return res.status(200).json(klientet);
+        } catch (error) {
+            res.status(500).json({
+                message: 'Error searching clients',
                 error: error.message
             });
         }

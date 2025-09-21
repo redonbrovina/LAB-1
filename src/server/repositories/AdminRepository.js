@@ -13,7 +13,7 @@ class AdminRepository extends BaseRepository {
     }
 
     async getAdminById(adminID) {
-        return await this.getOneByField('adminID', adminID);
+        return await this.getById(adminID);
     }
 
     async getAdminByEmail(email) {

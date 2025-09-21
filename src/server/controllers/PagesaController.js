@@ -5,7 +5,7 @@ const service = new PagesaService();
 const PagesaController = {
   async create(req, res) {
     try {
-      const { porosiaID, menyra_pagesesID, shuma_pageses, numri_llogarise } = req.body;
+      const { porosiaID, menyra_pagesesID, shuma_pageses, numri_llogarise, klientiID, adminID } = req.body;
       
       // Validate required fields
       if (!porosiaID || !menyra_pagesesID || !shuma_pageses) {
@@ -25,7 +25,9 @@ const PagesaController = {
         porosiaID,
         menyra_pagesesID,
         shuma_pageses,
-        numri_llogarise
+        numri_llogarise,
+        klientiID,
+        adminID
       });
       
       res.status(201).json(pagesa);
@@ -70,7 +72,7 @@ const PagesaController = {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { shuma_pageses, numri_llogarise } = req.body;
+      const { shuma_pageses, numri_llogarise, klientiID } = req.body;
       
       // Validate shuma_pageses if provided
       if (shuma_pageses !== undefined && shuma_pageses <= 0) {
@@ -81,7 +83,8 @@ const PagesaController = {
 
       const pagesa = await service.update(id, {
         shuma_pageses,
-        numri_llogarise
+        numri_llogarise,
+        klientiID
       });
       
       res.json(pagesa);

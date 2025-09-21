@@ -1,12 +1,10 @@
 const PagesaService = require('../services/PagesaService');
 const MenyraPagesesService = require('../services/MenyraPagesesService');
-const LevizjaNeStokService = require('../services/LevizjaNeStokService');
 
 class TransactionsController {
     constructor() {
         this.pagesaService = new PagesaService();
         this.menyraPagesesService = new MenyraPagesesService();
-        this.levizjaNeStokService = new LevizjaNeStokService();
     }
 
     // Pagesa
@@ -56,31 +54,6 @@ class TransactionsController {
         }
     }
 
-    // Levizja ne stok
-    async getLevizjet(req, res) {
-        try {
-            const levizjet = await this.levizjaNeStokService.getAll();
-            res.json(levizjet);
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    }
-
-    async createLevizje(req, res) {
-        try {
-            const { produktVariacioniId, lloj, sasia, porosiaId, adminId } = req.body;
-            const newLevizje = await this.levizjaNeStokService.create({
-                produkt_variacioniID: produktVariacioniId,
-                lloj: lloj,
-                sasia: sasia,
-                porosiaID: porosiaId,
-                adminID: adminId
-            });
-            res.status(201).json(newLevizje);
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    }
 }
 
 module.exports = TransactionsController;

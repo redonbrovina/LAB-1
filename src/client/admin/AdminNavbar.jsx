@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck } from "lucide-react";
+import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard } from "lucide-react";
 import { useAuth } from "../utils/AuthContext";
 
 export default function AdminNavbar() {
@@ -56,6 +56,11 @@ export default function AdminNavbar() {
         <Link to="/admin/payments" className={getLinkClass("/admin/payments")}>
           <DollarSign size={18} />
           Payments
+        </Link>
+
+        <Link to="/admin/payment-methods" className={getLinkClass("/admin/payment-methods")}>
+          <CreditCard size={18} />
+          Payment Methods
         </Link>
 
         <Link to="/admin/users" className={getLinkClass("/admin/users")}>

@@ -31,7 +31,6 @@ class AdminService {
     }
 
     async deleteAdmin(adminID) {
-        await this.getAdminById(adminID);
         return await this.adminRepository.deleteAdmin(adminID);
     }
 

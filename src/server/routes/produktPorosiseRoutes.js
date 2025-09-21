@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const ProduktiPorosiseController = require('../controllers/ProduktiPorosiseController');
+const { authenticateToken } = require('../middleware/auth');
 
 const controller = new ProduktiPorosiseController();
+
+router.use(authenticateToken);
 
 router.get('/', controller.getAll.bind(controller));
 router.get('/:id', controller.getById.bind(controller));

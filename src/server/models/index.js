@@ -7,7 +7,6 @@ const Forma = require('./Forma');
 const Furnitori = require('./Furnitori');
 const Kategoria = require('./Kategoria');
 const Klienti = require('./Klienti');
-const LevizjaNeStok = require('./LevizjaNeStok');
 const MenyraPageses = require('./MenyraPageses');
 const Pagesa = require('./Pagesa');
 const PagesaStatus = require('./PagesaStatus');
@@ -31,7 +30,6 @@ const models = {
     Furnitori,
     Kategoria,
     Klienti,
-    LevizjaNeStok,
     MenyraPageses,
     Pagesa,
     PagesaStatus,

@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const ProduktCartController = require('../controllers/ProduktCartController');
+const { authenticateToken } = require('../middleware/auth');
 
 const controller = new ProduktCartController();
+
+router.use(authenticateToken);
 
 router.get('/', controller.getAll.bind(controller));
 router.get('/test', (req, res) => {
