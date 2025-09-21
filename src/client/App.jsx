@@ -14,6 +14,7 @@ import Profile from "./pages/Profile";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminPayments from "./pages/AdminPayments";
+import AdminPaymentMethods from "./pages/AdminPaymentMethods";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import SignupSuccess from './pages/SignupSuccess';
@@ -85,6 +86,7 @@ export default function App() {
           <Route path="/admin" element={<AdminProtectedLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="payments" element={<AdminPayments />} />
+            <Route path="payment-methods" element={<AdminPaymentMethods />} />
             <Route path="applications" element={<Applications />} />
             <Route path="orders" element={<Orders />} />
             <Route path="suppliers" element={<SuppliersAdmin />} />
