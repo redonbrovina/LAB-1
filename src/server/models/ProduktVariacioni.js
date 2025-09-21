@@ -51,10 +51,6 @@ ProduktVariacioni.associate = function(models) {
         foreignKey: 'produkt_variacioniID',
         as: 'orderItems'
     });
-    ProduktVariacioni.hasMany(models.LevizjaNeStok, { 
-        foreignKey: 'produkt_variacioniID',
-        as: 'stockMovements'
-    });
 };
 
 module.exports = ProduktVariacioni;

@@ -24,7 +24,6 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- Start with child tables first, then parent tables
 
 -- Child tables (no dependencies)
-DELETE FROM `leviza_ne_stok`;
 DELETE FROM `produkti_cart`;
 DELETE FROM `produkti_porosise`;
 DELETE FROM `pagesa`;
@@ -337,36 +336,6 @@ INSERT INTO `pagesa` (`pagesaID`, `shuma_pageses`, `koha_pageses`, `porosiaID`, 
 (14, 175.80, '2025-01-19 08:20:00', 10, 15, '4567890123456789', NULL, 1),
 (15, 200.00, '2025-01-16 13:50:00', 5, 10, '5678901234567890', NULL, 1);
 
--- Populate leviza_ne_stok table (20+ records) - Stock movements
-INSERT INTO `leviza_ne_stok` (`levizjaID`, `lloji_levizjes`, `sasia`, `koha_krijimit`, `produkt_variacioniID`, `porosiaID`, `adminID`) VALUES
--- Initial stock purchases from suppliers (Blerje)
-(1, 'Blerje', 200, '2025-01-10 09:00:00', 1, NULL, 1),   -- Amoxicillin Tablet
-(2, 'Blerje', 150, '2025-01-10 10:30:00', 2, NULL, 1),  -- Amoxicillin Capsule
-(3, 'Blerje', 300, '2025-01-10 11:15:00', 3, NULL, 1),  -- Vitamin C Tablet
-(4, 'Blerje', 200, '2025-01-10 12:00:00', 4, NULL, 1),  -- Vitamin C Syrup
-(5, 'Blerje', 500, '2025-01-10 13:45:00', 5, NULL, 1),  -- Paracetamol Tablet
-(6, 'Blerje', 250, '2025-01-11 08:30:00', 6, NULL, 1),  -- Ibuprofen Tablet
-(7, 'Blerje', 180, '2025-01-11 09:15:00', 7, NULL, 1),  -- Cetirizine Tablet
-(8, 'Blerje', 150, '2025-01-11 10:00:00', 8, NULL, 1),  -- Omeprazole Tablet
-(9, 'Blerje', 120, '2025-01-11 11:30:00', 9, NULL, 1),  -- Sertraline Tablet
-(10, 'Blerje', 140, '2025-01-11 12:15:00', 10, NULL, 1), -- Metformin Tablet
-(11, 'Blerje', 160, '2025-01-11 13:00:00', 11, NULL, 1), -- Amlodipine Tablet
-(12, 'Blerje', 80, '2025-01-11 14:30:00', 12, NULL, 1),  -- Salbutamol Inhaler
-(13, 'Blerje', 100, '2025-01-11 15:15:00', 13, NULL, 1), -- Hydrocortisone Cream
-(14, 'Blerje', 200, '2025-01-11 16:00:00', 14, NULL, 1), -- Folic Acid Tablet
-(15, 'Blerje', 120, '2025-01-11 16:45:00', 15, NULL, 1), -- Pediatric Paracetamol
-
--- Sales transactions (Shitje)
-(16, 'Shitje', 10, '2025-01-15 14:35:00', 1, 1, 1),
-(17, 'Shitje', 5, '2025-01-15 14:35:00', 3, 1, 1),
-(18, 'Shitje', 20, '2025-01-16 10:35:00', 5, 2, 1),
-(19, 'Shitje', 10, '2025-01-16 10:35:00', 6, 2, 1),
-(20, 'Shitje', 8, '2025-01-16 11:20:00', 2, 3, 1),
-(21, 'Shitje', 12, '2025-01-16 11:20:00', 4, 3, 1),
-(22, 'Shitje', 8, '2025-01-16 12:05:00', 7, 4, 1),
-(23, 'Shitje', 15, '2025-01-16 13:50:00', 8, 5, 1),
-(24, 'Shitje', 6, '2025-01-17 09:25:00', 9, 6, 1),
-(25, 'Shitje', 8, '2025-01-17 09:25:00', 10, 6, 1);
 
 -- =====================================================
 -- SCRIPT COMPLETED SUCCESSFULLY
@@ -390,7 +359,6 @@ INSERT INTO `leviza_ne_stok` (`levizjaID`, `lloji_levizjes`, `sasia`, `koha_krij
 --    - porosia: 15 records
 --    - produkti_porosise: 15 records
 --    - pagesa: 15 records
---    - leviza_ne_stok: 25 records (15 blerje + 10 shitje)
 --
 -- The database is now fully populated with realistic, logically connected data!
 -- =====================================================
