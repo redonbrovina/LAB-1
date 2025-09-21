@@ -12,21 +12,9 @@ const MenyraPageses = sequelize.define("MenyraPageses", {
         type: DataTypes.STRING(255),
         allowNull: true
     },
-    klientiID: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-            model: 'Klienti',
-            key: 'klientiID'
-        }
-    },
-    adminID: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-            model: 'Admin',
-            key: 'adminID'
-        }
+    pershkrimi: {
+        type: DataTypes.TEXT,
+        allowNull: true
     }
 }, {
     tableName: "menyra_pageses",
@@ -38,14 +26,6 @@ MenyraPageses.associate = function(models) {
     MenyraPageses.hasMany(models.Pagesa, { 
         foreignKey: 'menyra_pagesesID',
         as: 'pagesat'
-    });
-    MenyraPageses.belongsTo(models.Klienti, { 
-        foreignKey: 'klientiID',
-        as: 'klienti'
-    });
-    MenyraPageses.belongsTo(models.Admin, { 
-        foreignKey: 'adminID',
-        as: 'admin'
     });
 };
 

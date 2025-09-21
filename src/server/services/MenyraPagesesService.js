@@ -27,10 +27,13 @@ class MenyraPagesesService {
     async delete(id) {
         await this.getById(id);
         
-        // First delete all associated payments
-        await this.menyraPagesesRepo.deleteAssociatedPayments(id);
+        // Check if payment method is in use
+        const isInUse = await this.menyraPagesesRepo.isPaymentMethodInUse(id);
+        if (isInUse) {
+            throw new Error("Nuk mund të fshihet mënyra e pagesës sepse është në përdorim nga pagesa ekzistuese. Së pari fshini pagesat e lidhura.");
+        }
         
-        // Then delete the payment method
+        // Delete the payment method
         return await this.menyraPagesesRepo.deleteMenyraPageses(id);
     }
 

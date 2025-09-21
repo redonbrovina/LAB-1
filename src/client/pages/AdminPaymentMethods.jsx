@@ -1,4 +1,4 @@
-import { CreditCard, Wallet, Smartphone, Plus, Edit, Trash2, CheckCircle, AlertCircle } from "lucide-react";
+import { CreditCard, Wallet, Smartphone, Plus, Edit, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function AdminPaymentMethods() {
@@ -9,7 +9,7 @@ export default function AdminPaymentMethods() {
 
   const [formData, setFormData] = useState({
     menyra_pageses: "",
-    aktiv: 1
+    pershkrimi: ""
   });
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function AdminPaymentMethods() {
         setEditingMethod(null);
         setFormData({
           menyra_pageses: "",
-          aktiv: 1
+          pershkrimi: ""
         });
         alert(editingMethod ? 'Payment method updated successfully!' : 'Payment method created successfully!');
       } else {
@@ -68,7 +68,7 @@ export default function AdminPaymentMethods() {
     setEditingMethod(method);
     setFormData({
       menyra_pageses: method.menyra_pageses || "",
-      aktiv: method.aktiv !== undefined ? method.aktiv : 1
+      pershkrimi: method.pershkrimi || ""
     });
     setShowForm(true);
   };
@@ -93,32 +93,6 @@ export default function AdminPaymentMethods() {
     }
   };
 
-  const handleToggleStatus = async (method) => {
-    try {
-      const newStatus = method.aktiv === 1 ? 0 : 1;
-      const response = await fetch(`http://localhost:5000/api/menyra-pageses/${method.menyra_pagesesID}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          menyra_pageses: method.menyra_pageses,
-          aktiv: newStatus
-        }),
-      });
-
-      if (response.ok) {
-        fetchPaymentMethods();
-        alert(`Payment method ${newStatus === 1 ? 'activated' : 'deactivated'} successfully!`);
-      } else {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.error || 'Failed to update payment method status'}`);
-      }
-    } catch (error) {
-      console.error('Error toggling payment method status:', error);
-      alert('Error updating payment method status. Please try again.');
-    }
-  };
 
   const handleDeleteAll = async () => {
     if (window.confirm('Are you sure you want to delete ALL payment methods? This action cannot be undone!')) {
@@ -192,13 +166,12 @@ export default function AdminPaymentMethods() {
       <div className="mb-8">
         <div className="bg-white shadow rounded-2xl p-6">
           <div className="flex items-center gap-3 text-green-600 font-semibold mb-4">
-            <CheckCircle size={24} />
+            <CreditCard size={24} />
             Payment Methods Overview
           </div>
           <p className="text-2xl font-bold">{paymentMethods.length} methods configured</p>
           {paymentMethods.length === 0 && (
             <div className="flex items-center gap-2 mt-2 text-orange-600">
-              <AlertCircle size={16} />
               <span className="text-sm">No payment methods configured - clients cannot make payments</span>
             </div>
           )}
@@ -223,25 +196,16 @@ export default function AdminPaymentMethods() {
                   {getPaymentMethodIcon(method.menyra_pageses || 'Default')}
                   <div className="flex gap-2">
                     <button
-                      onClick={() => handleToggleStatus(method)}
-                      className={`p-2 rounded-lg ${
-                        method.aktiv === 1 
-                          ? 'text-orange-600 hover:bg-orange-100' 
-                          : 'text-green-600 hover:bg-green-100'
-                      }`}
-                      title={method.aktiv === 1 ? 'Deactivate' : 'Activate'}
-                    >
-                      {method.aktiv === 1 ? <AlertCircle size={16} /> : <CheckCircle size={16} />}
-                    </button>
-                    <button
                       onClick={() => handleEdit(method)}
                       className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
+                      title="Edit"
                     >
                       <Edit size={16} />
                     </button>
                     <button
                       onClick={() => handleDelete(method.menyra_pagesesID)}
                       className="p-2 text-red-600 hover:bg-red-100 rounded-lg"
+                      title="Delete"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -257,13 +221,6 @@ export default function AdminPaymentMethods() {
                 </p>
                 
                 <div className="flex items-center justify-between">
-                  <span className={`px-3 py-1 rounded-full text-xs ${
-                    method.aktiv === 1 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {method.aktiv === 1 ? 'Active' : 'Inactive'}
-                  </span>
                   <span className="text-xs text-gray-500">
                     ID: {method.menyra_pagesesID}
                   </span>
@@ -297,15 +254,14 @@ export default function AdminPaymentMethods() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Status</label>
-                  <select
-                    value={formData.aktiv}
-                    onChange={(e) => setFormData({...formData, aktiv: parseInt(e.target.value)})}
+                  <label className="block text-sm font-medium mb-2">Description</label>
+                  <textarea
+                    value={formData.pershkrimi}
+                    onChange={(e) => setFormData({...formData, pershkrimi: e.target.value})}
                     className="w-full border rounded-lg px-3 py-2"
-                  >
-                    <option value={1}>Active</option>
-                    <option value={0}>Inactive</option>
-                  </select>
+                    placeholder="Optional description for this payment method"
+                    rows={3}
+                  />
                 </div>
               </div>
 
@@ -323,7 +279,7 @@ export default function AdminPaymentMethods() {
                     setEditingMethod(null);
                     setFormData({
                       menyra_pageses: "",
-                      aktiv: 1
+                      pershkrimi: ""
                     });
                   }}
                   className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
