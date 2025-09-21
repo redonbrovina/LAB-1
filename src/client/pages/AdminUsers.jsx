@@ -196,23 +196,6 @@ export default function AdminUsers() {
           </div>
         </div>
 
-        {/* Pagination */}
-        <div className="flex items-center justify-between mt-6">
-          <div className="text-sm text-gray-700">
-            Showing <span className="font-medium">1</span> to <span className="font-medium">5</span> of <span className="font-medium">5</span> results
-          </div>
-          <div className="flex gap-2">
-            <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">
-              Previous
-            </button>
-            <button className="px-3 py-1 text-sm bg-red-500 text-white rounded">
-              1
-            </button>
-            <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">
-              Next
-            </button>
-          </div>
-        </div>
 
       {/* Edit User Modal */}
       <EditUserModal
