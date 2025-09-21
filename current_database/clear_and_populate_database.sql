@@ -93,22 +93,21 @@ ALTER TABLE `pagesa`
 ADD CONSTRAINT `pagesa_ibfk_3` FOREIGN KEY (`klientiID`) REFERENCES `klienti` (`klientiID`) ON DELETE SET NULL ON UPDATE CASCADE,
 ADD CONSTRAINT `pagesa_ibfk_4` FOREIGN KEY (`adminID`) REFERENCES `administrator` (`adminID`) ON DELETE SET NULL ON UPDATE CASCADE;
 
--- 7. Add columns to menyra_pageses table (B2B logic)
+-- 7. Add aktiv column to menyra_pageses table (Global B2B payment methods)
 ALTER TABLE `menyra_pageses`
-ADD COLUMN IF NOT EXISTS `klientiID` int(11) DEFAULT NULL AFTER `menyra_pageses`,
-ADD COLUMN IF NOT EXISTS `adminID` int(11) DEFAULT NULL AFTER `klientiID`;
+ADD COLUMN IF NOT EXISTS `aktiv` tinyint(1) DEFAULT 1 AFTER `menyra_pageses`;
 
--- 8. Add foreign key constraints for menyra_pageses
-ALTER TABLE `menyra_pageses`
-ADD KEY IF NOT EXISTS `klientiID` (`klientiID`),
-ADD KEY IF NOT EXISTS `adminID` (`adminID`);
-
+-- 8. Remove old foreign key constraints from menyra_pageses (no longer needed for global payment methods)
+-- Kujdes: Këto komanda mund të japin gabim nëse kolonat nuk ekzistojnë
+-- Por kjo është normale dhe nuk do të ndikojë në funksionimin
 ALTER TABLE `menyra_pageses` DROP FOREIGN KEY IF EXISTS `menyra_pageses_ibfk_1`;
 ALTER TABLE `menyra_pageses` DROP FOREIGN KEY IF EXISTS `menyra_pageses_ibfk_2`;
+ALTER TABLE `menyra_pageses` DROP KEY IF EXISTS `klientiID`;
+ALTER TABLE `menyra_pageses` DROP KEY IF EXISTS `adminID`;
 
-ALTER TABLE `menyra_pageses`
-ADD CONSTRAINT `menyra_pageses_ibfk_1` FOREIGN KEY (`klientiID`) REFERENCES `klienti` (`klientiID`) ON DELETE SET NULL ON UPDATE CASCADE,
-ADD CONSTRAINT `menyra_pageses_ibfk_2` FOREIGN KEY (`adminID`) REFERENCES `administrator` (`adminID`) ON DELETE SET NULL ON UPDATE CASCADE;
+-- Këto duhet të ekzekutohen veçmas nëse kolonat ekzistojnë
+-- ALTER TABLE `menyra_pageses` DROP COLUMN `klientiID`;
+-- ALTER TABLE `menyra_pageses` DROP COLUMN `adminID`;
 
 -- 9. furnitori table remains simple (no additional columns needed)
 
@@ -143,15 +142,13 @@ INSERT INTO `furnitori` (`furnitoriID`, `emri`, `shtetiID`) VALUES
 (10, 'Adriatic Pharmaceuticals', 100), (11, 'Danube Medical', 102), (12, 'Carpathian Pharma', 189),
 (13, 'Mediterranean Wellness', 90), (14, 'Balkan Medical Supply', 149), (15, 'European Health Partners', 167);
 
--- Populate menyra_pageses table (15+ records) - B2B logic
-INSERT INTO `menyra_pageses` (`menyra_pagesesID`, `menyra_pageses`, `klientiID`, `adminID`) VALUES
--- Client payment methods (adminID is NULL)
-(1, 'Kartë Krediti', 1, NULL), (2, 'Kartë Debiti', 1, NULL), (3, 'Transfer Bankar', 2, NULL),
-(4, 'PayPal', 2, NULL), (5, 'Stripe', 3, NULL), (6, 'Cash on Delivery', 3, NULL),
-(7, 'Bank Transfer', 4, NULL), (8, 'Mobile Payment', 4, NULL), (9, 'Cryptocurrency', 5, NULL),
--- Admin payment methods (klientiID is NULL)
-(10, 'Check', NULL, 1), (11, 'Money Order', NULL, 1), (12, 'Wire Transfer', NULL, 1),
-(13, 'Apple Pay', NULL, 1), (14, 'Google Pay', NULL, 1), (15, 'Samsung Pay', NULL, 1);
+-- Populate menyra_pageses table (15+ records) - Global B2B payment methods
+INSERT INTO `menyra_pageses` (`menyra_pagesesID`, `menyra_pageses`, `aktiv`) VALUES
+(1, 'Kartë Krediti', 1), (2, 'Kartë Debiti', 1), (3, 'Transfer Bankar', 1),
+(4, 'PayPal', 1), (5, 'Stripe', 1), (6, 'Cash on Delivery', 1),
+(7, 'Bank Transfer', 1), (8, 'Mobile Payment', 1), (9, 'Cryptocurrency', 0),
+(10, 'Check', 1), (11, 'Money Order', 1), (12, 'Wire Transfer', 1),
+(13, 'Apple Pay', 1), (14, 'Google Pay', 1), (15, 'Samsung Pay', 1);
 
 -- =====================================================
 -- PART 4: POPULATE MAIN TABLES
@@ -336,6 +333,7 @@ INSERT INTO `pagesa` (`pagesaID`, `shuma_pageses`, `koha_pageses`, `porosiaID`, 
 (14, 175.80, '2025-01-19 08:20:00', 10, 15, '4567890123456789', NULL, 1),
 (15, 200.00, '2025-01-16 13:50:00', 5, 10, '5678901234567890', NULL, 1);
 
+-- leviza_ne_stok table remains empty (as intended)
 
 -- =====================================================
 -- SCRIPT COMPLETED SUCCESSFULLY
@@ -359,6 +357,7 @@ INSERT INTO `pagesa` (`pagesaID`, `shuma_pageses`, `koha_pageses`, `porosiaID`, 
 --    - porosia: 15 records
 --    - produkti_porosise: 15 records
 --    - pagesa: 15 records
+--    - leviza_ne_stok: remains empty (as intended)
 --
 -- The database is now fully populated with realistic, logically connected data!
 -- =====================================================

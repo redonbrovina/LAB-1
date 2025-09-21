@@ -2,6 +2,7 @@ import ClientNavBar from "../components/ClientNavBar";
 import { DollarSign, Plus, Edit, Trash2, CreditCard, Banknote } from "lucide-react";
 import { useState, useEffect } from "react";
 import { paymentAPI, paymentMethodsAPI, ordersAPI } from "../utils/api";
+import { useAuth } from "../utils/AuthContext";
 
 export default function Payments() {
   const [payments, setPayments] = useState([]);
@@ -10,6 +11,7 @@ export default function Payments() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
+  const { user } = useAuth();
 
   const [formData, setFormData] = useState({
     porosiaID: "",
@@ -19,8 +21,10 @@ export default function Payments() {
   });
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
 
   const fetchData = async () => {
     try {
@@ -29,9 +33,16 @@ export default function Payments() {
         paymentMethodsAPI.getAll(),
         ordersAPI.getAll()
       ]);
+      
+      // Filter orders to show only current client's orders
+      const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId;
+      const clientOrders = Array.isArray(ordersData) 
+        ? ordersData.filter(order => order.klientiID == clientId)
+        : [];
+      
       setPayments(Array.isArray(paymentsData) ? paymentsData : []);
       setPaymentMethods(Array.isArray(paymentMethodsData) ? paymentMethodsData : []);
-      setOrders(Array.isArray(ordersData) ? ordersData : []);
+      setOrders(clientOrders);
     } catch (error) {
       console.error('Error fetching data:', error);
       alert('Error fetching data. Please try again.');
@@ -55,10 +66,18 @@ export default function Payments() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId;
+      
       if (editingPayment && editingPayment.pagesaID) {
         await paymentAPI.update(editingPayment.pagesaID, formData);
       } else {
-        await paymentAPI.create(formData);
+        // Add client ID for B2B logic (client payment, adminID should be NULL)
+        const paymentData = {
+          ...formData,
+          klientiID: clientId,
+          adminID: null
+        };
+        await paymentAPI.create(paymentData);
       }
       await fetchData();
       setShowForm(false);
@@ -261,11 +280,13 @@ export default function Payments() {
                       required
                     >
                       <option value="">Select a payment method</option>
-                      {paymentMethods.map((method) => (
-                        <option key={method.menyra_pagesesID} value={method.menyra_pagesesID}>
-                          {method.menyra_pageses}
-                        </option>
-                      ))}
+                      {paymentMethods
+                        .filter(method => method.aktiv === 1)
+                        .map((method) => (
+                          <option key={method.menyra_pagesesID} value={method.menyra_pagesesID}>
+                            {method.menyra_pageses}
+                          </option>
+                        ))}
                     </select>
                   </div>
 
