@@ -1,5 +1,5 @@
 const BaseRepository = require('./BaseRepository');
-const { Porosia, PorosiaStatus, PagesaStatus, Klienti, ProduktPorosise, ProduktVariacioni } = require("../models");
+const { Porosia, PorosiaStatus, PagesaStatus, Klienti, ProduktPorosise, ProduktVariacioni, Produkti } = require("../models");
 
 class PorosiaRepository extends BaseRepository {
     constructor() {
@@ -72,6 +72,19 @@ class PorosiaRepository extends BaseRepository {
                     model: PagesaStatus,
                     as: 'pagesaStatus',
                     attributes: ['statusi']
+                },
+                {
+                    model: ProduktPorosise,
+                    as: 'produktet',
+                    include: [{
+                        model: ProduktVariacioni,
+                        as: 'produktVariacioni',
+                        include: [{
+                            model: Produkti,
+                            as: 'produkti',
+                            attributes: ['emri', 'pershkrimi']
+                        }]
+                    }]
                 }
             ],
             order: [['koha_krijimit', 'DESC']]

@@ -53,6 +53,57 @@ class PagesaRepository extends BaseRepository {
         });
     }
 
+    async getPagesatByKlientiID(klientiID) {
+        return await this.getByField('klientiID', klientiID, {
+            include: [
+                {
+                    model: MenyraPageses,
+                    as: 'menyraPageses',
+                    attributes: ['menyra_pageses']
+                },
+                {
+                    model: Porosia,
+                    as: 'porosia',
+                    attributes: ['porosiaID', 'koha_krijimit']
+                }
+            ],
+            order: [['koha_pageses', 'DESC']]
+        });
+    }
+
+    async getPagesatThisMonthByKlientiID(klientiID) {
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+        
+        const endOfMonth = new Date();
+        endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+        endOfMonth.setDate(0);
+        endOfMonth.setHours(23, 59, 59, 999);
+
+        return await this.model.findAll({
+            where: {
+                klientiID: klientiID,
+                koha_pageses: {
+                    [require('sequelize').Op.between]: [startOfMonth, endOfMonth]
+                }
+            },
+            include: [
+                {
+                    model: MenyraPageses,
+                    as: 'menyraPageses',
+                    attributes: ['menyra_pageses']
+                },
+                {
+                    model: Porosia,
+                    as: 'porosia',
+                    attributes: ['porosiaID', 'koha_krijimit']
+                }
+            ],
+            order: [['koha_pageses', 'DESC']]
+        });
+    }
+
     async createPagesa(data) {
         return await this.insert(data);
     }

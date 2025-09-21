@@ -5,6 +5,9 @@ const { authenticateToken } = require('../middleware/auth')
 
 const controller = new KlientiController()
 
+// Login route should not require authentication
+router.post('/login', controller.login.bind(controller))
+
 router.use(authenticateToken)
 
 router.get('/', controller.getAllKlientet.bind(controller))

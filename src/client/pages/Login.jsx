@@ -1,7 +1,7 @@
 import {Link, useNavigate} from "react-router-dom"
 import {useState} from "react"
 import {useAuth} from "../utils/AuthContext"
-import {publicApiPost} from "../utils/api"
+import {clientAPI} from "../utils/api"
 import svg from "../assets/images/undraw_finance_m6vw 1.png"
 
 export default function Login() {
@@ -35,7 +35,7 @@ export default function Login() {
         }
 
         try{
-            const data = await publicApiPost('/form/login', {email, password})
+            const data = await clientAPI.login({email, password})
             login(data.accessToken, data.refreshToken)
             navigate('/dashboard')
         }catch(err){

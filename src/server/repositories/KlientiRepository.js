@@ -33,7 +33,7 @@ class KlientiRepository extends BaseRepository {
     }
 
     async getKlientiByEmail(email) {
-        return await this.getByField('email', email);
+        return await this.getOneByField('email', email);
     }
 
     async getKlientiByEmri(emri_kompanise) {

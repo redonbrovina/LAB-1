@@ -55,6 +55,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = (accessToken, refreshToken) => {
+    console.log('AuthContext login called with accessToken:', accessToken?.substring(0, 20) + '...');
     localStorage.setItem('accessToken', accessToken);
     if (refreshToken) {
       localStorage.setItem('refreshToken', refreshToken);
@@ -62,6 +63,7 @@ export const AuthProvider = ({ children }) => {
     const decoded = parseJwt(accessToken);
     console.log('Login - Decoded JWT token:', decoded);
     console.log('Login - Available fields in token:', Object.keys(decoded));
+    console.log('Login - klientiID value:', decoded.klientiID);
     setUser(decoded);
   };
 

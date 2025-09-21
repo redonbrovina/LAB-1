@@ -1,5 +1,5 @@
 const BaseRepository = require('./BaseRepository');
-const { Cart, Klienti, ProduktCart, ProduktVariacioni } = require("../models");
+const { Cart, Klienti, ProduktCart, ProduktVariacioni, Produkti } = require("../models");
 
 class CartRepository extends BaseRepository {
     constructor() {
@@ -59,7 +59,12 @@ class CartRepository extends BaseRepository {
                     include: [{
                         model: ProduktVariacioni,
                         as: 'produktVariacioni',
-                        attributes: ['cmimi', 'sasia_ne_stok']
+                        attributes: ['cmimi'],
+                        include: [{
+                            model: Produkti,
+                            as: 'produkti',
+                            attributes: ['emri', 'pershkrimi', 'sasia_ne_stok', 'imazhi']
+                        }]
                     }]
                 }
             ]
@@ -67,20 +72,35 @@ class CartRepository extends BaseRepository {
     }
 
     async getCartByKlientiID(klientiID) {
-        return await this.getByField('klientiID', klientiID, {
-            include: [
-                {
-                    model: ProduktCart,
-                    as: 'produktet',
-                    include: [{
-                        model: ProduktVariacioni,
-                        as: 'produktVariacioni',
-                        attributes: ['cmimi', 'sasia_ne_stok']
-                    }]
-                }
-            ],
-            order: [['koha_krijimit', 'DESC']]
-        });
+        console.log('🔍 CartRepository.getCartByKlientiID called with klientiID:', klientiID);
+        try {
+            // First try simple query
+            const simpleResult = await this.getByField('klientiID', klientiID);
+            console.log('🔍 Simple query result:', simpleResult);
+            
+            if (simpleResult && simpleResult.length > 0) {
+                const cart = simpleResult[0];
+                console.log('🔍 Found cart:', cart);
+                
+                // Try with basic includes
+                const result = await this.getByField('klientiID', klientiID, {
+                    include: [
+                        {
+                            model: ProduktCart,
+                            as: 'produktet'
+                        }
+                    ]
+                });
+                console.log('🔍 CartRepository.getCartByKlientiID result:', result);
+                return result;
+            } else {
+                console.log('🔍 No cart found for klientiID:', klientiID);
+                return [];
+            }
+        } catch (error) {
+            console.error('❌ Error in CartRepository.getCartByKlientiID:', error);
+            throw error;
+        }
     }
 
     async createCart(data) {
