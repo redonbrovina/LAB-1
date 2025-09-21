@@ -32,7 +32,7 @@ export default function Products() {
     try {
       setLoading(true);
       setError('');
-      console.log("Loading products for client...");
+      console.log("Loading products for client...", new Date().toISOString());
       const [productsData, categoriesData] = await Promise.all([
         productsAPI.getAll(),
         categoriesAPI.getAll()
@@ -169,9 +169,18 @@ export default function Products() {
 
     // In stock filter
     if (filters.inStock) {
+      console.log('🔍 In Stock filter is ACTIVE');
+      console.log('Products before filter:', filtered.map(p => ({ name: p.emri, stock: p.sasia_ne_stok })));
+      
       filtered = filtered.filter(p => {
-        return p.sasia_ne_stok > 0;
+        const hasStock = p.sasia_ne_stok > 0;
+        console.log(`Checking ${p.emri}: stock=${p.sasia_ne_stok}, hasStock=${hasStock}`);
+        return hasStock;
       });
+      
+      console.log('Products after filter:', filtered.map(p => ({ name: p.emri, stock: p.sasia_ne_stok })));
+    } else {
+      console.log('🔍 In Stock filter is INACTIVE');
     }
 
     // Sort
@@ -199,6 +208,7 @@ export default function Products() {
 
   const displayProducts = searchResults ? searchResults : products;
   const filteredProducts = applyFilters(displayProducts);
+
 
   return (
     <div className="flex h-screen" style={{ backgroundColor: "#ECFAEA" }}>

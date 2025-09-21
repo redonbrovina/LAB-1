@@ -126,7 +126,7 @@ export default function ProductsAdmin() {
       pershkrimi: p.pershkrimi || '',
       kategoriaID: p.KategoriaID ?? p.kategoriaID ?? '',
       cmimi: p.variacionet?.[0]?.cmimi || '',
-      sasia_ne_stok: p.variacionet?.[0]?.sasia_ne_stok || '',
+      sasia_ne_stok: p.sasia_ne_stok || '', // Fixed: use p.sasia_ne_stok instead of p.variacionet[0].sasia_ne_stok
       imazhi: (p && p.imazhi) ? p.imazhi : '/src/client/assets/images/default-pill-bottle.svg',
     });
   };
@@ -286,7 +286,7 @@ export default function ProductsAdmin() {
                       <td className="py-2 pr-4">{p.emri}</td>
                       <td className="py-2 pr-4">{categoryMap.get(catId) || catId || '-'}</td>
                       <td className="py-2 pr-4">€{p.variacionet?.[0]?.cmimi || '0.00'}</td>
-                      <td className="py-2 pr-4">{p.variacionet?.[0]?.sasia_ne_stok || '0'}</td>
+                      <td className="py-2 pr-4">{p.sasia_ne_stok || '0'}</td>
                       <td className="py-2 pr-4 max-w-xl truncate" title={p.pershkrimi || ''}>{p.pershkrimi || '-'}</td>
                       <td className="py-2 pr-4 space-x-2">
                         <button className="px-3 py-1 text-xs bg-blue-500 text-white rounded" onClick={() => handleEdit(p)}>Edito</button>
