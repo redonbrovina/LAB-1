@@ -1,4 +1,4 @@
-import { ShoppingCart, Heart, Eye } from 'lucide-react';
+import { ShoppingCart, Heart, Eye, Minus, Plus } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ProductCard({ 
@@ -9,10 +9,11 @@ export default function ProductCard({
   showAddToCart = true 
 }) {
   const [isLiked, setIsLiked] = useState(false);
+  const [quantity, setQuantity] = useState(1);
   
   const handleAddToCart = () => {
     if (onAddToCart) {
-      onAddToCart(product);
+      onAddToCart(product, quantity);
     }
   };
 
@@ -28,7 +29,19 @@ export default function ProductCard({
 
   const hasVariations = product.variacionet && product.variacionet.length > 0;
   const price = hasVariations ? product.variacionet[0].cmimi : null;
-  const stock = hasVariations ? product.variacionet[0].sasia_ne_stok : 0;
+  const stock = product.sasia_ne_stok || 0;
+  
+  const incrementQuantity = () => {
+    if (quantity < stock) {
+      setQuantity(quantity + 1);
+    }
+  };
+  
+  const decrementQuantity = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
 
   return (
     <div className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
@@ -92,7 +105,7 @@ export default function ProductCard({
           <div>
             {price ? (
               <span className="text-lg font-bold text-green-600">
-                €{parseFloat(price).toFixed(2)}
+                €{(parseFloat(price) * quantity).toFixed(2)}
               </span>
             ) : (
               <span className="text-sm text-gray-500">Nuk ka çmim</span>
@@ -102,6 +115,31 @@ export default function ProductCard({
             {stock > 0 ? `${stock} në stok` : 'Jashtë stokut'}
           </div>
         </div>
+
+        {/* Quantity Selector */}
+        {stock > 0 && (
+          <div className="flex items-center justify-center mb-4">
+            <div className="flex items-center border border-gray-300 rounded-lg bg-white">
+              <button
+                onClick={decrementQuantity}
+                disabled={quantity <= 1}
+                className="p-2 text-gray-600 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Minus size={16} />
+              </button>
+              <span className="px-4 py-2 text-center font-medium min-w-[3rem]">
+                {quantity}
+              </span>
+              <button
+                onClick={incrementQuantity}
+                disabled={quantity >= stock}
+                className="p-2 text-gray-600 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Plus size={16} />
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Variations Info */}
         {hasVariations && product.variacionet.length > 1 && (
@@ -127,7 +165,7 @@ export default function ProductCard({
               {addingToCart ? 'Shtim...' : 
                !hasVariations ? 'Nuk ka variacione' :
                stock === 0 ? 'Jashtë stokut' : 
-               'Shto në Cart'}
+               `Shto ${quantity} në Cart`}
             </button>
           )}
           
