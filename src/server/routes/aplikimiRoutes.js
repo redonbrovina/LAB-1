@@ -1,15 +1,15 @@
 const express = require('express')
 const router = express.Router()
 const AplikimiController = require('../controllers/AplikimiController')
-const { authenticateToken, authorizeRoles } = require('../middleware/auth')
+const { authenticateToken, requireRole } = require('../middleware/auth')
 
 const controller = new AplikimiController()
 
 // POST (create) nuk kërkon authentication - për signup
 router.post('/', controller.createAplikimi.bind(controller))
 
-// Të gjitha routes tjera kërkojnë authentication
 router.use(authenticateToken)
+router.use(requireRole('admin'));
 
 router.get('/', controller.getAllAplikimet.bind(controller))
 router.get('/status/:aplikimiStatusID', controller.getAplikimiByAplikimiStatusID.bind(controller))

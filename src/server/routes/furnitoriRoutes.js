@@ -1,8 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const FurnitoriController = require("../controllers/FurnitoriController");
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const controller = new FurnitoriController();
+
+router.use(authenticateToken);
+router.use(requireRole('admin'));
 
 router.get("/", controller.getAll.bind(controller));
 router.get("/shteti/:shtetiID", controller.getByShteti.bind(controller));

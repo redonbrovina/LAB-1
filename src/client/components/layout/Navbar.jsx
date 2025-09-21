@@ -18,7 +18,7 @@ export default function Navbar() {
                     <NavLink to="/about" className="hidden md:flex text-[#808080] text-sm hover:text-[#4a4a4a] duration-75 ease-in-out cursor-pointer">About Us</NavLink>
                 </div>
                 <div className="items-center gap-16 hidden md:flex md:px-20">
-                    <NavLink to="/login"><button className="text-[#7ED957] wrap-normal py-2 px-5 text-sm border-1 border-solid border-color[#7ED957] rounded-3xl cursor-pointer hover:bg-[#7ED957] hover:text-white duration-200 ease-in-out">Sign in</button></NavLink>
+                    <NavLink to="/login"><button className="text-[#7ED957] wrap-normal py-2 px-5 text-sm border-1 border-solid border-color[#7ED957] rounded-3xl cursor-pointer hover:bg-[#7ED957] hover:text-white duration-200 ease-in-out">Log in</button></NavLink>
                     <NavLink to="/signup"><button className="bg-[#7ED957] wrap-normal text-white text-sm py-2 px-8 rounded-3xl cursor-pointer border-1 border-solid border-color[#7ED957] hover:bg-white hover:text-[#7ED957] duration-200 ease-in-out">Join Us</button></NavLink>
                 </div>
                 <div className="md:hidden flex items-center">

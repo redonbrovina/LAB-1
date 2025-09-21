@@ -140,24 +140,44 @@ export const apiRequest = async (endpoint, options = {}) => {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     
     console.log(`Response status: ${response.status} for ${endpoint}`);
+    console.log(`Response headers:`, Object.fromEntries(response.headers.entries()));
     
+    // Handle token expiration
     if (response.status === 401) {
+      console.log('Token expired, attempting refresh...');
       const refreshToken = localStorage.getItem('refreshToken');
+      
       if (refreshToken) {
         try {
+          console.log('Refresh token found, calling refresh endpoint...');
           const refreshResponse = await publicApiPost('/form/refresh-token', { refreshToken });
-          localStorage.setItem('accessToken', refreshResponse.accessToken);
+          const newAccessToken = refreshResponse.accessToken;
           
-          config.headers['Authorization'] = `Bearer ${refreshResponse.accessToken}`;
-          return await fetch(`${API_BASE_URL}${endpoint}`, config).then(res => res.json());
+          console.log('Token refreshed successfully, new token:', newAccessToken.substring(0, 20) + '...');
+          localStorage.setItem('accessToken', newAccessToken);
+          
+          // Retry the original request with new token
+          config.headers['Authorization'] = `Bearer ${newAccessToken}`;
+          console.log('Retrying original request with new token...');
+          const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, config);
+          
+          if (!retryResponse.ok) {
+            const errorData = await retryResponse.json().catch(() => ({}));
+            throw new Error(errorData.message || `HTTP error! status: ${retryResponse.status}`);
+          }
+          
+          return await retryResponse.json();
         } catch (refreshError) {
-
+          console.error('Token refresh failed:', refreshError);
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           window.location.href = '/login';
           throw new Error('Authentication required');
         }
       } else {
+        console.log('No refresh token available, redirecting to login');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         window.location.href = '/login';
         throw new Error('Authentication required');
       }

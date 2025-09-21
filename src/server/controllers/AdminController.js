@@ -35,7 +35,7 @@ class AdminController {
             console.log('Personal code check:', isPersonalCodeValid, 'Expected:', admin.kodi_personal, 'Got:', kodi_personal);
                 
             if (isPasswordValid && isPersonalCodeValid) {
-                // For now, create a simple JWT token without refresh token complexity
+                // Generate access token (24 hours)
                 const jwt = require('jsonwebtoken');
                 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
                 
@@ -46,17 +46,21 @@ class AdminController {
                         role: 'admin' 
                     },
                     JWT_SECRET,
-                    { expiresIn: '24h' }
+                    { expiresIn: '1h' } 
                 );
+                
+                // Generate refresh token (7 days)
+                const refreshTokenData = await this.refreshTokenService.createRefreshToken(admin.adminID, 'admin');
                 
                 console.log('Login successful for admin:', admin.adminID);
                 
                 return res.status(200).json({ 
                     accessToken,
+                    refreshToken: refreshTokenData.token,
                     role: 'admin',
                     adminID: admin.adminID,
                     email: admin.email,
-                    expiresIn: 86400 // 24 hours in seconds
+                    expiresIn: 3600 
                 });
             } else {
                 console.log('Login failed - invalid credentials');

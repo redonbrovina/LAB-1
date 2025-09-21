@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const PorosiaController = require('../controllers/PorosiaController');
-const { authenticateToken, authorizeRoles } = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/auth');
 
 const controller = new PorosiaController();
 

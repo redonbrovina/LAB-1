@@ -9,6 +9,10 @@ class KlientiService {
         return await this.klientiRepository.getAllKlientet();
     }
 
+    async getPaginatedKlientet(options = {}) {
+        return await this.klientiRepository.getPaginatedKlientet(options);
+    }
+
     async getKlientiById(klientiID) {
         const klienti = await this.klientiRepository.getKlientiById(klientiID);
         if (!klienti) throw new Error("Klienti nuk u gjet");
@@ -21,6 +25,10 @@ class KlientiService {
 
     async getKlientiByEmri(emri_kompanise) {
         return await this.klientiRepository.getKlientiByEmri(emri_kompanise);
+    }
+
+    async searchKlientet(query) {
+        return await this.klientiRepository.searchKlientet(query);
     }
 
     async getKlientiByAplikimiID(aplikimiID) {

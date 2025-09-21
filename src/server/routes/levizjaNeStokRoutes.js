@@ -1,7 +1,7 @@
 const LevizjaNeStokController = require('../controllers/LevizjaNeStokController');
 const express = require('express');
 const router = express.Router();
-const { authenticateToken, authorizeRoles } = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/auth');
 
 // Apply authentication middleware
 router.use(authenticateToken);

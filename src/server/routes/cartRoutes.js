@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const CartController = require('../controllers/CartController');
-const { authenticateToken, authorizeRoles } = require('../middleware/auth');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const controller = new CartController();
 
-//router.use(authenticateToken);
+router.use(authenticateToken);
+router.use(requireRole('klient'));
 
 router.get('/', controller.getAll.bind(controller));
 router.get('/test', (req, res) => {

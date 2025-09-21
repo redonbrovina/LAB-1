@@ -64,6 +64,29 @@ class BaseRepository {
       return await this.model.count({ where });
     }
 
+    async getPaginated(options = {}) {
+      const { page = 1, limit = 5, ...queryOptions } = options;
+      const offset = (page - 1) * limit;
+      
+      const { count, rows } = await this.model.findAndCountAll({
+        ...queryOptions,
+        limit: parseInt(limit),
+        offset: parseInt(offset)
+      });
+      
+      return {
+        data: rows,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(count / limit),
+          totalItems: count,
+          itemsPerPage: parseInt(limit),
+          hasNextPage: page < Math.ceil(count / limit),
+          hasPrevPage: page > 1
+        }
+      };
+    }
+
     getPrimaryKey() {
       // Get the primary key field name from the model
       const primaryKeys = this.model.primaryKeyAttributes;
