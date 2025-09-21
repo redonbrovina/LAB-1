@@ -11,6 +11,7 @@ export default function Orders() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showModal, setShowModal] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
 
   // Fetch orders from API
   const fetchOrders = async () => {
@@ -35,6 +36,7 @@ export default function Orders() {
   // Update order status
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
+      setUpdatingStatus(true);
       console.log('Updating order:', orderId, 'to status:', newStatus);
       const response = await apiPut(`/porosite/${orderId}`, { porosia_statusID: newStatus });
       console.log('Update response:', response);
@@ -48,6 +50,8 @@ export default function Orders() {
     } catch (err) {
       setError(`Gabim në përditësimin e statusit: ${err.message}`);
       console.error('Error updating order:', err);
+    } finally {
+      setUpdatingStatus(false);
     }
   };
 
@@ -109,17 +113,27 @@ export default function Orders() {
 
   return (
     <div className="space-y-6">
-      <AdminNavbar />
-      {/* Header */}
-      <div className="flex justify-between items-center ml-64">
-        <h1 className="text-2xl font-bold text-gray-800">Menaxhimi i Porosive</h1>
-        <div className="text-sm text-gray-500">
-          Total: {orders.length} porosi
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">Menaxhimi i Porosive</h1>
+            <p className="text-gray-600">Menaxho dhe ndiq porositë e klientëve</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-gray-500">
+              Total: {orders.length} porosi
+            </div>
+            <button 
+              onClick={fetchOrders}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
+            >
+              🔄 Refresh
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-4 ml-64">
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1">
@@ -136,7 +150,7 @@ export default function Orders() {
           </div>
 
           {/* Status Filter */}
-          <div className="flex items-center gap-2 ml-64">
+          <div className="flex items-center gap-2">
             <Filter className="text-gray-400" size={20} />
             <select
               value={statusFilter}
@@ -150,10 +164,10 @@ export default function Orders() {
             </select>
           </div>
         </div>
-      </div>
+        </div>
 
-      {/* Orders Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden ml-64">
+        {/* Orders Table */}
+        <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
@@ -230,20 +244,25 @@ export default function Orders() {
             Nuk u gjetën porosi që përputhen me kriteret e kërkimit.
           </div>
         )}
-      </div>
+        </div>
 
       {/* Order Details Modal */}
       {showModal && selectedOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-gray-800">
-                  Detajet e Porosisë #{selectedOrder.porosiaID}
-                </h2>
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-800">
+                    Detajet e Porosisë #{selectedOrder.porosiaID}
+                  </h2>
+                  <p className="text-sm text-gray-600">
+                    {formatDate(selectedOrder.koha_krijimit)}
+                  </p>
+                </div>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   <XCircle size={24} />
                 </button>
@@ -300,14 +319,14 @@ export default function Orders() {
                           console.log('Button clicked:', status.label, 'for order:', selectedOrder.porosiaID);
                           updateOrderStatus(selectedOrder.porosiaID, status.id);
                         }}
-                        disabled={selectedOrder.porosia_statusID === status.id}
+                        disabled={selectedOrder.porosia_statusID === status.id || updatingStatus}
                         className={`px-3 py-1 rounded text-white text-sm font-medium transition-colors ${
-                          selectedOrder.porosia_statusID === status.id 
+                          selectedOrder.porosia_statusID === status.id || updatingStatus
                             ? 'opacity-50 cursor-not-allowed' 
                             : status.color
                         }`}
                       >
-                        {status.label}
+                        {updatingStatus ? 'Duke përditësuar...' : status.label}
                       </button>
                     ))}
                   </div>

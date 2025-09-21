@@ -147,9 +147,9 @@ export default function AdminDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b rounded-lg">
         <div className="px-6 py-4">
           <div className="flex justify-between items-center">
             <div>
@@ -178,8 +178,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-
-      <div className="p-6">
         {/* Top Stats Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
@@ -338,7 +336,6 @@ export default function AdminDashboard() {
             </div>
           </ChartCard>
         </div>
-      </div>
     </div>
   );
 }

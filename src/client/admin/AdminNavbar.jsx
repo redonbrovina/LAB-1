@@ -20,7 +20,7 @@ export default function AdminNavbar() {
   };
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-64 bg-red-600 text-white flex flex-col z-10">
+    <div className="fixed left-0 top-0 h-screen w-64 bg-red-600 text-white flex flex-col z-20">
       {/* Header */}
       <div className="p-6">
         <h2 className="text-xl font-bold">Admin Panel</h2>
