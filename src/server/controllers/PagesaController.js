@@ -69,6 +69,26 @@ const PagesaController = {
     }
   },
 
+  async getByKlientiID(req, res) {
+    try {
+      const { klientiID } = req.params;
+      const pagesat = await service.getByKlientiID(klientiID);
+      res.json(pagesat);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  },
+
+  async getThisMonthByKlientiID(req, res) {
+    try {
+      const { klientiID } = req.params;
+      const pagesat = await service.getThisMonthByKlientiID(klientiID);
+      res.json(pagesat);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  },
+
   async update(req, res) {
     try {
       const { id } = req.params;

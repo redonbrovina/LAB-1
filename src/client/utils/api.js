@@ -287,4 +287,6 @@ export const clientAPI = {
   update: (id, data) => apiPut(`/klienti/${id}`, data),
   changePassword: (id, data) => apiPut(`/klienti/${id}/change-password`, data),
   delete: (id) => apiDelete(`/klienti/${id}`),
+  // Login function for clients (no auth required)
+  login: (data) => publicApiPost('/klienti/login', data),
 };

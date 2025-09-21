@@ -1,11 +1,91 @@
 const KlientiService = require('../services/KlientiService');
 const ShtetiService = require('../services/ShtetiService');
 const PasswordUtils = require('../utils/PasswordUtils');
+const jwt = require('jsonwebtoken');
 
 class KlientiController {
     constructor() {
         this.klientiService = new KlientiService();
         this.shtetiService = new ShtetiService();
+    }
+
+    async login(req, res) {
+        try {
+            const { email, password } = req.body;
+            
+            if (!email || !password) {
+                return res.status(400).json({
+                    message: 'Email dhe password janë të detyrueshëm'
+                });
+            }
+
+            // Find client by email
+            const klienti = await this.klientiService.getKlientiByEmail(email);
+            if (!klienti) {
+                return res.status(401).json({
+                    message: 'Email ose password i gabuar'
+                });
+            }
+
+            // Verify password
+            let isPasswordValid = false;
+            
+            // First try bcrypt comparison (for hashed passwords)
+            if (klienti.password && (klienti.password.startsWith('$2b$') || klienti.password.startsWith('$2a$') || klienti.password.startsWith('$2y$'))) {
+                isPasswordValid = await PasswordUtils.comparePassword(password, klienti.password);
+            } else {
+                // For plain text passwords (legacy support)
+                isPasswordValid = password === klienti.password;
+            }
+            
+            if (!isPasswordValid) {
+                return res.status(401).json({
+                    message: 'Email ose password i gabuar'
+                });
+            }
+
+            // Generate JWT token
+            const token = jwt.sign(
+                {
+                    klientiID: klienti.klientiID,
+                    email: klienti.email,
+                    role: 'klient'
+                },
+                process.env.JWT_SECRET || 'your-secret-key',
+                { expiresIn: '1h' }
+            );
+
+            // Generate refresh token
+            const refreshToken = jwt.sign(
+                {
+                    klientiID: klienti.klientiID,
+                    email: klienti.email,
+                    role: 'klient'
+                },
+                process.env.JWT_SECRET || 'your-secret-key',
+                { expiresIn: '7d' }
+            );
+
+            // Return client data without password
+            const { password: _, ...clientData } = klienti.toJSON();
+
+            res.json({
+                message: 'Login successful',
+                accessToken: token,
+                refreshToken: refreshToken,
+                user: {
+                    ...clientData,
+                    role: 'klient'
+                }
+            });
+
+        } catch (error) {
+            console.error('Login error:', error);
+            res.status(500).json({
+                message: 'Error during login',
+                error: error.message
+            });
+        }
     }
 
     async getAllKlientet(req, res) {

@@ -19,6 +19,14 @@ class PagesaService {
         return await this.pagesaRepo.getPagesatByPorosia(porosiaID);
     }
 
+    async getByKlientiID(klientiID) {
+        return await this.pagesaRepo.getPagesatByKlientiID(klientiID);
+    }
+
+    async getThisMonthByKlientiID(klientiID) {
+        return await this.pagesaRepo.getPagesatThisMonthByKlientiID(klientiID);
+    }
+
     async create(data) {
         return await this.pagesaRepo.createPagesa(data);
     }
