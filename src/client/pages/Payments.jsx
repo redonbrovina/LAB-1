@@ -2,6 +2,7 @@ import ClientNavBar from "../components/ClientNavBar";
 import { DollarSign, Plus, Edit, Trash2, CreditCard, Banknote } from "lucide-react";
 import { useState, useEffect } from "react";
 import { paymentAPI, paymentMethodsAPI, ordersAPI } from "../utils/api";
+import { useAuth } from "../utils/AuthContext";
 
 export default function Payments() {
   const [payments, setPayments] = useState([]);
@@ -10,6 +11,7 @@ export default function Payments() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
+  const { user } = useAuth();
 
   const [formData, setFormData] = useState({
     porosiaID: "",
@@ -19,8 +21,10 @@ export default function Payments() {
   });
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
 
   const fetchData = async () => {
     try {
@@ -29,9 +33,21 @@ export default function Payments() {
         paymentMethodsAPI.getAll(),
         ordersAPI.getAll()
       ]);
-      setPayments(Array.isArray(paymentsData) ? paymentsData : []);
+      
+      // Filter orders and payments to show only current client's data
+      const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId;
+      const clientOrders = Array.isArray(ordersData) 
+        ? ordersData.filter(order => order.klientiID == clientId)
+        : [];
+      
+      // Filter payments to show only current client's payments
+      const clientPayments = Array.isArray(paymentsData) 
+        ? paymentsData.filter(payment => payment.klientiID == clientId)
+        : [];
+      
+      setPayments(clientPayments);
       setPaymentMethods(Array.isArray(paymentMethodsData) ? paymentMethodsData : []);
-      setOrders(Array.isArray(ordersData) ? ordersData : []);
+      setOrders(clientOrders);
     } catch (error) {
       console.error('Error fetching data:', error);
       alert('Error fetching data. Please try again.');
@@ -43,7 +59,14 @@ export default function Payments() {
   const fetchPayments = async () => {
     try {
       const data = await paymentAPI.getAll();
-      setPayments(Array.isArray(data) ? data : []);
+      const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId;
+      
+      // Filter payments to show only current client's payments
+      const clientPayments = Array.isArray(data) 
+        ? data.filter(payment => payment.klientiID == clientId)
+        : [];
+      
+      setPayments(clientPayments);
     } catch (error) {
       console.error('Error fetching payments:', error);
       alert('Error fetching payments. Please try again.');
@@ -55,10 +78,18 @@ export default function Payments() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId;
+      
       if (editingPayment && editingPayment.pagesaID) {
         await paymentAPI.update(editingPayment.pagesaID, formData);
       } else {
-        await paymentAPI.create(formData);
+        // Add client ID for B2B logic (client payment, adminID should be NULL)
+        const paymentData = {
+          ...formData,
+          klientiID: clientId,
+          adminID: null
+        };
+        await paymentAPI.create(paymentData);
       }
       await fetchData();
       setShowForm(false);
@@ -176,7 +207,9 @@ export default function Payments() {
           
           {payments.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              No payments found. Create your first payment above.
+              <DollarSign size={48} className="mx-auto mb-4 text-gray-400" />
+              <p className="text-lg mb-2">No payments found</p>
+              <p className="text-sm">You haven't made any payments yet. Create your first payment above.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -193,32 +226,35 @@ export default function Payments() {
                   </tr>
                 </thead>
                 <tbody>
-                  {payments.map((payment, index) => (
-                    <tr key={payment.pagesaID || index} className="border-b hover:bg-gray-50">
-                      <td className="py-3 px-4">{payment.pagesaID || index + 1}</td>
-                      <td className="py-3 px-4">{payment.porosiaID || 'N/A'}</td>
-                      <td className="py-3 px-4">{payment.menyra_pagesesID || 'N/A'}</td>
-                      <td className="py-3 px-4 font-semibold">${payment.shuma_pageses || '0.00'}</td>
-                      <td className="py-3 px-4">{payment.numri_llogarise || 'N/A'}</td>
-                      <td className="py-3 px-4">{payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}</td>
-                      <td className="py-3 px-4">
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEdit(payment)}
-                            className="p-1 text-blue-600 hover:bg-blue-100 rounded"
-                          >
-                            <Edit size={16} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(payment.pagesaID)}
-                            className="p-1 text-red-600 hover:bg-red-100 rounded"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {payments.map((payment, index) => {
+                    const paymentMethod = paymentMethods.find(method => method.menyra_pagesesID === payment.menyra_pagesesID);
+                    return (
+                      <tr key={payment.pagesaID || index} className="border-b hover:bg-gray-50">
+                        <td className="py-3 px-4">{payment.pagesaID || index + 1}</td>
+                        <td className="py-3 px-4">{payment.porosiaID || 'N/A'}</td>
+                        <td className="py-3 px-4">{paymentMethod?.menyra_pageses || 'N/A'}</td>
+                        <td className="py-3 px-4 font-semibold">${payment.shuma_pageses || '0.00'}</td>
+                        <td className="py-3 px-4">{payment.numri_llogarise || 'N/A'}</td>
+                        <td className="py-3 px-4">{payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}</td>
+                        <td className="py-3 px-4">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEdit(payment)}
+                              className="p-1 text-blue-600 hover:bg-blue-100 rounded"
+                            >
+                              <Edit size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(payment.pagesaID)}
+                              className="p-1 text-red-600 hover:bg-red-100 rounded"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -261,24 +297,34 @@ export default function Payments() {
                       required
                     >
                       <option value="">Select a payment method</option>
-                      {paymentMethods.map((method) => (
-                        <option key={method.menyra_pagesesID} value={method.menyra_pagesesID}>
-                          {method.menyra_pageses}
-                        </option>
-                      ))}
+                      {paymentMethods.length === 0 ? (
+                        <option value="" disabled>No payment methods available</option>
+                      ) : (
+                        paymentMethods.map((method) => (
+                          <option key={method.menyra_pagesesID} value={method.menyra_pagesesID}>
+                            {method.menyra_pageses}
+                          </option>
+                        ))
+                      )}
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Amount</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.shuma_pageses}
-                      onChange={(e) => setFormData({...formData, shuma_pageses: e.target.value})}
-                      className="w-full border rounded-lg px-3 py-2"
-                      required
-                    />
+                    <label className="block text-sm font-medium mb-2">Payment Amount</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        value={formData.shuma_pageses}
+                        onChange={(e) => setFormData({...formData, shuma_pageses: e.target.value})}
+                        className="w-full border rounded-lg px-8 py-2 pl-8"
+                        placeholder="0.00"
+                        required
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Enter the amount you want to pay for this order</p>
                   </div>
 
                   <div>

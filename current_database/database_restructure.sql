@@ -39,19 +39,21 @@ ALTER TABLE `pagesa`
 ADD CONSTRAINT `pagesa_ibfk_3` FOREIGN KEY (`klientiID`) REFERENCES `klienti` (`klientiID`),
 ADD CONSTRAINT `pagesa_ibfk_4` FOREIGN KEY (`adminID`) REFERENCES `administrator` (`adminID`);
 
--- 7. Shtoj klientiID dhe adminID në tabelën menyra_pageses
+-- 7. Shtoj aktiv column në tabelën menyra_pageses (Global B2B payment methods)
 ALTER TABLE `menyra_pageses`
-ADD COLUMN `klientiID` int(11) DEFAULT NULL AFTER `menyra_pageses`,
-ADD COLUMN `adminID` int(11) DEFAULT NULL AFTER `klientiID`;
+ADD COLUMN `aktiv` tinyint(1) DEFAULT 1 AFTER `menyra_pageses`;
 
--- 8. Shtoj foreign key constraints për menyra_pageses
-ALTER TABLE `menyra_pageses`
-ADD KEY `klientiID` (`klientiID`),
-ADD KEY `adminID` (`adminID`);
+-- 8. Heq kolonat e vjetra nga menyra_pageses (nëse ekzistojnë)
+-- Kujdes: Këto komanda mund të japin gabim nëse kolonat nuk ekzistojnë
+-- Por kjo është normale dhe nuk do të ndikojë në funksionimin
+ALTER TABLE `menyra_pageses` DROP FOREIGN KEY IF EXISTS `menyra_pageses_ibfk_1`;
+ALTER TABLE `menyra_pageses` DROP FOREIGN KEY IF EXISTS `menyra_pageses_ibfk_2`;
+ALTER TABLE `menyra_pageses` DROP KEY IF EXISTS `klientiID`;
+ALTER TABLE `menyra_pageses` DROP KEY IF EXISTS `adminID`;
 
-ALTER TABLE `menyra_pageses`
-ADD CONSTRAINT `menyra_pageses_ibfk_1` FOREIGN KEY (`klientiID`) REFERENCES `klienti` (`klientiID`),
-ADD CONSTRAINT `menyra_pageses_ibfk_2` FOREIGN KEY (`adminID`) REFERENCES `administrator` (`adminID`);
+-- Këto duhet të ekzekutohen veçmas nëse kolonat ekzistojnë
+-- ALTER TABLE `menyra_pageses` DROP COLUMN `klientiID`;
+-- ALTER TABLE `menyra_pageses` DROP COLUMN `adminID`;
 
 -- !!!!!!!!!!!!!KUJJJJJJJJJJJDESSSSSSSSSS!!!!!!!!!!!!!!!!
 -- 9. Migrimi i të dhënave (nëse ka të dhëna ekzistuese)

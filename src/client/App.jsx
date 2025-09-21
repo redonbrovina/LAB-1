@@ -56,17 +56,17 @@ export default function App() {
       <AuthProvider>
         <BrowserRouter>
           <Suspense fallback={<LoadingSpinner />}>
-          <Routes>
-            {/* Public Pages */}
-            <Route path="/" element={
-              <PublicRoute>
-                <Layout />
-              </PublicRoute>
-            }>
-              <Route index element={<Home />} />
-              <Route path="about" element={<About />} />
-              <Route path="services" element={<Services />} />
-            </Route>
+            <Routes>
+              {/* Public Pages */}
+              <Route path="/" element={
+                <PublicRoute>
+                  <Layout />
+                </PublicRoute>
+              }>
+                <Route index element={<Home />} />
+                <Route path="about" element={<About />} />
+                <Route path="services" element={<Services />} />
+              </Route>
 
             {/* Auth Pages - Only accessible when not logged in */}
             <Route path="/login" element={
@@ -101,7 +101,6 @@ export default function App() {
               <Route path="cart" element={<Cart />} />
               <Route path="profile" element={<Profile />} />
               <Route path="/payments" element={<Payments />} />
-              <Route path="/stock-movement" element={<StockMovement />} />
               <Route path="/payment-methods" element={<PaymentMethods />} />
             </Route>
 
@@ -109,6 +108,7 @@ export default function App() {
             <Route path="/admin" element={<AdminProtectedLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="payments" element={<AdminPayments />} />
+              <Route path="payment-methods" element={<AdminPaymentMethods />} />
               <Route path="applications" element={<Applications />} />
               <Route path="orders" element={<Orders />} />
               <Route path="suppliers" element={<SuppliersAdmin />} />
@@ -117,9 +117,7 @@ export default function App() {
               <Route path="users/create" element={<AdminCreateClient />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
-
-            {/* If a route is not found, show the NotFound page */}
-            <Route path="*" element={<NotFound />} />
+            <Route path='*'><NotFound /></Route>
           </Routes>
         </Suspense>
       </BrowserRouter>

@@ -5,7 +5,6 @@ const app = express();
 
 const pagesaRoutes = require('./src/server/routes/pagesaRoutes');
 const menyraPagesesRoutes = require('./src/server/routes/menyraPagesesRoutes');
-const levizjaNeStokRoutes = require('./src/server/routes/levizjaNeStokRoutes');
 const porosiaRoutes = require('./src/server/routes/porosiaRoutes');
 const cartRoutes = require('./src/server/routes/cartRoutes');
 const produktPorosiseRoutes = require('./src/server/routes/produktPorosiseRoutes');
@@ -32,7 +31,6 @@ app.use(express.json());
 
 app.use('/api/pagesa', pagesaRoutes);
 app.use('/api/menyra-pageses', menyraPagesesRoutes);
-app.use('/api/levizje-stok', levizjaNeStokRoutes);
 app.use('/api/klienti', klientiRoutes);
 app.use('/api/aplikimi', aplikimiRoutes);
 app.use('/api/aplikimi-status', aplikimiStatusRoutes);

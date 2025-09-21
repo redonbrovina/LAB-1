@@ -51,6 +51,15 @@ class MenyraPagesesRepository extends BaseRepository {
         });
     }
 
+    async isPaymentMethodInUse(menyraPagesesID) {
+        // Check if this payment method is being used by any payments
+        const { Pagesa } = require("../models");
+        const paymentCount = await Pagesa.count({
+            where: { menyra_pagesesID: menyraPagesesID }
+        });
+        return paymentCount > 0;
+    }
+
     async deleteAllMenyraPageses() {
         // Delete all payment methods
         try {
