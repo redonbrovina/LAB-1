@@ -11,7 +11,7 @@ router.use(authenticateToken);
 router.use(requireRole('admin'));
 
 router.get('/dashboard-stats', controller.getDashboardStats.bind(controller));
-router.get('/', controller.getAllAdminet.bind(controller));
+router.get('/profile', controller.getCurrentAdmin.bind(controller));
 router.get('/:adminID', controller.getAdminById.bind(controller));
 router.put('/:adminID', controller.updateAdmin.bind(controller));
 router.delete('/:adminID', controller.deleteAdmin.bind(controller));

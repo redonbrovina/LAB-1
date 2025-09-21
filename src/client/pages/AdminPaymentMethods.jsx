@@ -1,5 +1,6 @@
 import { CreditCard, Wallet, Smartphone, Plus, Edit, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { paymentMethodsAPI } from "../utils/api";
 
 export default function AdminPaymentMethods() {
   const [paymentMethods, setPaymentMethods] = useState([]);
@@ -18,11 +19,25 @@ export default function AdminPaymentMethods() {
 
   const fetchPaymentMethods = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/menyra-pageses');
-      const data = await response.json();
-      setPaymentMethods(data);
+      console.log('Fetching payment methods...');
+      const data = await paymentMethodsAPI.getAll();
+      console.log('API response:', data);
+      
+      // Ensure data is an array
+      if (Array.isArray(data)) {
+        console.log('Data is array, setting payment methods:', data);
+        setPaymentMethods(data);
+      } else {
+        console.error('API returned non-array data:', data);
+        console.error('Data type:', typeof data);
+        console.error('Data constructor:', data?.constructor?.name);
+        setPaymentMethods([]);
+      }
     } catch (error) {
       console.error('Error fetching payment methods:', error);
+      console.error('Error details:', error.message);
+      console.error('Error stack:', error.stack);
+      setPaymentMethods([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
@@ -31,36 +46,24 @@ export default function AdminPaymentMethods() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = editingMethod 
-        ? `http://localhost:5000/api/menyra-pageses/${editingMethod.menyra_pagesesID}`
-        : 'http://localhost:5000/api/menyra-pageses';
-      
-      const method = editingMethod ? 'PUT' : 'POST';
-      
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        fetchPaymentMethods();
-        setShowForm(false);
-        setEditingMethod(null);
-        setFormData({
-          menyra_pageses: "",
-          pershkrimi: ""
-        });
-        alert(editingMethod ? 'Payment method updated successfully!' : 'Payment method created successfully!');
+      if (editingMethod) {
+        await paymentMethodsAPI.update(editingMethod.menyra_pagesesID, formData);
+        alert('Payment method updated successfully!');
       } else {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.error || 'Failed to save payment method'}`);
+        await paymentMethodsAPI.create(formData);
+        alert('Payment method created successfully!');
       }
+      
+      fetchPaymentMethods();
+      setShowForm(false);
+      setEditingMethod(null);
+      setFormData({
+        menyra_pageses: "",
+        pershkrimi: ""
+      });
     } catch (error) {
       console.error('Error saving payment method:', error);
-      alert('Error saving payment method. Please try again.');
+      alert(`Error: ${error.message || 'Failed to save payment method'}`);
     }
   };
 
@@ -76,19 +79,12 @@ export default function AdminPaymentMethods() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this payment method?')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/menyra-pageses/${id}`, {
-          method: 'DELETE',
-        });
-        if (response.ok) {
-          fetchPaymentMethods();
-          alert('Payment method deleted successfully!');
-        } else {
-          const errorData = await response.json();
-          alert(`Error: ${errorData.error || 'Failed to delete payment method'}`);
-        }
+        await paymentMethodsAPI.delete(id);
+        fetchPaymentMethods();
+        alert('Payment method deleted successfully!');
       } catch (error) {
         console.error('Error deleting payment method:', error);
-        alert('Error deleting payment method. Please try again.');
+        alert(`Error: ${error.message || 'Failed to delete payment method'}`);
       }
     }
   };
@@ -97,20 +93,12 @@ export default function AdminPaymentMethods() {
   const handleDeleteAll = async () => {
     if (window.confirm('Are you sure you want to delete ALL payment methods? This action cannot be undone!')) {
       try {
-        const response = await fetch('http://localhost:5000/api/menyra-pageses', {
-          method: 'DELETE',
-        });
-        if (response.ok) {
-          const result = await response.json();
-          alert(result.message || 'All payment methods deleted successfully');
-          fetchPaymentMethods();
-        } else {
-          const errorData = await response.json();
-          alert(`Error: ${errorData.error || 'Failed to delete all payment methods'}`);
-        }
+        const result = await paymentMethodsAPI.deleteAll();
+        alert(result?.message || 'All payment methods deleted successfully');
+        fetchPaymentMethods();
       } catch (error) {
         console.error('Error deleting all payment methods:', error);
-        alert('Error deleting all payment methods. Please try again.');
+        alert(`Error: ${error.message || 'Failed to delete all payment methods'}`);
       }
     }
   };
@@ -143,7 +131,7 @@ export default function AdminPaymentMethods() {
           Payment Methods Management
         </h1>
         <div className="flex gap-3">
-          {paymentMethods.length > 0 && (
+          {Array.isArray(paymentMethods) && paymentMethods.length > 0 && (
             <button
               onClick={handleDeleteAll}
               className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700"
@@ -169,8 +157,8 @@ export default function AdminPaymentMethods() {
             <CreditCard size={24} />
             Payment Methods Overview
           </div>
-          <p className="text-2xl font-bold">{paymentMethods.length} methods configured</p>
-          {paymentMethods.length === 0 && (
+          <p className="text-2xl font-bold">{Array.isArray(paymentMethods) ? paymentMethods.length : 0} methods configured</p>
+          {(!Array.isArray(paymentMethods) || paymentMethods.length === 0) && (
             <div className="flex items-center gap-2 mt-2 text-orange-600">
               <span className="text-sm">No payment methods configured - clients cannot make payments</span>
             </div>
@@ -182,7 +170,7 @@ export default function AdminPaymentMethods() {
       <div className="bg-white shadow rounded-2xl p-6">
         <h2 className="text-xl font-semibold mb-6">Manage Payment Methods</h2>
         
-        {paymentMethods.length === 0 ? (
+        {!Array.isArray(paymentMethods) || paymentMethods.length === 0 ? (
           <div className="text-center py-12 text-gray-500">
             <CreditCard size={48} className="mx-auto mb-4 text-gray-400" />
             <p className="text-lg mb-2">No payment methods configured</p>

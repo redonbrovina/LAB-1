@@ -84,9 +84,26 @@ class AdminController {
         }
     }
 
+    async getCurrentAdmin(req, res) {
+        try {
+            const adminID = req.user.adminID;
+            const admin = await this.adminService.getAdminById(parseInt(adminID));
+            return res.status(200).json(admin);
+        } catch (error) {
+            if (error.message === "Admin nuk u gjet") {
+                res.status(404).json({ message: error.message });
+            } else {
+                res.status(500).json({
+                    message: 'Error fetching admin profile',
+                    error: error.message
+                });
+            }
+        }
+    }
+
     async getAdminById(req, res) {
         try {
-            const admin = await this.adminService.getAdminById(req.params.adminID);
+            const admin = await this.adminService.getAdminById(parseInt(req.params.adminID));
             return res.status(200).json(admin);
         } catch (error) {
             if (error.message === "Admin nuk u gjet") {
@@ -114,8 +131,65 @@ class AdminController {
 
     async updateAdmin(req, res) {
         try {
-            const updatedAdmin = await this.adminService.updateAdmin(req.params.adminID, req.body);
-            return res.status(200).json(updatedAdmin);
+            const adminID = req.params.adminID;
+            const requestingAdminID = req.user.adminID;
+
+            // Check if admin is trying to update themselves
+            if (parseInt(adminID) !== parseInt(requestingAdminID)) {
+                return res.status(403).json({
+                    message: 'You can only update your own profile',
+                    error: 'FORBIDDEN'
+                });
+            }
+
+            const { currentPassword, newPassword, ...otherData } = req.body;
+
+            // If password change is requested
+            if (currentPassword && newPassword) {
+                // Get the current admin data
+                const admin = await this.adminService.getAdminById(parseInt(adminID));
+                
+                // Verify current password
+                let isCurrentPasswordValid = false;
+                
+                // Check if password is hashed or plain text
+                if (admin.pass && (admin.pass.startsWith('$2b$') || admin.pass.startsWith('$2a$') || admin.pass.startsWith('$2y$'))) {
+                    isCurrentPasswordValid = await PasswordUtils.comparePassword(currentPassword, admin.pass);
+                } else {
+                    // For plain text passwords (legacy support)
+                    isCurrentPasswordValid = currentPassword === admin.pass;
+                }
+                
+                if (!isCurrentPasswordValid) {
+                    return res.status(400).json({
+                        message: 'Current password is incorrect'
+                    });
+                }
+
+                // Validate new password strength
+                const passwordValidation = PasswordUtils.validatePasswordStrength(newPassword);
+                if (!passwordValidation.isValid) {
+                    return res.status(400).json({
+                        message: passwordValidation.message
+                    });
+                }
+
+                // Hash the new password
+                const hashedNewPassword = await PasswordUtils.hashPassword(newPassword);
+                
+                // Update admin with new password
+                const updateData = {
+                    ...otherData,
+                    pass: hashedNewPassword
+                };
+                
+                const updatedAdmin = await this.adminService.updateAdmin(parseInt(adminID), updateData);
+                return res.status(200).json(updatedAdmin);
+            } else {
+                // Regular update without password change
+                const updatedAdmin = await this.adminService.updateAdmin(parseInt(adminID), otherData);
+                return res.status(200).json(updatedAdmin);
+            }
         } catch (error) {
             if (error.message === "Admin nuk u gjet") {
                 res.status(404).json({ message: error.message });
@@ -130,7 +204,18 @@ class AdminController {
 
     async deleteAdmin(req, res) {
         try {
-            await this.adminService.deleteAdmin(req.params.adminID);
+            const adminID = req.params.adminID;
+            const requestingAdminID = req.user.adminID;
+
+            // Check if admin is trying to delete themselves
+            if (parseInt(adminID) !== parseInt(requestingAdminID)) {
+                return res.status(403).json({
+                    message: 'You can only delete your own account',
+                    error: 'FORBIDDEN'
+                });
+            }
+
+            await this.adminService.deleteAdmin(parseInt(adminID));
             return res.status(204).send();
         } catch (error) {
             if (error.message === "Admin nuk u gjet") {

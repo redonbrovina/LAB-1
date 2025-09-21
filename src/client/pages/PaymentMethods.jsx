@@ -1,6 +1,7 @@
 import ClientNavBar from "../components/ClientNavBar";
 import { CreditCard, Wallet, Smartphone, CheckCircle, Info } from "lucide-react";
 import { useState, useEffect } from "react";
+import { paymentMethodsAPI } from "../utils/api";
 
 export default function PaymentMethods() {
   const [paymentMethods, setPaymentMethods] = useState([]);
@@ -12,11 +13,23 @@ export default function PaymentMethods() {
 
   const fetchPaymentMethods = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/menyra-pageses');
-      const data = await response.json();
-      setPaymentMethods(data);
+      console.log('Fetching payment methods for client...');
+      const data = await paymentMethodsAPI.getAll();
+      console.log('API response:', data);
+      
+      // Ensure data is an array
+      if (Array.isArray(data)) {
+        console.log('Data is array, setting payment methods:', data);
+        setPaymentMethods(data);
+      } else {
+        console.error('API returned non-array data:', data);
+        console.error('Data type:', typeof data);
+        setPaymentMethods([]);
+      }
     } catch (error) {
       console.error('Error fetching payment methods:', error);
+      console.error('Error details:', error.message);
+      setPaymentMethods([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
@@ -68,7 +81,7 @@ export default function PaymentMethods() {
               <CheckCircle size={24} />
               Available Payment Methods
             </div>
-            <p className="text-2xl font-bold">{paymentMethods.length} methods configured</p>
+            <p className="text-2xl font-bold">{Array.isArray(paymentMethods) ? paymentMethods.length : 0} methods configured</p>
           </div>
         </div>
 
@@ -76,7 +89,7 @@ export default function PaymentMethods() {
         <div className="bg-white shadow rounded-2xl p-6">
           <h2 className="text-xl font-semibold mb-6">Available Payment Methods</h2>
           
-          {paymentMethods.length === 0 ? (
+          {!Array.isArray(paymentMethods) || paymentMethods.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
               <CreditCard size={48} className="mx-auto mb-4 text-gray-400" />
               <p className="text-lg mb-2">No payment methods available</p>
@@ -84,7 +97,7 @@ export default function PaymentMethods() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {paymentMethods.map((method, index) => (
+              {Array.isArray(paymentMethods) && paymentMethods.map((method, index) => (
                 <div key={method.menyra_pagesesID || index} className="border rounded-2xl p-6 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-gray-50">
                   <div className="flex items-center justify-between mb-4">
                     {getPaymentMethodIcon(method.menyra_pageses || 'Default')}

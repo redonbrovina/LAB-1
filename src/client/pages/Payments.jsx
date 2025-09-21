@@ -35,7 +35,8 @@ export default function Payments() {
       ]);
       
       // Filter orders and payments to show only current client's data
-      const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId;
+      const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId || user?.klienti_id;
+      
       const clientOrders = Array.isArray(ordersData) 
         ? ordersData.filter(order => order.klientiID == clientId)
         : [];
@@ -78,12 +79,23 @@ export default function Payments() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId;
+      // Try different possible field names for client ID
+      const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId || user?.klienti_id;
+      
+      // Validate that we have a client ID
+      if (!clientId) {
+        alert('Error: Client ID not found. Please log in again.');
+        return;
+      }
       
       if (editingPayment && editingPayment.pagesaID) {
-        await paymentAPI.update(editingPayment.pagesaID, formData);
+        const updateData = {
+          ...formData,
+          klientiID: clientId
+        };
+        await paymentAPI.update(editingPayment.pagesaID, updateData);
       } else {
-        // Add client ID for B2B logic (client payment, adminID should be NULL)
+        // For creating new payment, ensure client ID is included
         const paymentData = {
           ...formData,
           klientiID: clientId,
@@ -91,6 +103,7 @@ export default function Payments() {
         };
         await paymentAPI.create(paymentData);
       }
+      
       await fetchData();
       setShowForm(false);
       setEditingPayment(null);

@@ -25,7 +25,6 @@ const Login = lazy(() => import("./pages/Login"));
 const Signup = lazy(() => import("./pages/Signup"));
 const SignupSuccess = lazy(() => import('./pages/SignupSuccess'));
 const Payments = lazy(() => import("./pages/Payments"));
-const StockMovement = lazy(() => import("./pages/StockMovement"));
 const PaymentMethods = lazy(() => import("./pages/PaymentMethods"));
 const Applications = lazy(() => import("./pages/Applications"));
 const AdminUsers = lazy(() => import("./pages/AdminUsers"));
@@ -34,6 +33,7 @@ const Orders = lazy(() => import("./components/Orders"));
 const SuppliersAdmin = lazy(() => import("./components/SuppliersAdmin"));
 const ProductsAdmin = lazy(() => import("./components/ProductsAdmin"));
 const AdminCreateClient = lazy(() => import("./pages/AdminCreateClient"));
+const AdminPaymentMethods = lazy(() => import("./pages/AdminPaymentMethods"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading component
@@ -117,7 +117,7 @@ export default function App() {
               <Route path="users/create" element={<AdminCreateClient />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
-            <Route path='*'><NotFound /></Route>
+            <Route path='*' element={<NotFound />} />
           </Routes>
         </Suspense>
       </BrowserRouter>

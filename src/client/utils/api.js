@@ -57,17 +57,17 @@ export const publicApiRequest = async (endpoint, options = {}) => {
 
 // Payment API functions
 export const paymentAPI = {
-  getAll: () => apiCall('/pagesa'),
-  getById: (id) => apiCall(`/pagesa/${id}`),
-  create: (data) => apiCall('/pagesa', {
+  getAll: () => apiRequest('/pagesa'),
+  getById: (id) => apiRequest(`/pagesa/${id}`),
+  create: (data) => apiRequest('/pagesa', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  update: (id, data) => apiCall(`/pagesa/${id}`, {
+  update: (id, data) => apiRequest(`/pagesa/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   }),
-  delete: (id) => apiCall(`/pagesa/${id}`, {
+  delete: (id) => apiRequest(`/pagesa/${id}`, {
     method: 'DELETE',
   }),
 };
@@ -91,34 +91,23 @@ export const stockMovementAPI = {
 
 // Payment Methods API functions
 export const paymentMethodsAPI = {
-  getAll: () => apiCall('/menyra-pageses'),
-  getById: (id) => apiCall(`/menyra-pageses/${id}`),
-  create: (data) => apiCall('/menyra-pageses', {
+  getAll: () => apiRequest('/menyra-pageses'),
+  getById: (id) => apiRequest(`/menyra-pageses/${id}`),
+  create: (data) => apiRequest('/menyra-pageses', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  update: (id, data) => apiCall(`/menyra-pageses/${id}`, {
+  update: (id, data) => apiRequest(`/menyra-pageses/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   }),
-  delete: (id) => apiCall(`/menyra-pageses/${id}`, {
+  delete: (id) => apiRequest(`/menyra-pageses/${id}`, {
+    method: 'DELETE',
+  }),
+  deleteAll: () => apiRequest('/menyra-pageses', {
     method: 'DELETE',
   }),
 };
-
-// Form API functions (login, signup, countries)
-export const formAPI = {
-  login: (data) => apiCall('/form/login', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
-  signup: (data) => apiCall('/form/signup', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
-  getCountries: () => apiCall('/form/shtetet'),
-};
-
 
 
 export const apiRequest = async (endpoint, options = {}) => {
@@ -183,12 +172,18 @@ export const apiRequest = async (endpoint, options = {}) => {
       }
     }
     
+    // Handle 204 No Content responses first (before checking response.ok)
+    if (response.status === 204) {
+      console.log(`API response for ${endpoint}: 204 No Content`);
+      return null;
+    }
+    
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error(`API error for ${endpoint}:`, errorData);
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
-    
+
     const data = await response.json();
     console.log(`API response for ${endpoint}:`, data);
     return data;
