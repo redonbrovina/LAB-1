@@ -5,7 +5,7 @@ const service = new PagesaService();
 const PagesaController = {
   async create(req, res) {
     try {
-      const { porosiaID, menyra_pagesesID, shuma_pageses, numri_llogarise, klientiID, adminID } = req.body;
+      const { porosiaID, menyra_pagesesID, shuma_pageses, numri_llogarise, klientiID, adminID, pagesa_statusID } = req.body;
       
       // Validate required fields
       if (!menyra_pagesesID || !shuma_pageses) {
@@ -40,6 +40,7 @@ const PagesaController = {
         menyra_pagesesID,
         shuma_pageses,
         numri_llogarise,
+        pagesa_statusID,
         klientiID,
         adminID
       });
