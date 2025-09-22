@@ -90,31 +90,35 @@ export default function Applications() {
     }
 
     return (
-        <div>
+        <div className="p-4 lg:p-6">
             {/* Header */}
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-2xl font-bold" style={{ color: "#808080" }}>
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 space-y-4 lg:space-y-0">
+                <div className="flex-1">
+                    <h1 className="text-xl lg:text-2xl font-bold" style={{ color: "#808080" }}>
                         Applications Management
                     </h1>
                     <p className="text-gray-600 mt-1">Manage client applications in the system</p>
                     
                     {/* Filters */}
-                    <div className="flex gap-4 mt-3">
-                        <select value={status} onChange={(e) => setStatus(e.target.value)} className="px-4 py-2 border border-gray-300 rounded-lg hover:border-gray-500">
+                    <div className="flex flex-col sm:flex-row gap-4 mt-3">
+                        <select 
+                            value={status} 
+                            onChange={(e) => setStatus(e.target.value)} 
+                            className="px-4 py-2 border border-gray-300 rounded-lg hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+                        >
                             <option value='all'>All Applications</option>
                             <option value='pending'>Pending</option>
                             <option value='pranuar'>Approved</option>
                             <option value='refuzuar'>Rejected</option>
                         </select>
                         
-                        <div className="relative">
+                        <div className="relative flex-1">
                             <input
                                 type="text"
                                 placeholder="Search by company name or city..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="px-4 py-2 pr-10 border border-gray-300 rounded-lg hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[400px] text-base"
+                                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                             />
                             {searchTerm && (
                                 <button
@@ -129,7 +133,7 @@ export default function Applications() {
                 </div>
                 <button 
                     onClick={fetchApplications}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2 w-full sm:w-auto justify-center"
                 >
                     🔄 Refresh
                 </button>
@@ -146,7 +150,8 @@ export default function Applications() {
 
             {/* Applications Table */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
-                <div className="overflow-x-auto">
+                {/* Desktop Table */}
+                <div className="hidden lg:block overflow-x-auto">
                     <table className="w-full">
                         <thead className="bg-gray-50">
                             <tr>
@@ -220,6 +225,66 @@ export default function Applications() {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="lg:hidden">
+                    {applications.length > 0 ? (
+                        <div className="space-y-4 p-4">
+                            {applications.map((application) => (
+                                <div key={application.aplikimiID} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="flex items-center">
+                                            <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                                                <span className="text-sm font-medium text-red-600">
+                                                    {application.emri_kompanise ? application.emri_kompanise.split(' ').map(n => n[0]).join('') : 'AP'}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <div className="font-medium text-gray-900">{application.emri_kompanise}</div>
+                                                <div className="text-sm text-gray-500">ID: {application.aplikimiID}</div>
+                                            </div>
+                                        </div>
+                                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusStyles[application.statusi?.statusi]?.bgColor || 'bg-gray-100'} ${statusStyles[application.statusi?.statusi]?.textColor || 'text-gray-800'}`}>
+                                            {statusStyles[application.statusi?.statusi]?.label || application.statusi?.statusi || 'Unknown'}
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="space-y-2 mb-4">
+                                        <div className="text-sm">
+                                            <span className="font-medium text-gray-700">Email:</span>
+                                            <span className="text-gray-900 ml-1">{application.email}</span>
+                                        </div>
+                                        <div className="text-sm">
+                                            <span className="font-medium text-gray-700">Address:</span>
+                                            <span className="text-gray-900 ml-1">{application.adresa}</span>
+                                        </div>
+                                        <div className="text-sm">
+                                            <span className="font-medium text-gray-700">City:</span>
+                                            <span className="text-blue-600 font-medium ml-1">{application.qyteti}</span>
+                                        </div>
+                                        <div className="text-sm">
+                                            <span className="font-medium text-gray-700">Date:</span>
+                                            <span className="text-gray-900 ml-1">
+                                                {application.koha_aplikimit ? new Date(application.koha_aplikimit).toLocaleDateString() : 'N/A'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <button
+                                        onClick={() => handleEditApplication(application)}
+                                        className="w-full text-blue-600 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-2 rounded-md transition-colors duration-200 flex items-center justify-center gap-1"
+                                    >
+                                        Review Application
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="p-6 text-center text-gray-500">
+                            No {status} applications found
+                        </div>
+                    )}
                 </div>
             </div>
 

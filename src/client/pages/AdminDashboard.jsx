@@ -150,13 +150,13 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-white shadow-sm border-b rounded-lg">
-        <div className="px-6 py-4">
-          <div className="flex justify-between items-center">
+        <div className="px-4 lg:px-6 py-4">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-gray-600">Analytics & Overview</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+              <p className="text-gray-600 text-sm sm:text-base">Analytics & Overview</p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <button 
                 onClick={() => {
                   fetchApplications();
@@ -164,9 +164,9 @@ export default function AdminDashboard() {
                   fetchRecentOrders();
                   fetchTopProducts();
                 }}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
+                className="px-3 sm:px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
               >
-                🔄 Refresh Data
+                🔄 <span className="hidden sm:inline">Refresh Data</span>
               </button>
               <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
                 <span role="img" aria-label="bell">🔔</span>

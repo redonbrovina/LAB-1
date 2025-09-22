@@ -216,34 +216,34 @@ export default function Products() {
       <ClientNavBar />
 
       {/* Main Content */}
-      <div className="flex-1 p-8 overflow-y-auto">
+            <div className="flex-1 pt-16 lg:pt-0 p-4 lg:p-8 overflow-y-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold" style={{ color: "#808080" }}>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold" style={{ color: "#808080" }}>
             {searchResults ? `Rezultatet e kërkimit (${searchResults.length})` : 'Shop'}
           </h1>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {/* View Mode Toggle */}
             <div className="flex border rounded-lg bg-white">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-l-lg ${viewMode === 'grid' ? 'bg-green-500 text-white' : 'text-gray-600'}`}
               >
-                <Grid size={18} />
+                <Grid size={16} />
               </button>
               <button
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-r-lg ${viewMode === 'list' ? 'bg-green-500 text-white' : 'text-gray-600'}`}
               >
-                <List size={18} />
+                <List size={16} />
               </button>
             </div>
             
             <button 
               onClick={loadProducts}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
+              className="px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
             >
-              🔄 Refresh
+              🔄 <span className="hidden sm:inline">Refresh</span>
             </button>
             <button className="p-2 rounded-full bg-white shadow">
               <span role="img" aria-label="bell">🔔</span>
@@ -264,9 +264,9 @@ export default function Products() {
         </div>
 
         {/* Filters and Products Layout */}
-        <div className="flex gap-6">
+        <div className="flex flex-col lg:flex-row gap-6">
           {/* Filters Sidebar */}
-          <div className="w-64 flex-shrink-0">
+          <div className="w-full lg:w-64 flex-shrink-0">
             <ProductFilter
               categories={categories}
               onFilterChange={handleFilterChange}
@@ -276,7 +276,7 @@ export default function Products() {
           </div>
 
           {/* Products Section */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
 
         {/* Error Message */}
         {error && (
@@ -310,7 +310,7 @@ export default function Products() {
             ) : (
               /* Products Display */
               <div className={viewMode === 'grid' 
-                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6"
                 : "space-y-4"
               }>
                 {filteredProducts.map((product) => (

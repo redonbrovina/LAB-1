@@ -106,7 +106,7 @@ export default function Profile() {
     <div className="flex h-screen" style={{ backgroundColor: "#ECFAEA" }}>
       <ClientNavBar />
 
-      <div className="flex-1 p-8 overflow-y-auto">
+            <div className="flex-1 pt-16 lg:pt-0 p-4 lg:p-8 overflow-y-auto">
         <div className="space-y-6">
           {/* Header */}
           <div className="bg-white shadow-sm rounded-lg">

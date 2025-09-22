@@ -1,10 +1,12 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard } from "lucide-react";
+import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard, Menu, X } from "lucide-react";
 import { useAuth } from "../utils/AuthContext";
+import { useState } from "react";
 
 export default function AdminNavbar() {
   const location = useLocation();
   const { user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -19,66 +21,100 @@ export default function AdminNavbar() {
       : "flex items-center gap-2 text-white hover:bg-red-700 px-4 py-2 rounded-lg transition-colors duration-200";
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
-    <div className="fixed left-0 top-0 h-screen w-64 bg-red-600 text-white flex flex-col z-20">
-      {/* Header */}
-      <div className="p-6">
-        <h2 className="text-xl font-bold">Admin Panel</h2>
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={toggleMobileMenu}
+        className="lg:hidden fixed top-4 right-4 z-50 p-2 bg-red-600 text-white rounded-lg shadow-md"
+      >
+        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={closeMobileMenu}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={`
+        fixed lg:static top-0 left-0 h-screen w-64 bg-red-600 text-white flex flex-col z-50
+        transform transition-transform duration-300 ease-in-out
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 lg:block'}
+      `}>
+        {/* Header */}
+        <div className="p-6">
+          <h2 className="text-xl font-bold">Admin Panel</h2>
+        </div>
+
+        {/* Menu Items */}
+        <nav className="flex-1 p-4 space-y-2">
+          <Link to="/admin" className={getLinkClass("/admin")} onClick={closeMobileMenu}>
+            <LayoutDashboard size={18} />
+            Dashboard
+          </Link>
+
+          <Link to="/admin/applications" className={getLinkClass("/admin/applications")} onClick={closeMobileMenu}>
+            <FileText size={18} />
+            Applications
+          </Link>
+
+          <Link to="/admin/orders" className={getLinkClass("/admin/orders")} onClick={closeMobileMenu}>
+            <ShoppingBag size={18} />
+            Orders
+          </Link>
+
+          <Link to="/admin/suppliers" className={getLinkClass("/admin/suppliers")} onClick={closeMobileMenu}>
+            <Truck size={18} />
+            Suppliers
+          </Link>
+
+          <Link to="/admin/products" className={getLinkClass("/admin/products")} onClick={closeMobileMenu}>
+            <Package size={18} />
+            Products
+          </Link>
+
+          <Link to="/admin/payments" className={getLinkClass("/admin/payments")} onClick={closeMobileMenu}>
+            <DollarSign size={18} />
+            Payments
+          </Link>
+
+          <Link to="/admin/payment-methods" className={getLinkClass("/admin/payment-methods")} onClick={closeMobileMenu}>
+            <CreditCard size={18} />
+            Payment Methods
+          </Link>
+
+          <Link to="/admin/users" className={getLinkClass("/admin/users")} onClick={closeMobileMenu}>
+            <Users size={18} />
+            Users
+          </Link>
+
+          <Link to="/admin/settings" className={getLinkClass("/admin/settings")} onClick={closeMobileMenu}>
+            <Settings size={18} />
+            Settings
+          </Link>
+          
+          <div className="pt-4">
+            <button 
+              onClick={handleLogout}
+              className="w-full px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            >
+              Logout
+            </button>
+          </div>
+        </nav>
       </div>
-
-      {/* Menu Items */}
-      <nav className="flex-1 p-6 space-y-4">
-        <Link to="/admin" className={getLinkClass("/admin")}>
-          <LayoutDashboard size={18} />
-          Dashboard
-        </Link>
-
-        <Link to="/admin/applications" className={getLinkClass("/admin/applications")}>
-          <FileText size={18} />
-          Applications
-        </Link>
-
-        <Link to="/admin/orders" className={getLinkClass("/admin/orders")}>
-          <ShoppingBag size={18} />
-          Orders
-        </Link>
-
-        <Link to="/admin/suppliers" className={getLinkClass("/admin/suppliers")}>
-          <Truck size={18} />
-          Suppliers
-        </Link>
-
-        <Link to="/admin/products" className={getLinkClass("/admin/products")}>
-          <Package size={18} />
-          Products
-        </Link>
-
-        <Link to="/admin/payments" className={getLinkClass("/admin/payments")}>
-          <DollarSign size={18} />
-          Payments
-        </Link>
-
-        <Link to="/admin/payment-methods" className={getLinkClass("/admin/payment-methods")}>
-          <CreditCard size={18} />
-          Payment Methods
-        </Link>
-
-        <Link to="/admin/users" className={getLinkClass("/admin/users")}>
-          <Users size={18} />
-          Users
-        </Link>
-
-        <Link to="/admin/settings" className={getLinkClass("/admin/settings")}>
-          <Settings size={18} />
-          Settings
-        </Link>
-        <button 
-          onClick={handleLogout}
-          className="px-4 ml-2 mt-2 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-        >
-        Logout
-        </button>
-      </nav>
-    </div>
+    </>
   );
 }
