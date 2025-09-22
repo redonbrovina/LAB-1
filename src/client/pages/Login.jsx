@@ -3,6 +3,7 @@ import {useState} from "react"
 import {useAuth} from "../utils/AuthContext"
 import {clientAPI} from "../utils/api"
 import svg from "../assets/images/undraw_finance_m6vw 1.png"
+import eye from "../assets/images/icons8-eye-90.png"
 
 export default function Login() {
 
@@ -76,6 +77,12 @@ export default function Login() {
                                 setPassword(e.target.value)
                             }} 
                             className="rounded-full px-3 py-2 bg-[#EDECEC] w-full pr-10"
+                        />
+                        <img 
+                            src={eye} 
+                            alt="eye" 
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 cursor-pointer hover:opacity-70 transition-opacity" 
+                            onClick={togglePasswordVisibility}
                         />
                     </div>
 

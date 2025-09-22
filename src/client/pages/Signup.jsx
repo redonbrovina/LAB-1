@@ -3,6 +3,7 @@ import {useEffect, useState} from "react"
 import {publicApiPost, publicApiGet} from "../utils/api"
 import Shneta from "../assets/images/Shneta.png"
 import pic from "../assets/images/login5.jpg"
+import eye from "../assets/images/icons8-eye-90.png"
 
 export default function Signup() {
 
@@ -18,6 +19,7 @@ export default function Signup() {
 
     const [shtetet, setShtetet] = useState([])
     const [errorMessage, setErrorMessage] = useState("")
+    const [showPassword, setShowPassword] = useState(false)
 
     const navigate = useNavigate()
 
@@ -27,6 +29,10 @@ export default function Signup() {
             ...prev,
             [name]: value
         }));
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
     };
 
     const fetchShtetet = async () => {
@@ -197,16 +203,16 @@ export default function Signup() {
                                 />
                             </div>
 
-                            <div>
-                                <label className="text-[#808080] block mb-2">Password</label>
+                            <label className="text-[#808080] ml-3">Password</label>
+                            <div className="relative">
                                 <input 
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     name="password"
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="w-full rounded-full px-4 py-3 bg-[#EDECEC] border-0 focus:outline-none focus:ring-2 focus:ring-[#7ED957]"
-                                    placeholder="Enter password"
+                                    className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3 w-full pr-10"
                                 />
+                                <img src={eye} alt="eye" className="w-4 h-4 absolute right-3 top-2/5 transform -translate-y-1/2 text-gray-500" onClick={togglePasswordVisibility}/>
                             </div>
                             
                             <button 
