@@ -10,7 +10,7 @@ const ClientOnlyRoute = ({ children }) => {
   
   if (user.role !== 'klient') {
     if (user.role === 'admin') {
-      return <Navigate to="/admin-dashboard" />;
+      return <Navigate to="/admin" />;
     }
     
     return <Navigate to="/login" />;

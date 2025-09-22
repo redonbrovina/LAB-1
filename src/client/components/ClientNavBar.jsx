@@ -5,6 +5,7 @@ import { useAuth } from "../utils/AuthContext";
 
 export default function ClientNavBar() {
   const location = useLocation(); // merr path-in aktual
+  const navigate = useNavigate();
 
   const { user, logout } = useAuth();
 
