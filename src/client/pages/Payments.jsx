@@ -1,5 +1,5 @@
 import ClientNavBar from "../components/ClientNavBar";
-import { DollarSign, CreditCard, Banknote, Info } from "lucide-react";
+import { DollarSign, CreditCard, Banknote, Info, Edit, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { paymentAPI, paymentMethodsAPI, ordersAPI } from "../utils/api";
 import { useAuth } from "../utils/AuthContext";
@@ -51,7 +51,7 @@ export default function Payments() {
   const fetchPayments = async () => {
     try {
       const data = await paymentAPI.getAll();
-      const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId;
+      const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId || user?.klienti_id;
       
       // Filter payments to show only current client's payments
       const clientPayments = Array.isArray(data) 
@@ -158,7 +158,6 @@ export default function Payments() {
                       <th className="text-left py-3 px-4">Amount</th>
                       <th className="text-left py-3 px-4">Account Number</th>
                       <th className="text-left py-3 px-4">Payment Date</th>
-                      <th className="text-left py-3 px-4">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -173,20 +172,6 @@ export default function Payments() {
                           <td className="py-3 px-4">{payment.numri_llogarise || 'N/A'}</td>
                           <td className="py-3 px-4">{payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}</td>
                           <td className="py-3 px-4">
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => handleEdit(payment)}
-                                className="p-1 text-blue-600 hover:bg-blue-100 rounded"
-                              >
-                                <Edit size={16} />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(payment.pagesaID)}
-                                className="p-1 text-red-600 hover:bg-red-100 rounded"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
                           </td>
                         </tr>
                       );
@@ -209,20 +194,6 @@ export default function Payments() {
                           <div className="text-sm text-gray-500">
                             Order ID: {payment.porosiaID || 'N/A'}
                           </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEdit(payment)}
-                            className="p-1 text-blue-600 hover:bg-blue-100 rounded"
-                          >
-                            <Edit size={16} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(payment.pagesaID)}
-                            className="p-1 text-red-600 hover:bg-red-100 rounded"
-                          >
-                            <Trash2 size={16} />
-                          </button>
                         </div>
                       </div>
                       
