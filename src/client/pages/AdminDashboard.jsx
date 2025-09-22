@@ -333,6 +333,19 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </button>
+              
+              <button 
+                onClick={() => navigate('/admin/payments')}
+                className="w-full p-3 bg-orange-50 hover:bg-orange-100 rounded-lg text-left transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <DollarSign className="h-5 w-5 text-orange-600" />
+                  <div>
+                    <p className="font-medium text-gray-900">Manage Payments</p>
+                    <p className="text-sm text-gray-500">Admin & Client payments</p>
+                  </div>
+                </div>
+              </button>
             </div>
           </ChartCard>
         </div>

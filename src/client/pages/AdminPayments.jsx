@@ -10,7 +10,6 @@ export default function AdminPayments() {
   const [loading, setLoading] = useState(true);
   const [paymentFilter, setPaymentFilter] = useState('all'); // 'all', 'client', 'admin'
   const [showForm, setShowForm] = useState(false);
-  const [editingPayment, setEditingPayment] = useState(null);
   const { user } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -119,72 +118,26 @@ export default function AdminPayments() {
     try {
       const adminId = user?.adminID || user?.id || user?.adminId || user?.userId;
       
-      if (editingPayment && editingPayment.pagesaID) {
-        // Only allow editing admin payments
-        if (!editingPayment.klientiID) {
-          await paymentAPI.update(editingPayment.pagesaID, formData);
-        } else {
-          alert("You can only edit admin payments, not client payments.");
-          return;
-        }
-      } else {
-        // Create new admin payment for client orders
-        const paymentData = {
-          ...formData,
-          klientiID: null, // This will be an admin payment
-          adminID: adminId
-        };
-        await paymentAPI.create(paymentData);
-      }
+      // Create new admin payment for business expenses (B2B logic)
+      // Admin payments should NOT be linked to client orders (porosiaID should be null)
+      const paymentData = {
+        ...formData,
+        porosiaID: null, // Admin payments are for business expenses, not client orders
+        klientiID: null, // This will be an admin payment
+        adminID: adminId
+      };
+      await paymentAPI.create(paymentData);
+      
       await fetchData();
       setShowForm(false);
-      setEditingPayment(null);
       setFormData({ porosiaID: "", menyra_pagesesID: "", shuma_pageses: "", numri_llogarise: "" });
-      alert("Payment saved successfully!");
+      alert("Admin payment created successfully!");
     } catch (error) {
-      console.error("Error saving payment:", error);
-      alert(`Error saving payment: ${error.message}`);
+      console.error("Error creating payment:", error);
+      alert(`Error creating payment: ${error.message}`);
     }
   };
 
-  const handleEdit = (payment) => {
-    // Only allow editing admin payments
-    if (payment.klientiID) {
-      alert("You can only edit admin payments, not client payments.");
-      return;
-    }
-    
-    setEditingPayment(payment);
-    setFormData({
-      porosiaID: payment.porosiaID || "",
-      menyra_pagesesID: payment.menyra_pagesesID || "",
-      shuma_pageses: payment.shuma_pageses || "",
-      numri_llogarise: payment.numri_llogarise || "",
-    });
-    setShowForm(true);
-  };
-
-  const handleDelete = async (id) => {
-    if (!id) return;
-    
-    // Find the payment to check if it's an admin payment
-    const payment = payments.find(p => p.pagesaID === id);
-    if (payment && payment.klientiID) {
-      alert("You can only delete admin payments, not client payments.");
-      return;
-    }
-    
-    if (window.confirm("Delete this admin payment?")) {
-      try {
-        await paymentAPI.delete(id);
-        await fetchData();
-        alert("Payment deleted successfully!");
-      } catch (error) {
-        console.error("Error deleting payment:", error);
-        alert(`Error deleting payment: ${error.message}`);
-      }
-    }
-  };
 
   if (loading) {
     return (
@@ -197,7 +150,7 @@ export default function AdminPayments() {
   return (
     <div>
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold" style={{ color: "#808080" }}>
+          <h1 className="text-3xl font-bold text-gray-800">
             Admin Payments Dashboard
           </h1>
           <div className="flex gap-3">
@@ -220,7 +173,7 @@ export default function AdminPayments() {
         {/* Payment Filters */}
         <div className="mb-6">
           <div className="bg-white shadow rounded-2xl p-4">
-            <h3 className="text-lg font-semibold mb-4">Filter Payments</h3>
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">Filter Payments</h3>
             <div className="flex gap-3">
               <button
                 onClick={() => setPaymentFilter('all')}
@@ -283,36 +236,37 @@ export default function AdminPayments() {
         </div>
 
         <div className="bg-white shadow rounded-2xl p-6">
-          <h2 className="text-xl font-semibold mb-4">Payment History</h2>
-          
-          {/* Debug Information */}
-          <div className="mb-4 p-3 bg-gray-100 rounded-lg text-sm">
-            <p><strong>Debug Info:</strong></p>
-            <p>Total Payments: {payments.length} | Client: {getFilterCounts().client} | Admin: {getFilterCounts().admin} | Orders: {orders.length}</p>
-            <p>Current Filter: {paymentFilter} | Showing: {getFilteredPayments().length} payments</p>
-            <p>Authentication: {localStorage.getItem('token') ? 'Token present' : 'No token'}</p>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">Payment History</h2>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+              <p className="text-sm text-blue-700">
+                <strong>Note:</strong> All payments are view-only for audit trail integrity. Payments cannot be edited or deleted once created.
+              </p>
+            </div>
           </div>
+          
 
           {getFilteredPayments().length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              {payments.length === 0 
-                ? "No payments found. Payments will appear here when clients make payments."
-                : `No ${paymentFilter} payments found. Try a different filter.`
-              }
+            <div className="text-center py-8 text-gray-600">
+              <p className="text-lg font-medium">
+                {payments.length === 0 
+                  ? "No payments found. Payments will appear here when clients make payments."
+                  : `No ${paymentFilter} payments found. Try a different filter.`
+                }
+              </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-4">ID</th>
-                    <th className="text-left py-3 px-4">Order ID</th>
-                    <th className="text-left py-3 px-4">Payment Method</th>
-                    <th className="text-left py-3 px-4">Amount</th>
-                    <th className="text-left py-3 px-4">Account Number</th>
-                    <th className="text-left py-3 px-4">Payment Date</th>
-                    <th className="text-left py-3 px-4">Type</th>
-                    <th className="text-left py-3 px-4">Actions</th>
+                  <tr className="border-b bg-gray-50">
+                    <th className="text-left py-3 px-4 font-semibold text-gray-800">ID</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-800">Order ID</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-800">Payment Method</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-800">Amount</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-800">Account Number</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-800">Payment Date</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-800">Type</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -320,40 +274,18 @@ export default function AdminPayments() {
                     const paymentMethod = paymentMethods.find(method => method.menyra_pagesesID === payment.menyra_pagesesID);
                     return (
                       <tr key={payment.pagesaID || index} className="border-b hover:bg-gray-50">
-                        <td className="py-3 px-4">{payment.pagesaID || index + 1}</td>
-                        <td className="py-3 px-4">{payment.porosiaID || 'N/A'}</td>
-                        <td className="py-3 px-4">{paymentMethod?.menyra_pageses || 'N/A'}</td>
-                        <td className="py-3 px-4 font-semibold">${payment.shuma_pageses || '0.00'}</td>
-                        <td className="py-3 px-4">{payment.numri_llogarise || 'N/A'}</td>
-                        <td className="py-3 px-4">{payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}</td>
+                        <td className="py-3 px-4 text-gray-700 font-medium">{payment.pagesaID || index + 1}</td>
+                        <td className="py-3 px-4 text-gray-700">{payment.porosiaID || 'N/A'}</td>
+                        <td className="py-3 px-4 text-gray-700">{paymentMethod?.menyra_pageses || 'N/A'}</td>
+                        <td className="py-3 px-4 font-semibold text-gray-800">${payment.shuma_pageses || '0.00'}</td>
+                        <td className="py-3 px-4 text-gray-700">{payment.numri_llogarise || 'N/A'}</td>
+                        <td className="py-3 px-4 text-gray-700">{payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}</td>
                         <td className="py-3 px-4">
                           <span className={`px-2 py-1 rounded-full text-xs ${
                             payment.klientiID ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
                           }`}>
-                            {payment.klientiID ? 'Client Payment' : `Admin Payment (ID: ${payment.adminID})`}
+                            {payment.klientiID ? 'Client Payment' : 'Admin Payment'}
                           </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          {!payment.klientiID ? (
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => handleEdit(payment)}
-                                className="p-1 text-blue-600 hover:bg-blue-100 rounded"
-                                title="Edit Admin Payment"
-                              >
-                                <CreditCard size={16} />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(payment.pagesaID)}
-                                className="p-1 text-red-600 hover:bg-red-100 rounded"
-                                title="Delete Admin Payment"
-                              >
-                                <DollarSign size={16} />
-                              </button>
-                            </div>
-                          ) : (
-                            <span className="text-gray-400 text-sm">View Only</span>
-                          )}
                         </td>
                       </tr>
                     );
@@ -368,39 +300,31 @@ export default function AdminPayments() {
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-              <h2 className="text-xl font-semibold mb-4">
-                {editingPayment ? "Edit Admin Payment" : "Add New Admin Payment"}
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">
+                Add New Admin Payment
               </h2>
               
               <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Order</label>
-                    <select
-                      value={formData.porosiaID}
-                      onChange={(e) => setFormData({...formData, porosiaID: e.target.value})}
-                      className="w-full border rounded-lg px-3 py-2"
-                      required
-                    >
-                      <option value="">Select an order</option>
-                      {orders.length === 0 ? (
-                        <option value="" disabled>No orders available</option>
-                      ) : (
-                        orders.map((order) => (
-                          <option key={order.porosiaID} value={order.porosiaID}>
-                            Order #{order.porosiaID} - ${order.cmimi_total || '0.00'}
-                          </option>
-                        ))
-                      )}
-                    </select>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Payment Description</label>
+                    <input
+                      type="text"
+                      value={formData.numri_llogarise}
+                      onChange={(e) => setFormData({...formData, numri_llogarise: e.target.value})}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Optional description for this admin payment"
+                      maxLength={255}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Admin payments are for business expenses, not client orders</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Payment Method</label>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Payment Method</label>
                     <select
                       value={formData.menyra_pagesesID}
                       onChange={(e) => setFormData({...formData, menyra_pagesesID: e.target.value})}
-                      className="w-full border rounded-lg px-3 py-2"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       required
                     >
                       <option value="">Select a payment method</option>
@@ -417,7 +341,7 @@ export default function AdminPayments() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Payment Amount</label>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Payment Amount</label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
                       <input
@@ -426,24 +350,14 @@ export default function AdminPayments() {
                         min="0.01"
                         value={formData.shuma_pageses}
                         onChange={(e) => setFormData({...formData, shuma_pageses: e.target.value})}
-                        className="w-full border rounded-lg px-8 py-2 pl-8"
+                        className="w-full border border-gray-300 rounded-lg px-8 py-2 pl-8 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="0.00"
                         required
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Amount to be paid for this order</p>
+                    <p className="text-xs text-gray-500 mt-1">Amount for this business expense</p>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Account Number</label>
-                    <input
-                      type="text"
-                      value={formData.numri_llogarise}
-                      onChange={(e) => setFormData({...formData, numri_llogarise: e.target.value})}
-                      className="w-full border rounded-lg px-3 py-2"
-                      placeholder="Optional account number"
-                    />
-                  </div>
                 </div>
 
                 <div className="flex gap-3 mt-6">
@@ -451,13 +365,12 @@ export default function AdminPayments() {
                     type="submit"
                     className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
                   >
-                    {editingPayment ? 'Update' : 'Create'} Admin Payment
+                    Create Admin Payment
                   </button>
                   <button
                     type="button"
                     onClick={() => {
                       setShowForm(false);
-                      setEditingPayment(null);
                       setFormData({
                         porosiaID: "",
                         menyra_pagesesID: "",
