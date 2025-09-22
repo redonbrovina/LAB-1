@@ -62,7 +62,7 @@ export default function PaymentMethods() {
     <div className="flex h-screen" style={{ backgroundColor: "#ECFAEA" }}>
       <ClientNavBar />
 
-      <div className="flex-1 p-8 overflow-y-auto">
+            <div className="flex-1 pt-16 lg:pt-0 p-4 lg:p-8 overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold" style={{ color: "#808080" }}>
