@@ -168,82 +168,133 @@ export default function Orders() {
 
         {/* Orders Table */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ID Porosie
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Klienti
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Data
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Shuma
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Statusi
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Veprime
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredOrders.map((order) => {
-                const status = getStatusBadge(order.porosia_statusID);
-                const StatusIcon = status.icon;
-                
-                return (
-                  <tr key={order.porosiaID} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      #{order.porosiaID}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <div>
-                        <div className="font-medium text-gray-900">#{order.klientiID}</div>
-                        <div className="text-xs text-gray-400">ID Klienti</div>
+          {/* Desktop Table */}
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ID Porosie
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Klienti
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Data
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Shuma
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Statusi
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Veprime
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredOrders.map((order) => {
+                  const status = getStatusBadge(order.porosia_statusID);
+                  const StatusIcon = status.icon;
+                  
+                  return (
+                    <tr key={order.porosiaID} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        #{order.porosiaID}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div>
+                          <div className="font-medium text-gray-900">#{order.klientiID}</div>
+                          <div className="text-xs text-gray-400">ID Klienti</div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {formatDate(order.koha_krijimit)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {formatPrice(order.cmimi_total)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${status.color}`}>
+                          <StatusIcon size={12} />
+                          {status.text}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button
+                          onClick={() => {
+                            setSelectedOrder(order);
+                            setShowModal(true);
+                          }}
+                          className="text-red-600 hover:text-red-900 flex items-center gap-1"
+                        >
+                          <Eye size={16} />
+                          Shiko
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="lg:hidden">
+            {filteredOrders.length > 0 ? (
+              <div className="space-y-4 p-4">
+                {filteredOrders.map((order) => {
+                  const status = getStatusBadge(order.porosia_statusID);
+                  const StatusIcon = status.icon;
+                  
+                  return (
+                    <div key={order.porosiaID} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      {/* First Row - Order ID and Status */}
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <div className="font-medium text-gray-900">Porosia #{order.porosiaID}</div>
+                          <div className="text-sm text-gray-500">Klienti #{order.klientiID}</div>
+                        </div>
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${status.color}`}>
+                          <StatusIcon size={12} />
+                          {status.text}
+                        </span>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(order.koha_krijimit)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {formatPrice(order.cmimi_total)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${status.color}`}>
-                        <StatusIcon size={12} />
-                        {status.text}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      
+                      {/* Second Row - Date and Amount */}
+                      <div className="flex justify-between items-center mb-3">
+                        <div>
+                          <div className="text-sm font-medium text-gray-700">Data:</div>
+                          <div className="text-sm text-gray-600">{formatDate(order.koha_krijimit)}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm font-medium text-gray-700">Shuma:</div>
+                          <div className="text-sm font-bold text-gray-900">{formatPrice(order.cmimi_total)}</div>
+                        </div>
+                      </div>
+                      
+                      {/* Action Button */}
                       <button
                         onClick={() => {
                           setSelectedOrder(order);
                           setShowModal(true);
                         }}
-                        className="text-red-600 hover:text-red-900 flex items-center gap-1"
+                        className="w-full text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-md transition-colors duration-200 flex items-center justify-center gap-1"
                       >
                         <Eye size={16} />
-                        Shiko
+                        Shiko Detajet
                       </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {filteredOrders.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            Nuk u gjetën porosi që përputhen me kriteret e kërkimit.
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                Nuk u gjetën porosi që përputhen me kriteret e kërkimit.
+              </div>
+            )}
           </div>
-        )}
         </div>
 
       {/* Order Details Modal */}

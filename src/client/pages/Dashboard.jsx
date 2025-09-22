@@ -173,7 +173,7 @@ export default function Dashboard() {
     <div className="flex h-screen" style={{ backgroundColor: "#ECFAEA" }}>
       <ClientNavBar />
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 pt-16 lg:pt-0 overflow-y-auto">
         {/* Header */}
         <div className="bg-white shadow-sm border-b" style={{ borderColor: "#808080" }}>
           <div className="px-6 py-4">
@@ -198,8 +198,39 @@ export default function Dashboard() {
 
         {/* Navigation Tabs */}
         <div className="bg-white border-b" style={{ borderColor: "#808080" }}>
-          <div className="px-6">
-            <nav className="flex space-x-8">
+          <div className="px-4 lg:px-6">
+            {/* Mobile Grid Layout */}
+            <div className="lg:hidden grid grid-cols-2 gap-2 py-2">
+              {[
+                { id: 'overview', label: 'Përmbledhje', icon: TrendingUp },
+                { id: 'cart', label: 'Shporta', icon: ShoppingCart },
+                { id: 'orders', label: 'Porositë', icon: Package },
+                { id: 'payments', label: 'Pagesat', icon: CreditCard }
+              ].map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setActiveTab(id)}
+                  className={`flex flex-col items-center gap-1 px-3 py-3 rounded-lg font-medium transition-colors ${
+                    activeTab === id
+                      ? 'bg-green-100 text-green-600 border-2 border-green-600'
+                      : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <div className="flex items-center gap-1">
+                    <Icon size={16} />
+                    {id === 'cart' && cartItems.length > 0 && (
+                      <span className="bg-green-600 text-white text-xs rounded-full px-1.5 py-0.5">
+                        {cartItems.length}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs">{label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Desktop Horizontal Layout */}
+            <nav className="hidden lg:flex space-x-8">
               {[
                 { id: 'overview', label: 'Përmbledhje', icon: TrendingUp },
                 { id: 'cart', label: 'Shporta', icon: ShoppingCart },
