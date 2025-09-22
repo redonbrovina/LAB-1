@@ -250,59 +250,125 @@ export default function ProductsAdmin() {
         {loading ? (
           <div className="text-gray-500">Duke u ngarkuar...</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="text-left text-gray-600 border-b">
-                  <th className="py-2 pr-4">ID</th>
-                  <th className="py-2 pr-4">Imazhi</th>
-                  <th className="py-2 pr-4">Emri</th>
-                  <th className="py-2 pr-4">Kategoria</th>
-                  <th className="py-2 pr-4">Çmimi</th>
-                  <th className="py-2 pr-4">Stok</th>
-                  <th className="py-2 pr-4">Përshkrimi</th>
-                  <th className="py-2 pr-4">Veprimet</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map(p => {
-                  const id = p.ProduktiID ?? p.produktiID ?? p.id;
-                  const catId = p.KategoriaID ?? p.kategoriaID;
-                  return (
-                    <tr key={id} className="border-b hover:bg-gray-50">
-                      <td className="py-2 pr-4">{id}</td>
-                      <td className="py-2 pr-4">
-                        <div className="w-12 h-12">
-                          <img 
-                            src={(p && p.imazhi) ? p.imazhi : '/src/client/assets/images/default-pill-bottle.svg'} 
-                            alt={p?.emri || 'Product'}
-                            className="w-full h-full object-contain"
-                            onError={(e) => {
-                              e.target.src = '/src/client/assets/images/default-pill-bottle.svg';
-                            }}
-                          />
-                        </div>
-                      </td>
-                      <td className="py-2 pr-4">{p.emri}</td>
-                      <td className="py-2 pr-4">{categoryMap.get(catId) || catId || '-'}</td>
-                      <td className="py-2 pr-4">€{p.variacionet?.[0]?.cmimi || '0.00'}</td>
-                      <td className="py-2 pr-4">{p.sasia_ne_stok || '0'}</td>
-                      <td className="py-2 pr-4 max-w-xl truncate" title={p.pershkrimi || ''}>{p.pershkrimi || '-'}</td>
-                      <td className="py-2 pr-4 space-x-2">
-                        <button className="px-3 py-1 text-xs bg-blue-500 text-white rounded" onClick={() => handleEdit(p)}>Edito</button>
-                        <button className="px-3 py-1 text-xs bg-red-500 text-white rounded" onClick={() => handleDelete(id)}>Fshij</button>
-                      </td>
-                    </tr>
-                  );
-                })}
-                {products.length === 0 && (
-                  <tr>
-                    <td className="py-4 text-center text-gray-500" colSpan={8}>Nuk ka produkte</td>
+          <>
+            {/* Desktop Table */}
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="text-left text-gray-600 border-b">
+                    <th className="py-2 pr-4">ID</th>
+                    <th className="py-2 pr-4">Imazhi</th>
+                    <th className="py-2 pr-4">Emri</th>
+                    <th className="py-2 pr-4">Kategoria</th>
+                    <th className="py-2 pr-4">Çmimi</th>
+                    <th className="py-2 pr-4">Stok</th>
+                    <th className="py-2 pr-4">Përshkrimi</th>
+                    <th className="py-2 pr-4">Veprimet</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {products.map(p => {
+                    const id = p.ProduktiID ?? p.produktiID ?? p.id;
+                    const catId = p.KategoriaID ?? p.kategoriaID;
+                    return (
+                      <tr key={id} className="border-b hover:bg-gray-50">
+                        <td className="py-2 pr-4">{id}</td>
+                        <td className="py-2 pr-4">
+                          <div className="w-12 h-12">
+                            <img 
+                              src={(p && p.imazhi) ? p.imazhi : '/src/client/assets/images/default-pill-bottle.svg'} 
+                              alt={p?.emri || 'Product'}
+                              className="w-full h-full object-contain"
+                              onError={(e) => {
+                                e.target.src = '/src/client/assets/images/default-pill-bottle.svg';
+                              }}
+                            />
+                          </div>
+                        </td>
+                        <td className="py-2 pr-4">{p.emri}</td>
+                        <td className="py-2 pr-4">{categoryMap.get(catId) || catId || '-'}</td>
+                        <td className="py-2 pr-4">€{p.variacionet?.[0]?.cmimi || '0.00'}</td>
+                        <td className="py-2 pr-4">{p.sasia_ne_stok || '0'}</td>
+                        <td className="py-2 pr-4 max-w-xl truncate" title={p.pershkrimi || ''}>{p.pershkrimi || '-'}</td>
+                        <td className="py-2 pr-4 space-x-2">
+                          <button className="px-3 py-1 text-xs bg-blue-500 text-white rounded" onClick={() => handleEdit(p)}>Edito</button>
+                          <button className="px-3 py-1 text-xs bg-red-500 text-white rounded" onClick={() => handleDelete(id)}>Fshij</button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {products.length === 0 && (
+                    <tr>
+                      <td className="py-4 text-center text-gray-500" colSpan={8}>Nuk ka produkte</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="lg:hidden">
+              {products.length > 0 ? (
+                <div className="space-y-4">
+                  {products.map(p => {
+                    const id = p.ProduktiID ?? p.produktiID ?? p.id;
+                    const catId = p.KategoriaID ?? p.kategoriaID;
+                    
+                    return (
+                      <div key={id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        {/* First Row - Image, Name, and Actions */}
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="w-16 h-16 flex-shrink-0">
+                            <img 
+                              src={(p && p.imazhi) ? p.imazhi : '/src/client/assets/images/default-pill-bottle.svg'} 
+                              alt={p?.emri || 'Product'}
+                              className="w-full h-full object-contain"
+                              onError={(e) => {
+                                e.target.src = '/src/client/assets/images/default-pill-bottle.svg';
+                              }}
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-gray-900 truncate">{p.emri}</div>
+                            <div className="text-sm text-gray-500">ID: {id}</div>
+                            <div className="text-sm text-gray-600">{categoryMap.get(catId) || catId || '-'}</div>
+                          </div>
+                          <div className="flex gap-2">
+                            <button className="px-3 py-1 text-xs bg-blue-500 text-white rounded" onClick={() => handleEdit(p)}>Edito</button>
+                            <button className="px-3 py-1 text-xs bg-red-500 text-white rounded" onClick={() => handleDelete(id)}>Fshij</button>
+                          </div>
+                        </div>
+                        
+                        {/* Second Row - Price, Stock, and Description */}
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium text-gray-700">Çmimi:</span>
+                            <span className="font-semibold text-gray-900">€{p.variacionet?.[0]?.cmimi || '0.00'}</span>
+                          </div>
+                          
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium text-gray-700">Stok:</span>
+                            <span className="font-medium text-gray-900">{p.sasia_ne_stok || '0'}</span>
+                          </div>
+                          
+                          {p.pershkrimi && (
+                            <div>
+                              <span className="text-sm font-medium text-gray-700">Përshkrimi:</span>
+                              <p className="text-sm text-gray-600 mt-1 line-clamp-2">{p.pershkrimi}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  Nuk ka produkte
+                </div>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

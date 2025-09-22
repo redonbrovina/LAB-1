@@ -48,45 +48,68 @@ export default function AdminLogin() {
 
     return(
         <>
-        <div className="bg-white flex flex-col md:flex-row justify-evenly m-10">
-            <div className="flex flex-col md:w-1/2 pt-35">
-                <p className="text-[#808080] text-2xl text-center pb-10">Admin <span className="text-[#7ED957]">Access</span> Portal</p>
-                <form className="flex flex-col gap-2" method="POST">
-                    <label className="text-[#808080]">Admin Email</label>
-                    <input
-                     type="email"
-                     value={email}
-                     onChange={(e) => {
-                        setEmail(e.target.value)
-                     }} 
-                     className="rounded-full px-3 py-2 bg-[#EDECEC]"></input>
+        <div className="min-h-screen bg-white flex items-center justify-center p-6">
+            <div className="w-full max-w-md">
+                <div className="text-center mb-8">
+                    <h1 className="text-[#808080] text-2xl lg:text-3xl font-bold">
+                        Admin <span className="text-[#DC2626]">Access</span> Portal
+                    </h1>
+                    <p className="text-[#808080] text-sm mt-2">Secure administrator login</p>
+                </div>
+                
+                <form className="space-y-6" method="POST">
+                    <div>
+                        <label className="text-[#808080] block mb-2 font-medium">Admin Email</label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)} 
+                            className="w-full rounded-full px-4 py-3 bg-[#EDECEC] border-0 focus:outline-none focus:ring-2 focus:ring-[#DC2626]"
+                            placeholder="Enter admin email"
+                        />
+                    </div>
 
-                    <label className="text-[#808080] pt-5">Password</label>
-                    <input 
-                    type="password"
-                    value={password}
-                    onChange={(e) => {
-                        setPassword(e.target.value)
-                    }} 
-                    className="rounded-full px-3 py-2 bg-[#EDECEC]"></input>
+                    <div>
+                        <label className="text-[#808080] block mb-2 font-medium">Password</label>
+                        <input 
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)} 
+                            className="w-full rounded-full px-4 py-3 bg-[#EDECEC] border-0 focus:outline-none focus:ring-2 focus:ring-[#DC2626]"
+                            placeholder="Enter password"
+                        />
+                    </div>
 
-                    <label className="text-[#808080] pt-5">Personal Code</label>
-                    <input 
-                    type="text"
-                    value={kodiPersonal}
-                    onChange={(e) => {
-                        setKodiPersonal(e.target.value)
-                    }} 
-                    placeholder="Enter your personal code"
-                    className="rounded-full px-3 py-2 bg-[#EDECEC]"></input>
+                    <div>
+                        <label className="text-[#808080] block mb-2 font-medium">Personal Code</label>
+                        <input 
+                            type="text"
+                            value={kodiPersonal}
+                            onChange={(e) => setKodiPersonal(e.target.value)} 
+                            placeholder="Enter your personal code"
+                            className="w-full rounded-full px-4 py-3 bg-[#EDECEC] border-0 focus:outline-none focus:ring-2 focus:ring-[#DC2626]"
+                        />
+                    </div>
 
-                    <button type="submit" onClick={handleSubmit} className="mt-5 py-2 bg-[#DC2626] text-white cursor-pointer text-xl rounded-full hover:bg-[#B91C1C] transition-colors duration-200">Admin Login</button>
+                    <button 
+                        type="submit" 
+                        onClick={handleSubmit} 
+                        className="w-full mt-8 py-3 bg-[#DC2626] text-white cursor-pointer text-lg rounded-full hover:bg-[#B91C1C] transition-colors duration-200 font-medium"
+                    >
+                        Admin Login
+                    </button>
 
-                     {errorMessage && (
-                            <p className="text-red-500 text-xs my-2 ml-3">{errorMessage}</p>
+                    {errorMessage && (
+                        <p className="text-red-500 text-sm mt-4 text-center">{errorMessage}</p>
                     )}
                 </form>
-                <p className="pt-3 text-[#808080] text-sm ml-3">Regular user? <Link className="underline text-[#7ED957] text-sm" to="/login">Client Login</Link></p>
+                
+                <div className="mt-6 text-center">
+                    <p className="text-[#808080] text-sm">
+                        Regular user? 
+                        <Link className="underline text-[#7ED957] ml-1" to="/login">Client Login</Link>
+                    </p>
+                </div>
             </div>
         </div>
         </>

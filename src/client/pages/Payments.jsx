@@ -81,7 +81,7 @@ export default function Payments() {
     return (
       <div className="flex h-screen" style={{ backgroundColor: "#ECFAEA" }}>
         <ClientNavBar />
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 lg:ml-0 flex items-center justify-center">
           <div className="text-lg">Loading payments...</div>
         </div>
       </div>
@@ -92,7 +92,7 @@ export default function Payments() {
     <div className="flex h-screen" style={{ backgroundColor: "#ECFAEA" }}>
       <ClientNavBar />
 
-      <div className="flex-1 p-8 overflow-y-auto">
+            <div className="flex-1 pt-16 lg:pt-0 p-4 lg:p-8 overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold" style={{ color: "#808080" }}>
@@ -105,7 +105,7 @@ export default function Payments() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8">
           <div className="bg-white shadow rounded-2xl p-6">
             <div className="flex items-center gap-3 text-green-600 font-semibold">
               <DollarSign size={24} />
@@ -146,39 +146,114 @@ export default function Payments() {
               <p className="text-sm">Payments will appear here automatically when you place orders.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-4">ID</th>
-                    <th className="text-left py-3 px-4">Order ID</th>
-                    <th className="text-left py-3 px-4">Payment Method</th>
-                    <th className="text-left py-3 px-4">Amount</th>
-                    <th className="text-left py-3 px-4">Account Number</th>
-                    <th className="text-left py-3 px-4">Payment Date</th>
-                    <th className="text-left py-3 px-4">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {payments.map((payment, index) => {
-                    const paymentMethod = paymentMethods.find(method => method.menyra_pagesesID === payment.menyra_pagesesID);
-                    return (
-                      <tr key={payment.pagesaID || index} className="border-b hover:bg-gray-50">
-                        <td className="py-3 px-4">{payment.pagesaID || index + 1}</td>
-                        <td className="py-3 px-4">{payment.porosiaID || 'N/A'}</td>
-                        <td className="py-3 px-4">{paymentMethod?.menyra_pageses || 'N/A'}</td>
-                        <td className="py-3 px-4 font-semibold">${payment.shuma_pageses || '0.00'}</td>
-                        <td className="py-3 px-4">{payment.numri_llogarise || 'N/A'}</td>
-                        <td className="py-3 px-4">{payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}</td>
-                        <td className="py-3 px-4">
-                          <span className="text-gray-400 text-sm">View Only</span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <>
+              {/* Desktop Table */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-3 px-4">ID</th>
+                      <th className="text-left py-3 px-4">Order ID</th>
+                      <th className="text-left py-3 px-4">Payment Method</th>
+                      <th className="text-left py-3 px-4">Amount</th>
+                      <th className="text-left py-3 px-4">Account Number</th>
+                      <th className="text-left py-3 px-4">Payment Date</th>
+                      <th className="text-left py-3 px-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {payments.map((payment, index) => {
+                      const paymentMethod = paymentMethods.find(method => method.menyra_pagesesID === payment.menyra_pagesesID);
+                      return (
+                        <tr key={payment.pagesaID || index} className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4">{payment.pagesaID || index + 1}</td>
+                          <td className="py-3 px-4">{payment.porosiaID || 'N/A'}</td>
+                          <td className="py-3 px-4">{paymentMethod?.menyra_pageses || 'N/A'}</td>
+                          <td className="py-3 px-4 font-semibold">${payment.shuma_pageses || '0.00'}</td>
+                          <td className="py-3 px-4">{payment.numri_llogarise || 'N/A'}</td>
+                          <td className="py-3 px-4">{payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}</td>
+                          <td className="py-3 px-4">
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleEdit(payment)}
+                                className="p-1 text-blue-600 hover:bg-blue-100 rounded"
+                              >
+                                <Edit size={16} />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(payment.pagesaID)}
+                                className="p-1 text-red-600 hover:bg-red-100 rounded"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="lg:hidden space-y-4">
+                {payments.map((payment, index) => {
+                  const paymentMethod = paymentMethods.find(method => method.menyra_pagesesID === payment.menyra_pagesesID);
+                  return (
+                    <div key={payment.pagesaID || index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <div className="font-medium" style={{ color: "#808080" }}>
+                            Payment #{payment.pagesaID || index + 1}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            Order ID: {payment.porosiaID || 'N/A'}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEdit(payment)}
+                            className="p-1 text-blue-600 hover:bg-blue-100 rounded"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(payment.pagesaID)}
+                            className="p-1 text-red-600 hover:bg-red-100 rounded"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium" style={{ color: "#808080" }}>Method:</span>
+                          <span className="text-sm">{paymentMethod?.menyra_pageses || 'N/A'}</span>
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium" style={{ color: "#808080" }}>Amount:</span>
+                          <span className="font-semibold">${payment.shuma_pageses || '0.00'}</span>
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium" style={{ color: "#808080" }}>Account:</span>
+                          <span className="text-sm">{payment.numri_llogarise || 'N/A'}</span>
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium" style={{ color: "#808080" }}>Date:</span>
+                          <span className="text-sm">
+                            {payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
 

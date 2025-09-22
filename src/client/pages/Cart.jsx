@@ -201,7 +201,7 @@ export default function Cart() {
       <ClientNavBar />
 
       {/* Main Content */}
-      <div className="flex-1 p-8 overflow-y-auto">
+      <div className="flex-1 pt-16 lg:pt-0 p-4 lg:p-8 overflow-y-auto">
         {/* Header */}
                <div className="flex justify-between items-center mb-8">
                  <h1 className="text-2xl font-bold" style={{ color: "#808080" }}>
@@ -256,94 +256,154 @@ export default function Cart() {
                   </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full border border-gray-200">
-                    <thead>
-                      <tr className="bg-gray-100">
-                        <th className="text-left p-2 border-b">Product</th>
-                        <th className="text-left p-2 border-b">Quantity</th>
-                        <th className="text-left p-2 border-b">Price</th>
-                        <th className="text-left p-2 border-b">Total</th>
-                        <th className="text-left p-2 border-b">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                             {cartItems.map((item) => (
-                               <tr key={item.produkti_cartID} className="hover:bg-gray-50">
-                                 <td className="p-2 border-b" style={{ color: "#808080" }}>
-                                   <div>
-                                     <div className="font-medium">Product #{item.produkt_variacioniID}</div>
-                                     <div className="text-sm text-gray-500">Variation ID: {item.produkt_variacioniID}</div>
-                                   </div>
-                                 </td>
-                                 <td className="p-2 border-b" style={{ color: "#808080" }}>
-                                   <div className="flex items-center gap-2">
-                                     <button
-                                       onClick={() => updateQuantity(item.produkti_cartID, item.sasia - 1)}
-                                       className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
-                                     >
-                                       <Minus size={12} />
-                                     </button>
-                                     <span className="px-2 py-1 bg-gray-100 rounded min-w-[2rem] text-center">{item.sasia}</span>
-                                     <button
-                                       onClick={() => updateQuantity(item.produkti_cartID, item.sasia + 1)}
-                                       className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
-                                     >
-                                       <Plus size={12} />
-                                     </button>
-                                   </div>
-                                 </td>
-                                 <td className="p-2 border-b" style={{ color: "#808080" }}>
-                                   €{item.cmimi}
-                                 </td>
-                                 <td className="p-2 border-b" style={{ color: "#808080" }}>
-                                   €{(item.sasia * item.cmimi).toFixed(2)}
-                                 </td>
-                                 <td className="p-2 border-b">
-                                   <button
-                                     onClick={() => removeItem(item.produkti_cartID)}
-                                     className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50"
-                                   >
-                                     <Trash2 size={16} />
-                                   </button>
-                                 </td>
-                               </tr>
-                             ))}
-                    </tbody>
-                  </table>
+                <>
+                  {/* Desktop Table */}
+                  <div className="hidden lg:block overflow-x-auto">
+                    <table className="min-w-full border border-gray-200">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="text-left p-2 border-b">Product</th>
+                          <th className="text-left p-2 border-b">Quantity</th>
+                          <th className="text-left p-2 border-b">Price</th>
+                          <th className="text-left p-2 border-b">Total</th>
+                          <th className="text-left p-2 border-b">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {cartItems.map((item) => (
+                          <tr key={item.produkti_cartID} className="hover:bg-gray-50">
+                            <td className="p-2 border-b" style={{ color: "#808080" }}>
+                              <div>
+                                <div className="font-medium">Product #{item.produkt_variacioniID}</div>
+                                <div className="text-sm text-gray-500">Variation ID: {item.produkt_variacioniID}</div>
+                              </div>
+                            </td>
+                            <td className="p-2 border-b" style={{ color: "#808080" }}>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => updateQuantity(item.produkti_cartID, item.sasia - 1)}
+                                  className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                                >
+                                  <Minus size={12} />
+                                </button>
+                                <span className="px-2 py-1 bg-gray-100 rounded min-w-[2rem] text-center">{item.sasia}</span>
+                                <button
+                                  onClick={() => updateQuantity(item.produkti_cartID, item.sasia + 1)}
+                                  className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                                >
+                                  <Plus size={12} />
+                                </button>
+                              </div>
+                            </td>
+                            <td className="p-2 border-b" style={{ color: "#808080" }}>
+                              €{item.cmimi}
+                            </td>
+                            <td className="p-2 border-b" style={{ color: "#808080" }}>
+                              €{(item.sasia * item.cmimi).toFixed(2)}
+                            </td>
+                            <td className="p-2 border-b">
+                              <button
+                                onClick={() => removeItem(item.produkti_cartID)}
+                                className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile Cards */}
+                  <div className="lg:hidden space-y-4">
+                    {cartItems.map((item) => (
+                      <div key={item.produkti_cartID} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <div className="font-medium" style={{ color: "#808080" }}>
+                              Product #{item.produkt_variacioniID}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              Variation ID: {item.produkt_variacioniID}
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => removeItem(item.produkti_cartID)}
+                            className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium" style={{ color: "#808080" }}>Price:</span>
+                            <span className="font-medium" style={{ color: "#808080" }}>€{item.cmimi}</span>
+                          </div>
+                          
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium" style={{ color: "#808080" }}>Quantity:</span>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => updateQuantity(item.produkti_cartID, item.sasia - 1)}
+                                className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                              >
+                                <Minus size={12} />
+                              </button>
+                              <span className="px-2 py-1 bg-gray-100 rounded min-w-[2rem] text-center">{item.sasia}</span>
+                              <button
+                                onClick={() => updateQuantity(item.produkti_cartID, item.sasia + 1)}
+                                className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                              >
+                                <Plus size={12} />
+                              </button>
+                            </div>
+                          </div>
+                          
+                          <div className="flex justify-between items-center pt-2 border-t border-gray-200">
+                            <span className="font-medium" style={{ color: "#808080" }}>Total:</span>
+                            <span className="font-bold text-lg" style={{ color: "#808080" }}>
+                              €{(item.sasia * item.cmimi).toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                   
-                         {/* Cart Total */}
-                         {cart && (
-                           <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                             <div className="flex justify-between items-center">
-                               <span className="text-lg font-semibold">Total:</span>
-                               <span className="text-lg font-bold text-green-600">
-                                 €{cartItems.filter(item => item.produkt_variacioniID !== null).reduce((sum, item) => sum + (item.sasia * item.cmimi), 0).toFixed(2)}
-                               </span>
-                             </div>
-                           </div>
-                         )}
-                         
-                         {/* Confirm Order Button */}
-                         {cartItems.length > 0 && (
-                           <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
-                             <div className="text-center">
-                               <h3 className="text-lg font-semibold text-green-800 mb-2">
-                                 Ready to Order?
-                               </h3>
-                               <p className="text-green-600 mb-4">
-                                 Review your items and confirm your order
-                               </p>
-                               <button
-                                 onClick={createOrder}
-                                 className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold text-lg shadow-lg transition-colors duration-200"
-                               >
-                                 📦 Confirm Order
-                               </button>
-                             </div>
-                           </div>
-                         )}
-                </div>
+                  {/* Cart Total */}
+                  {cart && (
+                    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg font-semibold">Total:</span>
+                        <span className="text-lg font-bold text-green-600">
+                          €{cartItems.filter(item => item.produkt_variacioniID !== null).reduce((sum, item) => sum + (item.sasia * item.cmimi), 0).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Confirm Order Button */}
+                  {cartItems.length > 0 && (
+                    <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+                      <div className="text-center">
+                        <h3 className="text-lg font-semibold text-green-800 mb-2">
+                          Ready to Order?
+                        </h3>
+                        <p className="text-green-600 mb-4">
+                          Review your items and confirm your order
+                        </p>
+                        <button
+                          onClick={createOrder}
+                          className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold text-lg shadow-lg transition-colors duration-200"
+                        >
+                          📦 Confirm Order
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </>
