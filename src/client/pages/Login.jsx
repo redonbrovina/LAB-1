@@ -3,12 +3,14 @@ import {useState} from "react"
 import {useAuth} from "../utils/AuthContext"
 import {clientAPI} from "../utils/api"
 import svg from "../assets/images/undraw_finance_m6vw 1.png"
+import eye from "../assets/images/icons8-eye-90.png"
 
 export default function Login() {
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
+    const [showPassword, setShowPassword] = useState(false)
     const navigate = useNavigate()
     const { login } = useAuth()
 
@@ -24,6 +26,10 @@ export default function Login() {
 
         return "";
     }
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -63,13 +69,22 @@ export default function Login() {
                      className="rounded-full px-3 py-2 bg-[#EDECEC]"></input>
 
                     <label className="text-[#808080] pt-5">Password</label>
-                    <input 
-                    type="password"
-                    value={password}
-                    onChange={(e) => {
-                        setPassword(e.target.value)
-                    }} 
-                    className="rounded-full px-3 py-2 bg-[#EDECEC]"></input>
+                    <div className="relative">
+                        <input 
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => {
+                                setPassword(e.target.value)
+                            }} 
+                            className="rounded-full px-3 py-2 bg-[#EDECEC] w-full pr-10"
+                        />
+                        <img 
+                            src={eye} 
+                            alt="eye" 
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 cursor-pointer hover:opacity-70 transition-opacity" 
+                            onClick={togglePasswordVisibility}
+                        />
+                    </div>
 
                     <button type="submit" onClick={handleSubmit} className="mt-5 py-2 bg-[#7ED957] text-white cursor-pointer text-xl rounded-full hover:bg-[#6bc348] transition-colors duration-200">Login</button>
 
