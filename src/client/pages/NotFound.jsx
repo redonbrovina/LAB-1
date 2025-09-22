@@ -5,47 +5,22 @@ const NotFound = () => {
   const navigate = useNavigate();
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      backgroundColor: '#f8f9fa',
-      padding: '20px',
-      textAlign: 'center'
-    }}>
-      <h1 style={{ fontSize: '6rem', color: '#dc3545', margin: '0' }}>404</h1>
-      <h2 style={{ color: '#333', marginBottom: '20px' }}>Page Not Found</h2>
-      <p style={{ color: '#666', marginBottom: '30px', maxWidth: '500px' }}>
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 p-6 text-center">
+      <h1 className="text-6xl sm:text-8xl lg:text-9xl text-red-500 font-bold mb-4">404</h1>
+      <h2 className="text-2xl sm:text-3xl lg:text-4xl text-gray-800 mb-6 font-semibold">Page Not Found</h2>
+      <p className="text-gray-600 mb-8 max-w-md sm:max-w-lg lg:max-w-xl text-base sm:text-lg leading-relaxed">
         The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.
       </p>
-      <div style={{ display: 'flex', gap: '15px' }}>
+      <div className="flex flex-col sm:flex-row gap-4">
         <button 
           onClick={() => navigate(-1)}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: '#6c757d',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontSize: '16px'
-          }}
+          className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 font-medium text-base"
         >
           ← Go Back
         </button>
         <button 
           onClick={() => navigate('/')}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontSize: '16px'
-          }}
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium text-base"
         >
           🏠 Go Home
         </button>

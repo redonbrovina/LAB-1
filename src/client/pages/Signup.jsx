@@ -102,101 +102,140 @@ export default function Signup() {
 
     return(
         <>
-            <div className="md:flex flex-row space-between">
-                <div className="flex flex-col my-4 mx-6 md:mx-30 md:w-1/2">
-                    <div className="flex flex-row justify-evenly md:justify-between md:mx-4 md:mt-5 items-center">
-                        <img src={Shneta} alt="Shneta Logo" className="w-30 md:w-40" />
-                        <Link to="/" className="px-4 py-2 bg-[#7ED957] text-white cursor-pointer text-sm md:text-l rounded-full w-fit"><button className="cursor-pointer">Back to Home</button></Link>
+            <div className="min-h-screen bg-white flex flex-col lg:flex-row">
+                {/* Left side - Form */}
+                <div className="lg:w-1/2 flex flex-col p-6 lg:p-12">
+                    {/* Header */}
+                    <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
+                        <img src={Shneta} alt="Shneta Logo" className="w-24 sm:w-32 lg:w-40 mb-4 sm:mb-0" />
+                        <Link to="/" className="px-4 py-2 bg-[#7ED957] text-white cursor-pointer text-sm rounded-full w-fit">
+                            <button className="cursor-pointer">Back to Home</button>
+                        </Link>
                     </div>
-                    <div>
-                        <h1 className="text-[#808080] text-center md:text-left md:ml-3 mt-10 text-xl md:text-2xl">Create an <span className="text-[#7ED957]">Account</span></h1>
-                        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-                            <label className="text-[#808080] mt-10 ml-3">Company Name</label>
-                            <input
-                                type="text"
-                                name="emri_kompanise"
-                                value={formData.emri_kompanise}
-                                onChange={handleChange}
-                                className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
-                            />
+                    
+                    {/* Form */}
+                    <div className="flex-1 flex flex-col justify-center">
+                        <h1 className="text-[#808080] text-center lg:text-left text-xl lg:text-2xl mb-8">
+                            Create an <span className="text-[#7ED957]">Account</span>
+                        </h1>
+                        
+                        <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto lg:mx-0 w-full">
+                            <div>
+                                <label className="text-[#808080] block mb-2">Company Name</label>
+                                <input
+                                    type="text"
+                                    name="emri_kompanise"
+                                    value={formData.emri_kompanise}
+                                    onChange={handleChange}
+                                    className="w-full rounded-full px-4 py-3 bg-[#EDECEC] border-0 focus:outline-none focus:ring-2 focus:ring-[#7ED957]"
+                                    placeholder="Enter company name"
+                                />
+                            </div>
 
-                            <label className="text-[#808080] ml-3">Email</label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
-                            />
+                            <div>
+                                <label className="text-[#808080] block mb-2">Email</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    className="w-full rounded-full px-4 py-3 bg-[#EDECEC] border-0 focus:outline-none focus:ring-2 focus:ring-[#7ED957]"
+                                    placeholder="Enter email address"
+                                />
+                            </div>
 
-                            <label className="text-[#808080] ml-3">Address</label>
-                            <input
-                                type="text"
-                                name="adresa"
-                                value={formData.adresa}
-                                onChange={handleChange}
-                                className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
-                            />
+                            <div>
+                                <label className="text-[#808080] block mb-2">Address</label>
+                                <input
+                                    type="text"
+                                    name="adresa"
+                                    value={formData.adresa}
+                                    onChange={handleChange}
+                                    className="w-full rounded-full px-4 py-3 bg-[#EDECEC] border-0 focus:outline-none focus:ring-2 focus:ring-[#7ED957]"
+                                    placeholder="Enter address"
+                                />
+                            </div>
 
-                            <label className="text-[#808080] ml-3">Country</label>
-                            <select
-                                name="shtetiID"
-                                value={formData.shtetiID}
-                                onChange={handleChange}
-                                className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3 text-gray-500"
-                            >
-                                <option value="">Select a Country</option>
-                                {shtetet.map((shteti) => (
-                                    <option key={shteti.shtetiID} value={shteti.shtetiID}>
-                                        {shteti.emri_shtetit}
-                                    </option>
-                                ))}
-                            </select>
+                            <div>
+                                <label className="text-[#808080] block mb-2">Country</label>
+                                <select
+                                    name="shtetiID"
+                                    value={formData.shtetiID}
+                                    onChange={handleChange}
+                                    className="w-full rounded-full px-4 py-3 bg-[#EDECEC] border-0 focus:outline-none focus:ring-2 focus:ring-[#7ED957] text-gray-700"
+                                >
+                                    <option value="">Select a Country</option>
+                                    {shtetet.map((shteti) => (
+                                        <option key={shteti.shtetiID} value={shteti.shtetiID}>
+                                            {shteti.emri_shtetit}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
-                            <label className="text-[#808080] ml-3">City</label>
-                            <input
-                                type="text"
-                                name="qyteti"
-                                value={formData.qyteti}
-                                onChange={handleChange}
-                                className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
-                            />
+                            <div>
+                                <label className="text-[#808080] block mb-2">City</label>
+                                <input
+                                    type="text"
+                                    name="qyteti"
+                                    value={formData.qyteti}
+                                    onChange={handleChange}
+                                    className="w-full rounded-full px-4 py-3 bg-[#EDECEC] border-0 focus:outline-none focus:ring-2 focus:ring-[#7ED957]"
+                                    placeholder="Enter city"
+                                />
+                            </div>
 
-                            <label className="text-[#808080] ml-3">Postal Code</label>
-                            <input
-                                type="text"
-                                name="kodi_postal"
-                                value={formData.kodi_postal}
-                                onChange={handleChange}
-                                className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
-                            />
+                            <div>
+                                <label className="text-[#808080] block mb-2">Postal Code</label>
+                                <input
+                                    type="text"
+                                    name="kodi_postal"
+                                    value={formData.kodi_postal}
+                                    onChange={handleChange}
+                                    className="w-full rounded-full px-4 py-3 bg-[#EDECEC] border-0 focus:outline-none focus:ring-2 focus:ring-[#7ED957]"
+                                    placeholder="Enter postal code"
+                                />
+                            </div>
 
-                            <label className="text-[#808080] ml-3">Password</label>
-                            <input 
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                className="rounded-full px-3 py-2 bg-[#EDECEC] mb-3"
-                            />
+                            <div>
+                                <label className="text-[#808080] block mb-2">Password</label>
+                                <input 
+                                    type="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    className="w-full rounded-full px-4 py-3 bg-[#EDECEC] border-0 focus:outline-none focus:ring-2 focus:ring-[#7ED957]"
+                                    placeholder="Enter password"
+                                />
+                            </div>
                             
                             <button 
                                 type="submit" 
-                                className="mt-5 py-2.5 bg-[#7ED957] text-white cursor-pointer text-xl rounded-full hover:bg-[#6bc348] transition-colors duration-200"
+                                className="w-full mt-6 py-3 bg-[#7ED957] text-white cursor-pointer text-lg rounded-full hover:bg-[#6bc348] transition-colors duration-200"
                             >
                                 Submit Application
                             </button>
                             
                             {errorMessage && (
-                                <p className="text-red-500 text-xs mt-4 mb-2 ml-3">{errorMessage}</p>
+                                <p className="text-red-500 text-sm mt-4 text-center">{errorMessage}</p>
                             )}
                         </form>
-                        <p className="text-sm text-[#808080] mt-5 ml-3">Already have an account? <Link className="text-[#7ED957] underline" to="/login">Sign in</Link></p>
-                        <p className="text-[0.6rem] my-5 ml-3 text-[#808080]">*Warning: Only Eligible Companies will be permitted to create an account. Every submission will be reviewed and approved accordingly</p>
+                        
+                        <div className="mt-6 space-y-2 text-center lg:text-left">
+                            <p className="text-sm text-[#808080]">
+                                Already have an account? 
+                                <Link className="text-[#7ED957] underline ml-1" to="/login">Sign in</Link>
+                            </p>
+                            <p className="text-xs text-[#808080]">
+                                *Warning: Only Eligible Companies will be permitted to create an account. Every submission will be reviewed and approved accordingly
+                            </p>
+                        </div>
                     </div>
                 </div>
-                <div className="w-1/2">
-                    <img className="hidden md:block w-full h-[65rem]" src={pic} alt="signup-picture"/>
+                
+                {/* Right side - Image */}
+                <div className="lg:w-1/2 hidden lg:block">
+                    <img className="w-full h-full object-cover" src={pic} alt="signup-picture"/>
                 </div>
             </div>
         </>
