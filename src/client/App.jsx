@@ -7,46 +7,40 @@ import PublicRoute from './utils/PublicRoute';
 import ClientOnlyRoute from './utils/ClientOnlyRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 
+// Core layouts - keep lazy loaded as they're heavy
 const Layout = lazy(() => import('./components/layout/Layout'));
 const ProtectedLayout = lazy(() => import('./components/layout/ProtectedLayout'));
 const AdminProtectedLayout = lazy(() => import('./components/layout/AdminProtectedLayout'));
 
-const Home = lazy(() => import("./pages/Home"));
-const About = lazy(() => import("./pages/About"));
-const Services = lazy(() => import("./pages/Services"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Products = lazy(() => import("./pages/Products"));
-const Cart = lazy(() => import("./pages/Cart"));
-const Profile = lazy(() => import("./pages/Profile"));
-const AdminLogin = lazy(() => import("./pages/AdminLogin"));
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
-const AdminPayments = lazy(() => import("./pages/AdminPayments"));
-const Login = lazy(() => import("./pages/Login"));
-const Signup = lazy(() => import("./pages/Signup"));
-const SignupSuccess = lazy(() => import('./pages/SignupSuccess'));
-const Payments = lazy(() => import("./pages/Payments"));
-const PaymentMethods = lazy(() => import("./pages/PaymentMethods"));
-const Applications = lazy(() => import("./pages/Applications"));
-const AdminUsers = lazy(() => import("./pages/AdminUsers"));
-const AdminSettings = lazy(() => import("./pages/AdminSettings"));
-const Orders = lazy(() => import("./components/Orders"));
-const SuppliersAdmin = lazy(() => import("./components/SuppliersAdmin"));
-const ProductsAdmin = lazy(() => import("./components/ProductsAdmin"));
-const AdminCreateClient = lazy(() => import("./pages/AdminCreateClient"));
-const AdminPaymentMethods = lazy(() => import("./pages/AdminPaymentMethods"));
+// Public pages - bundle together for better performance
+const PublicPages = lazy(() => import('./pages/AppPages/PublicPages'));
+
+// Auth pages - bundle together
+const AuthPages = lazy(() => import('./pages/AppPages/AuthPages'));
+
+// Client pages - bundle together for better performance
+const ClientPages = lazy(() => import('./pages/AppPages/ClientPages'));
+
+// Admin pages - bundle together for better performance
+const AdminPages = lazy(() => import('./pages/AppPages/AdminPages'));
+
+// Error page - keep separate as it's rarely used
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-// Loading component
+// Enhanced loading component with better UX
 const LoadingSpinner = () => (
   <div style={{ 
     display: 'flex', 
+    flexDirection: 'column',
     justifyContent: 'center', 
     alignItems: 'center', 
     height: '100vh',
     fontSize: '18px',
-    color: '#666'
+    color: '#666',
+    backgroundColor: '#ECFAEA'
   }}>
-    Loading...
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
+    <div>Loading...</div>
   </div>
 );
 
@@ -63,30 +57,30 @@ export default function App() {
                   <Layout />
                 </PublicRoute>
               }>
-                <Route index element={<Home />} />
-                <Route path="about" element={<About />} />
-                <Route path="services" element={<Services />} />
+                <Route index element={<PublicPages />} />
+                <Route path="about" element={<PublicPages />} />
+                <Route path="services" element={<PublicPages />} />
               </Route>
 
             {/* Auth Pages - Only accessible when not logged in */}
             <Route path="/login" element={
               <PublicRoute>
-                <Login />
+                <AuthPages />
               </PublicRoute>
             } />
             <Route path="/signup" element={
               <PublicRoute>
-                <Signup />
+                <AuthPages />
               </PublicRoute>
             } />
             <Route path="/signup-success" element={
               <PublicRoute>
-                <SignupSuccess />
+                <AuthPages />
               </PublicRoute>
             } />
             <Route path="/admin-login" element={
               <PublicRoute>
-                <AdminLogin />
+                <AuthPages />
               </PublicRoute>
             } />
             
@@ -96,26 +90,26 @@ export default function App() {
                 <ProtectedLayout />
               </ClientOnlyRoute>
             }>
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="products" element={<Products />} />
-              <Route path="cart" element={<Cart />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="/payments" element={<Payments />} />
-              <Route path="/payment-methods" element={<PaymentMethods />} />
+              <Route path="dashboard" element={<ClientPages />} />
+              <Route path="products" element={<ClientPages />} />
+              <Route path="cart" element={<ClientPages />} />
+              <Route path="profile" element={<ClientPages />} />
+              <Route path="/payments" element={<ClientPages />} />
+              <Route path="/payment-methods" element={<ClientPages />} />
             </Route>
 
             {/* Admin Only Pages - aligned with AdminNavbar links */}
             <Route path="/admin" element={<AdminProtectedLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="payments" element={<AdminPayments />} />
-              <Route path="payment-methods" element={<AdminPaymentMethods />} />
-              <Route path="applications" element={<Applications />} />
-              <Route path="orders" element={<Orders />} />
-              <Route path="suppliers" element={<SuppliersAdmin />} />
-              <Route path="products" element={<ProductsAdmin />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="users/create" element={<AdminCreateClient />} />
-              <Route path="settings" element={<AdminSettings />} />
+              <Route index element={<AdminPages />} />
+              <Route path="payments" element={<AdminPages />} />
+              <Route path="payment-methods" element={<AdminPages />} />
+              <Route path="applications" element={<AdminPages />} />
+              <Route path="orders" element={<AdminPages />} />
+              <Route path="suppliers" element={<AdminPages />} />
+              <Route path="products" element={<AdminPages />} />
+              <Route path="users" element={<AdminPages />} />
+              <Route path="users/create" element={<AdminPages />} />
+              <Route path="settings" element={<AdminPages />} />
             </Route>
             <Route path='*' element={<NotFound />} />
           </Routes>

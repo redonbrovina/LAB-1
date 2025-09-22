@@ -1,0 +1,45 @@
+import { useLocation } from 'react-router-dom';
+
+// Import all admin pages
+import AdminDashboard from '../AdminDashboard';
+import AdminPayments from '../AdminPayments';
+import AdminPaymentMethods from '../AdminPaymentMethods';
+import Applications from '../Applications';
+import Orders from '../../components/Orders';
+import SuppliersAdmin from '../../components/SuppliersAdmin';
+import ProductsAdmin from '../../components/ProductsAdmin';
+import AdminUsers from '../AdminUsers';
+import AdminCreateClient from '../AdminCreateClient';
+import AdminSettings from '../AdminSettings';
+
+const AdminPages = () => {
+  const location = useLocation();
+  
+  // Route to the appropriate component based on current path
+  switch (location.pathname) {
+    case '/admin':
+      return <AdminDashboard />;
+    case '/admin/payments':
+      return <AdminPayments />;
+    case '/admin/payment-methods':
+      return <AdminPaymentMethods />;
+    case '/admin/applications':
+      return <Applications />;
+    case '/admin/orders':
+      return <Orders />;
+    case '/admin/suppliers':
+      return <SuppliersAdmin />;
+    case '/admin/products':
+      return <ProductsAdmin />;
+    case '/admin/users':
+      return <AdminUsers />;
+    case '/admin/users/create':
+      return <AdminCreateClient />;
+    case '/admin/settings':
+      return <AdminSettings />;
+    default:
+      return <AdminDashboard />;
+  }
+};
+
+export default AdminPages;

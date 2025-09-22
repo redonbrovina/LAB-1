@@ -5,12 +5,12 @@ const service = new PagesaService();
 const PagesaController = {
   async create(req, res) {
     try {
-      const { porosiaID, menyra_pagesesID, shuma_pageses, numri_llogarise, klientiID, adminID } = req.body;
+      const { porosiaID, menyra_pagesesID, shuma_pageses, numri_llogarise, klientiID, adminID, pagesa_statusID } = req.body;
       
       // Validate required fields
-      if (!porosiaID || !menyra_pagesesID || !shuma_pageses) {
+      if (!menyra_pagesesID || !shuma_pageses) {
         return res.status(400).json({ 
-          error: "PorosiaID, menyra_pagesesID dhe shuma_pageses janë të detyrueshëm" 
+          error: "menyra_pagesesID dhe shuma_pageses janë të detyrueshëm" 
         });
       }
 
@@ -21,11 +21,26 @@ const PagesaController = {
         });
       }
 
+      // B2B Logic: Either klientiID OR adminID, not both
+      if (klientiID && adminID) {
+        return res.status(400).json({ 
+          error: "Pagesa mund të jetë ose për klient ose për admin, jo për të dy" 
+        });
+      }
+
+      // Admin payments should not have porosiaID (they are for business expenses)
+      if (adminID && porosiaID) {
+        return res.status(400).json({ 
+          error: "Pagesat e adminit nuk mund të lidhen me porosi klientësh" 
+        });
+      }
+
       const pagesa = await service.create({
         porosiaID,
         menyra_pagesesID,
         shuma_pageses,
         numri_llogarise,
+        pagesa_statusID,
         klientiID,
         adminID
       });

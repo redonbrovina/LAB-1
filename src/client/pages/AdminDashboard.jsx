@@ -15,6 +15,7 @@ import {
   ArrowUpRight,
   ArrowDownRight
 } from "lucide-react";
+
 import { useAuth } from "../utils/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { apiGet } from "../utils/api";
@@ -28,6 +29,8 @@ export default function AdminDashboard() {
   const [dashboardStats, setDashboardStats] = useState({
     totalUsers: 0,
     totalRevenue: 0,
+    totalExpenses: 0,
+    totalIncome: 0,
     totalOrders: 0,
     totalProducts: 0,
     pendingApplications: 0
@@ -46,7 +49,7 @@ export default function AdminDashboard() {
       const pendingApplications = response.filter((application) => 
         !application.statusi || application.statusi?.statusi === "pending"
       );
-      const limitedData = pendingApplications.slice(0, 2);
+      const limitedData = pendingApplications.slice(0, 3);
 
       setTrueApps(pendingApplications);
       setApplications(limitedData);
@@ -74,7 +77,7 @@ export default function AdminDashboard() {
   const fetchRecentOrders = async () => {
     try {
       const response = await apiGet("/porosite");
-      const recent = response.slice(0, 5); // Get last 5 orders
+      const recent = response.slice(0, 3); // Get last 5 orders
       setRecentOrders(recent);
     } catch (error) {
       console.error('Error fetching recent orders:', error);
@@ -98,12 +101,12 @@ export default function AdminDashboard() {
     fetchTopProducts();
   }, []);
 
-  const StatCard = ({ title, value, icon: Icon, change, changeType, subtitle }) => (
+  const StatCard = ({ title, value, icon: Icon, change, changeType, subtitle, valueColor }) => (
     <div className="bg-white shadow rounded-2xl p-6 hover:shadow-lg transition-shadow">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className={`text-2xl font-bold ${valueColor || 'text-gray-900'}`}>
             {statsLoading ? '...' : value}
           </p>
           {subtitle && <p className="text-xs text-gray-500 mt-1">{subtitle}</p>}
@@ -193,15 +196,16 @@ export default function AdminDashboard() {
             subtitle="From all payments"
           />
           <StatCard
-            title="Total Orders"
-            value={dashboardStats.totalOrders.toLocaleString()}
-            icon={ShoppingBag}
-            subtitle="All orders"
+            title="Income"
+            value={`€${dashboardStats.totalIncome.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
+            icon={DollarSign}
+            subtitle="Current Income"
+            valueColor={dashboardStats.totalIncome >= 0 ? 'text-green-600' : 'text-red-600'}
           />
           <StatCard
-            title="Products"
-            value={dashboardStats.totalProducts.toLocaleString()}
-            icon={Package}
+            title="Expenses"
+            value={dashboardStats.totalExpenses.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+            icon={DollarSign}
             subtitle="Available products"
           />
         </div>
@@ -330,6 +334,19 @@ export default function AdminDashboard() {
                   <div>
                     <p className="font-medium text-gray-900">Manage Products</p>
                     <p className="text-sm text-gray-500">{dashboardStats.totalProducts} available</p>
+                  </div>
+                </div>
+              </button>
+              
+              <button 
+                onClick={() => navigate('/admin/payments')}
+                className="w-full p-3 bg-orange-50 hover:bg-orange-100 rounded-lg text-left transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <DollarSign className="h-5 w-5 text-orange-600" />
+                  <div>
+                    <p className="font-medium text-gray-900">Manage Payments</p>
+                    <p className="text-sm text-gray-500">Admin & Client payments</p>
                   </div>
                 </div>
               </button>

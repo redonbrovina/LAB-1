@@ -136,7 +136,7 @@ export default function SuppliersAdmin() {
                 <tr className="text-left text-gray-600 border-b">
                   <th className="py-2 pr-4">ID</th>
                   <th className="py-2 pr-4">Emri</th>
-                  <th className="py-2 pr-4">ID Shteti</th>
+                  <th className="py-2 pr-4">Shteti</th>
                   <th className="py-2 lg:pr-2 lg:sticky lg:right-0 lg:bg-white lg:shadow-lg lg:pl-4">Veprimet</th>
                 </tr>
               </thead>
@@ -147,7 +147,7 @@ export default function SuppliersAdmin() {
                     <tr key={id} className="border-b hover:bg-gray-50">
                       <td className="py-2 pr-4">{id}</td>
                       <td className="py-2 pr-4">{s.emri}</td>
-                      <td className="py-2 pr-4">{s.shtetiID || '-'}</td>
+                      <td className="py-2 pr-4">{s.shteti.emri_shtetit || '-'}</td>
                       <td className="py-2 lg:pr-2 lg:sticky lg:right-0 lg:bg-white lg:shadow-lg lg:pl-4 space-x-2">
                         <button className="px-3 py-1 text-xs bg-blue-500 text-white rounded" onClick={() => handleEdit(s)}>Edito</button>
                         <button className="px-3 py-1 text-xs bg-red-500 text-white rounded" onClick={() => handleDelete(id)}>Fshij</button>

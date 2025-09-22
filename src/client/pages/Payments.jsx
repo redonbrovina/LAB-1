@@ -1,5 +1,5 @@
 import ClientNavBar from "../components/ClientNavBar";
-import { DollarSign, Plus, Edit, Trash2, CreditCard, Banknote } from "lucide-react";
+import { DollarSign, Plus, CreditCard, Banknote } from "lucide-react";
 import { useState, useEffect } from "react";
 import { paymentAPI, paymentMethodsAPI, ordersAPI } from "../utils/api";
 import { useAuth } from "../utils/AuthContext";
@@ -10,7 +10,6 @@ export default function Payments() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editingPayment, setEditingPayment] = useState(null);
   const { user } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -38,7 +37,7 @@ export default function Payments() {
       const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId || user?.klienti_id;
       
       const clientOrders = Array.isArray(ordersData) 
-        ? ordersData.filter(order => order.klientiID == clientId)
+        ? ordersData.filter(order => order.klientiID == clientId && order.pagesa_statusID === 1)
         : [];
       
       // Filter payments to show only current client's payments
@@ -88,25 +87,20 @@ export default function Payments() {
         return;
       }
       
-      if (editingPayment && editingPayment.pagesaID) {
-        const updateData = {
-          ...formData,
-          klientiID: clientId
-        };
-        await paymentAPI.update(editingPayment.pagesaID, updateData);
-      } else {
-        // For creating new payment, ensure client ID is included
-        const paymentData = {
-          ...formData,
-          klientiID: clientId,
-          adminID: null
-        };
-        await paymentAPI.create(paymentData);
+      // For creating new payment, ensure client ID is included
+      const paymentData = {
+        ...formData,
+        klientiID: clientId,
+        adminID: null
+      };
+      await paymentAPI.create(paymentData);
+      
+      if (formData.porosiaID) {
+        await ordersAPI.update(formData.porosiaID, { pagesa_statusID: 2 });
       }
       
       await fetchData();
       setShowForm(false);
-      setEditingPayment(null);
       setFormData({
         porosiaID: "",
         menyra_pagesesID: "",
@@ -117,30 +111,6 @@ export default function Payments() {
     } catch (error) {
       console.error('Error saving payment:', error);
       alert(`Error saving payment: ${error.message}`);
-    }
-  };
-
-  const handleEdit = (payment) => {
-    setEditingPayment(payment);
-    setFormData({
-      porosiaID: payment.porosiaID || "",
-      menyra_pagesesID: payment.menyra_pagesesID || "",
-      shuma_pageses: payment.shuma_pageses || "",
-      numri_llogarise: payment.numri_llogarise || ""
-    });
-    setShowForm(true);
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this payment?')) {
-      try {
-        await paymentAPI.delete(id);
-        await fetchData();
-        alert("Payment deleted successfully!");
-      } catch (error) {
-        console.error('Error deleting payment:', error);
-        alert(`Error deleting payment: ${error.message}`);
-      }
     }
   };
 
@@ -237,7 +207,6 @@ export default function Payments() {
                       <th className="text-left py-3 px-4">Amount</th>
                       <th className="text-left py-3 px-4">Account Number</th>
                       <th className="text-left py-3 px-4">Payment Date</th>
-                      <th className="text-left py-3 px-4">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -252,20 +221,6 @@ export default function Payments() {
                           <td className="py-3 px-4">{payment.numri_llogarise || 'N/A'}</td>
                           <td className="py-3 px-4">{payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}</td>
                           <td className="py-3 px-4">
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => handleEdit(payment)}
-                                className="p-1 text-blue-600 hover:bg-blue-100 rounded"
-                              >
-                                <Edit size={16} />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(payment.pagesaID)}
-                                className="p-1 text-red-600 hover:bg-red-100 rounded"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
                           </td>
                         </tr>
                       );
@@ -288,20 +243,6 @@ export default function Payments() {
                           <div className="text-sm text-gray-500">
                             Order ID: {payment.porosiaID || 'N/A'}
                           </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEdit(payment)}
-                            className="p-1 text-blue-600 hover:bg-blue-100 rounded"
-                          >
-                            <Edit size={16} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(payment.pagesaID)}
-                            className="p-1 text-red-600 hover:bg-red-100 rounded"
-                          >
-                            <Trash2 size={16} />
-                          </button>
                         </div>
                       </div>
                       
@@ -336,12 +277,12 @@ export default function Payments() {
           )}
         </div>
 
-        {/* Add/Edit Payment Modal */}
+        {/* Add Payment Modal */}
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl p-6 w-full max-w-md">
               <h2 className="text-xl font-semibold mb-4">
-                {editingPayment ? 'Edit Payment' : 'Add New Payment'}
+                Add New Payment
               </h2>
               
               <form onSubmit={handleSubmit}>
@@ -350,7 +291,15 @@ export default function Payments() {
                     <label className="block text-sm font-medium mb-2">Order</label>
                     <select
                       value={formData.porosiaID}
-                      onChange={(e) => setFormData({...formData, porosiaID: e.target.value})}
+                      onChange={(e) => {
+                        const selectedOrderId = e.target.value;
+                        const selectedOrder = orders.find(order => order.porosiaID == selectedOrderId);
+                        setFormData({
+                          ...formData, 
+                          porosiaID: selectedOrderId,
+                          shuma_pageses: selectedOrder ? selectedOrder.cmimi_total : ""
+                        });
+                      }}
                       className="w-full border rounded-lg px-3 py-2"
                       required
                     >
@@ -399,7 +348,7 @@ export default function Payments() {
                         required
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Enter the amount you want to pay for this order</p>
+                    <p className="text-xs text-gray-500 mt-1">Amount will be auto-filled when you select an order</p>
                   </div>
 
                   <div>
@@ -419,13 +368,12 @@ export default function Payments() {
                     type="submit"
                     className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
                   >
-                    {editingPayment ? 'Update' : 'Create'} Payment
+                    Create Payment
                   </button>
                   <button
                     type="button"
                     onClick={() => {
                       setShowForm(false);
-                      setEditingPayment(null);
                       setFormData({
                         porosiaID: "",
                         menyra_pagesesID: "",
