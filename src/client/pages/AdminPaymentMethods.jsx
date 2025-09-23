@@ -124,12 +124,15 @@ export default function AdminPaymentMethods() {
   }
 
   return (
-    <div>
+    <div className="p-4 lg:p-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold" style={{ color: "#808080" }}>
-          Payment Methods Management
-        </h1>
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 space-y-4 lg:space-y-0">
+        <div className="flex-1">
+          <h1 className="text-xl lg:text-2xl font-bold" style={{ color: "#808080" }}>
+            Payment Methods Management
+          </h1>
+          <p className="text-gray-600 mt-1">Manage payment methods in the system</p>
+        </div>
         <div className="flex gap-3">
           {Array.isArray(paymentMethods) && paymentMethods.length > 0 && (
             <button

@@ -10,7 +10,18 @@ export default function AdminPayments() {
   const [loading, setLoading] = useState(true);
   const [paymentFilter, setPaymentFilter] = useState('all'); // 'all', 'client', 'admin'
   const [showForm, setShowForm] = useState(false);
+  const [editingPayment, setEditingPayment] = useState(null);
   const { user } = useAuth();
+
+  // Pagination state
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 5,
+    hasNextPage: false,
+    hasPrevPage: false
+  });
 
   const [formData, setFormData] = useState({
     porosiaID: "",
@@ -23,7 +34,8 @@ export default function AdminPayments() {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (page = pagination.currentPage) => {
+    setLoading(true);
     try {
       console.log("Fetching data for admin payments...");
       
@@ -33,10 +45,26 @@ export default function AdminPayments() {
       let ordersData = [];
       
       try {
-        paymentsData = await paymentAPI.getAll();
+        const response = await paymentAPI.getPaginated(page, pagination.itemsPerPage);
+        paymentsData = response.data;
+        setPagination(response.pagination);
         console.log("Payments data:", paymentsData);
       } catch (error) {
         console.error("Error fetching payments:", error);
+        // Fallback to getAll if paginated fails
+        try {
+          paymentsData = await paymentAPI.getAll();
+          setPagination({
+            currentPage: 1,
+            totalPages: 1,
+            totalItems: paymentsData.length,
+            itemsPerPage: paymentsData.length,
+            hasNextPage: false,
+            hasPrevPage: false
+          });
+        } catch (fallbackError) {
+          console.error("Error fetching payments (fallback):", fallbackError);
+        }
       }
       
       try {
@@ -74,6 +102,13 @@ export default function AdminPayments() {
       console.error("Error fetching payments:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Pagination handlers
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      fetchData(newPage);
     }
   };
 
@@ -118,26 +153,72 @@ export default function AdminPayments() {
     try {
       const adminId = user?.adminID || user?.id || user?.adminId || user?.userId;
       
-      // Create new admin payment for business expenses (B2B logic)
-      // Admin payments should NOT be linked to client orders (porosiaID should be null)
-      const paymentData = {
-        ...formData,
-        porosiaID: null, // Admin payments are for business expenses, not client orders
-        klientiID: null, // This will be an admin payment
-        adminID: adminId
-      };
-      await paymentAPI.create(paymentData);
-      
+      if (editingPayment && editingPayment.pagesaID) {
+        // Only allow editing admin payments
+        if (!editingPayment.klientiID) {
+          await paymentAPI.update(editingPayment.pagesaID, formData);
+        } else {
+          alert("You can only edit admin payments, not client payments.");
+          return;
+        }
+      } else {
+        // Create new admin payment for client orders
+        const paymentData = {
+          ...formData,
+          klientiID: null, // This will be an admin payment
+          adminID: adminId
+        };
+        await paymentAPI.create(paymentData);
+      }
       await fetchData();
       setShowForm(false);
+      setEditingPayment(null);
       setFormData({ porosiaID: "", menyra_pagesesID: "", shuma_pageses: "", numri_llogarise: "" });
-      alert("Admin payment created successfully!");
+      alert("Payment saved successfully!");
     } catch (error) {
-      console.error("Error creating payment:", error);
-      alert(`Error creating payment: ${error.message}`);
+      console.error("Error saving payment:", error);
+      alert(`Error saving payment: ${error.message}`);
     }
   };
 
+  const handleEdit = (payment) => {
+    // Only allow editing admin payments
+    if (payment.klientiID) {
+      alert("You can only edit admin payments, not client payments.");
+      return;
+    }
+    
+    setEditingPayment(payment);
+    setFormData({
+      porosiaID: payment.porosiaID || "",
+      menyra_pagesesID: payment.menyra_pagesesID || "",
+      shuma_pageses: payment.shuma_pageses || "",
+      numri_llogarise: payment.numri_llogarise || "",
+    });
+    setShowForm(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!id) return;
+    
+    // Find the payment to check if it's an admin payment
+    const payment = payments.find(p => p.pagesaID === id);
+    if (payment && payment.klientiID) {
+      alert("You can only delete admin payments, not client payments.");
+      return;
+    }
+    
+    if (window.confirm("Delete this admin payment?")) {
+      try {
+        await paymentAPI.delete(id);
+        await fetchData();
+        alert("Payment deleted successfully!");
+      } catch (error) {
+        console.error("Error deleting payment:", error);
+        alert(`Error deleting payment: ${error.message}`);
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -148,11 +229,15 @@ export default function AdminPayments() {
   }
 
   return (
-    <div>
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">
-            Admin Payments Dashboard
-          </h1>
+    <div className="p-4 lg:p-6">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 space-y-4 lg:space-y-0">
+          <div className="flex-1">
+            <h1 className="text-xl lg:text-2xl font-bold" style={{ color: "#808080" }}>
+              Admin Payments
+            </h1>
+            <p className="text-gray-600 mt-1">Manage payments in the system</p>
+          </div>
           <div className="flex gap-3">
             <button
               onClick={fetchData}
@@ -173,7 +258,7 @@ export default function AdminPayments() {
         {/* Payment Filters */}
         <div className="mb-6">
           <div className="bg-white shadow rounded-2xl p-4">
-            <h3 className="text-lg font-semibold mb-4 text-gray-800">Filter Payments</h3>
+            <h3 className="text-lg font-semibold mb-4">Filter Payments</h3>
             <div className="flex gap-3">
               <button
                 onClick={() => setPaymentFilter('all')}
@@ -209,7 +294,7 @@ export default function AdminPayments() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8">
+        <div className="grid grid-cols-3 gap-6 mb-8">
           <div className="bg-white shadow rounded-2xl p-6">
             <div className="flex items-center gap-3 text-red-600 font-semibold">
               <DollarSign size={24} />
@@ -237,164 +322,59 @@ export default function AdminPayments() {
 
         <div className="bg-white shadow rounded-2xl p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">Payment History</h2>
+            <h2 className="text-xl font-semibold">Payment History</h2>
             <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
               <p className="text-sm text-blue-700">
                 <strong>Note:</strong> All payments are view-only for audit trail integrity. Payments cannot be edited or deleted once created.
               </p>
             </div>
           </div>
-          
 
           {getFilteredPayments().length === 0 ? (
-            <div className="text-center py-8 text-gray-600">
-              <p className="text-lg font-medium">
-                {payments.length === 0 
-                  ? "No payments found. Payments will appear here when clients make payments."
-                  : `No ${paymentFilter} payments found. Try a different filter.`
-                }
-              </p>
+            <div className="text-center py-8 text-gray-500">
+              {payments.length === 0 
+                ? "No payments found. Payments will appear here when clients make payments."
+                : `No ${paymentFilter} payments found. Try a different filter.`
+              }
             </div>
           ) : (
-            <>
-              {/* Desktop Table */}
-              <div className="hidden lg:block overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-4">ID</th>
-                      <th className="text-left py-3 px-4">Order ID</th>
-                      <th className="text-left py-3 px-4">Payment Method</th>
-                      <th className="text-left py-3 px-4">Amount</th>
-                      <th className="text-left py-3 px-4">Account Number</th>
-                      <th className="text-left py-3 px-4">Payment Date</th>
-                      <th className="text-left py-3 px-4">Type</th>
-                      <th className="text-left py-3 px-4">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {getFilteredPayments().map((payment, index) => {
-                      const paymentMethod = paymentMethods.find(method => method.menyra_pagesesID === payment.menyra_pagesesID);
-                      return (
-                        <tr key={payment.pagesaID || index} className="border-b hover:bg-gray-50">
-                          <td className="py-3 px-4">{payment.pagesaID || index + 1}</td>
-                          <td className="py-3 px-4">{payment.porosiaID || 'N/A'}</td>
-                          <td className="py-3 px-4">{paymentMethod?.menyra_pageses || 'N/A'}</td>
-                          <td className="py-3 px-4 font-semibold">${payment.shuma_pageses || '0.00'}</td>
-                          <td className="py-3 px-4">{payment.numri_llogarise || 'N/A'}</td>
-                          <td className="py-3 px-4">{payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}</td>
-                          <td className="py-3 px-4">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              payment.klientiID ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                            }`}>
-                              {payment.klientiID ? 'Client Payment' : `Admin Payment (ID: ${payment.adminID})`}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4">
-                            {!payment.klientiID ? (
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={() => handleEdit(payment)}
-                                  className="p-1 text-blue-600 hover:bg-blue-100 rounded"
-                                  title="Edit Admin Payment"
-                                >
-                                  <CreditCard size={16} />
-                                </button>
-                                <button
-                                  onClick={() => handleDelete(payment.pagesaID)}
-                                  className="p-1 text-red-600 hover:bg-red-100 rounded"
-                                  title="Delete Admin Payment"
-                                >
-                                  <DollarSign size={16} />
-                                </button>
-                              </div>
-                            ) : (
-                              <span className="text-gray-400 text-sm">View Only</span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Mobile Cards */}
-              <div className="lg:hidden space-y-4">
-                {getFilteredPayments().map((payment, index) => {
-                  const paymentMethod = paymentMethods.find(method => method.menyra_pagesesID === payment.menyra_pagesesID);
-                  return (
-                    <div key={payment.pagesaID || index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <div className="font-medium" style={{ color: "#808080" }}>
-                            Payment #{payment.pagesaID || index + 1}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            Order ID: {payment.porosiaID || 'N/A'}
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          {!payment.klientiID ? (
-                            <>
-                              <button
-                                onClick={() => handleEdit(payment)}
-                                className="p-1 text-blue-600 hover:bg-blue-100 rounded"
-                                title="Edit Admin Payment"
-                              >
-                                <CreditCard size={16} />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(payment.pagesaID)}
-                                className="p-1 text-red-600 hover:bg-red-100 rounded"
-                                title="Delete Admin Payment"
-                              >
-                                <DollarSign size={16} />
-                              </button>
-                            </>
-                          ) : (
-                            <span className="text-gray-400 text-sm">View Only</span>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium" style={{ color: "#808080" }}>Method:</span>
-                          <span className="text-sm">{paymentMethod?.menyra_pageses || 'N/A'}</span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium" style={{ color: "#808080" }}>Amount:</span>
-                          <span className="font-semibold">${payment.shuma_pageses || '0.00'}</span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium" style={{ color: "#808080" }}>Account:</span>
-                          <span className="text-sm">{payment.numri_llogarise || 'N/A'}</span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium" style={{ color: "#808080" }}>Date:</span>
-                          <span className="text-sm">
-                            {payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}
-                          </span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium" style={{ color: "#808080" }}>Type:</span>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-4">ID</th>
+                    <th className="text-left py-3 px-4">Order ID</th>
+                    <th className="text-left py-3 px-4">Payment Method</th>
+                    <th className="text-left py-3 px-4">Amount</th>
+                    <th className="text-left py-3 px-4">Account Number</th>
+                    <th className="text-left py-3 px-4">Payment Date</th>
+                    <th className="text-left py-3 px-4">Type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getFilteredPayments().map((payment, index) => {
+                    const paymentMethod = paymentMethods.find(method => method.menyra_pagesesID === payment.menyra_pagesesID);
+                    return (
+                      <tr key={payment.pagesaID || index} className="border-b hover:bg-gray-50">
+                        <td className="py-3 px-4">{payment.pagesaID || index + 1}</td>
+                        <td className="py-3 px-4">{payment.porosiaID || 'N/A'}</td>
+                        <td className="py-3 px-4">{paymentMethod?.menyra_pageses || 'N/A'}</td>
+                        <td className="py-3 px-4 font-semibold">${payment.shuma_pageses || '0.00'}</td>
+                        <td className="py-3 px-4">{payment.numri_llogarise || 'N/A'}</td>
+                        <td className="py-3 px-4">{payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}</td>
+                        <td className="py-3 px-4">
                           <span className={`px-2 py-1 rounded-full text-xs ${
                             payment.klientiID ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
                           }`}>
-                            {payment.klientiID ? 'Client Payment' : `Admin Payment (ID: ${payment.adminID})`}
+                            {payment.klientiID ? 'Client Payment' : 'Admin Payment'}
                           </span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
@@ -402,31 +382,39 @@ export default function AdminPayments() {
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-              <h2 className="text-xl font-semibold mb-4 text-gray-800">
-                Add New Admin Payment
+              <h2 className="text-xl font-semibold mb-4">
+                {editingPayment ? "Edit Admin Payment" : "Add New Admin Payment"}
               </h2>
               
               <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Payment Description</label>
-                    <input
-                      type="text"
-                      value={formData.numri_llogarise}
-                      onChange={(e) => setFormData({...formData, numri_llogarise: e.target.value})}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Optional description for this admin payment"
-                      maxLength={255}
-                    />
-                    <p className="text-xs text-gray-500 mt-1">Admin payments are for business expenses, not client orders</p>
+                    <label className="block text-sm font-medium mb-2">Order</label>
+                    <select
+                      value={formData.porosiaID}
+                      onChange={(e) => setFormData({...formData, porosiaID: e.target.value})}
+                      className="w-full border rounded-lg px-3 py-2"
+                      required
+                    >
+                      <option value="">Select an order</option>
+                      {orders.length === 0 ? (
+                        <option value="" disabled>No orders available</option>
+                      ) : (
+                        orders.map((order) => (
+                          <option key={order.porosiaID} value={order.porosiaID}>
+                            Order #{order.porosiaID} - ${order.cmimi_total || '0.00'}
+                          </option>
+                        ))
+                      )}
+                    </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Payment Method</label>
+                    <label className="block text-sm font-medium mb-2">Payment Method</label>
                     <select
                       value={formData.menyra_pagesesID}
                       onChange={(e) => setFormData({...formData, menyra_pagesesID: e.target.value})}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full border rounded-lg px-3 py-2"
                       required
                     >
                       <option value="">Select a payment method</option>
@@ -443,7 +431,7 @@ export default function AdminPayments() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Payment Amount</label>
+                    <label className="block text-sm font-medium mb-2">Payment Amount</label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
                       <input
@@ -452,14 +440,24 @@ export default function AdminPayments() {
                         min="0.01"
                         value={formData.shuma_pageses}
                         onChange={(e) => setFormData({...formData, shuma_pageses: e.target.value})}
-                        className="w-full border border-gray-300 rounded-lg px-8 py-2 pl-8 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full border rounded-lg px-8 py-2 pl-8"
                         placeholder="0.00"
                         required
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Amount for this business expense</p>
+                    <p className="text-xs text-gray-500 mt-1">Amount to be paid for this order</p>
                   </div>
 
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Account Number</label>
+                    <input
+                      type="text"
+                      value={formData.numri_llogarise}
+                      onChange={(e) => setFormData({...formData, numri_llogarise: e.target.value})}
+                      className="w-full border rounded-lg px-3 py-2"
+                      placeholder="Optional account number"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex gap-3 mt-6">
@@ -467,12 +465,13 @@ export default function AdminPayments() {
                     type="submit"
                     className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
                   >
-                    Create Admin Payment
+                    {editingPayment ? 'Update' : 'Create'} Admin Payment
                   </button>
                   <button
                     type="button"
                     onClick={() => {
                       setShowForm(false);
+                      setEditingPayment(null);
                       setFormData({
                         porosiaID: "",
                         menyra_pagesesID: "",
@@ -489,6 +488,53 @@ export default function AdminPayments() {
             </div>
           </div>
         )}
+
+        {/* Pagination */}
+        <div className="flex items-center justify-between mt-6">
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-gray-700">
+              Showing <span className="font-medium">{((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}</span> to <span className="font-medium">{Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)}</span> of <span className="font-medium">{pagination.totalItems}</span> results
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <button 
+              onClick={() => handlePageChange(pagination.currentPage - 1)}
+              disabled={!pagination.hasPrevPage}
+              className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            
+            {/* Page numbers */}
+            {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+              const pageNum = Math.max(1, pagination.currentPage - 2) + i;
+              if (pageNum > pagination.totalPages) return null;
+              
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  className={`px-3 py-1 text-sm rounded ${
+                    pageNum === pagination.currentPage
+                      ? 'bg-blue-500 text-white'
+                      : 'border border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+            
+            <button 
+              onClick={() => handlePageChange(pagination.currentPage + 1)}
+              disabled={!pagination.hasNextPage}
+              className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
 
     </div>
   );

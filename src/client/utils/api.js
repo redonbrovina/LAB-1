@@ -58,6 +58,7 @@ export const publicApiRequest = async (endpoint, options = {}) => {
 // Payment API functions
 export const paymentAPI = {
   getAll: () => apiRequest('/pagesa'),
+  getPaginated: (page = 1, limit = 5) => apiRequest(`/pagesa/paginated?page=${page}&limit=${limit}`),
   getById: (id) => apiRequest(`/pagesa/${id}`),
   create: (data) => apiRequest('/pagesa', {
     method: 'POST',

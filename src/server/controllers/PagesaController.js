@@ -60,6 +60,19 @@ const PagesaController = {
     }
   },
 
+  async getPaginated(req, res) {
+    try {
+      const { page = 1, limit = 5 } = req.query;
+      const result = await service.getPaginated({ 
+        page: parseInt(page), 
+        limit: parseInt(limit) 
+      });
+      res.json(result);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  },
+
   async getById(req, res) {
     try {
       const { id } = req.params;

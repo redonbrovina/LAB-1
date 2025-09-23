@@ -6,6 +6,7 @@ const { authenticateToken } = require('../middleware/auth');
 router.use(authenticateToken);
 
 router.get("/", PagesaController.getAll);
+router.get("/paginated", PagesaController.getPaginated);
 router.get("/:id", PagesaController.getById);
 router.get("/porosia/:porosiaID", PagesaController.getByPorosia);
 router.get("/klienti/:klientiID", PagesaController.getByKlientiID);

@@ -114,11 +114,11 @@ export default function AdminUsers() {
   }
 
   return (
-    <div>
+    <div className="p-4 lg:p-6">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-2xl font-bold" style={{ color: "#808080" }}>
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 space-y-4 lg:space-y-0">
+          <div className="flex-1">
+            <h1 className="text-xl lg:text-2xl font-bold" style={{ color: "#808080" }}>
               User Management
             </h1>
             <p className="text-gray-600 mt-1">Manage the clients in the system</p>

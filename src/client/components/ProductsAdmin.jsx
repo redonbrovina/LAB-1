@@ -142,7 +142,15 @@ export default function ProductsAdmin() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="p-4 lg:p-6 space-y-6">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 space-y-4 lg:space-y-0">
+        <div className="flex-1">
+          <h1 className="text-xl lg:text-2xl font-bold" style={{ color: "#808080" }}>Products Management</h1>
+          <p className="text-gray-600 mt-1">Manage products in the system</p>
+        </div>
+      </div>
+
       <div className="bg-white shadow rounded-2xl p-6">
         <h3 className="font-semibold mb-4 text-red-600">{editingId ? 'Përditëso Produktin' : 'Shto Produkt të Ri'}</h3>
         {error && <div className="mb-3 text-sm text-red-600">{error}</div>}
