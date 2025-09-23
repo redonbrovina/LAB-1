@@ -7,24 +7,19 @@ import PublicRoute from './utils/PublicRoute';
 import ClientOnlyRoute from './utils/ClientOnlyRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 
-// Core layouts - keep lazy loaded as they're heavy
 const Layout = lazy(() => import('./components/layout/Layout'));
 const ProtectedLayout = lazy(() => import('./components/layout/ProtectedLayout'));
 const AdminProtectedLayout = lazy(() => import('./components/layout/AdminProtectedLayout'));
 
-// Public pages - bundle together for better performance
 const PublicPages = lazy(() => import('./pages/AppPages/PublicPages'));
 
 // Auth pages - bundle together
 const AuthPages = lazy(() => import('./pages/AppPages/AuthPages'));
 
-// Client pages - bundle together for better performance
 const ClientPages = lazy(() => import('./pages/AppPages/ClientPages'));
 
-// Admin pages - bundle together for better performance
 const AdminPages = lazy(() => import('./pages/AppPages/AdminPages'));
 
-// Error page - keep separate as it's rarely used
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Enhanced loading component with better UX
@@ -37,7 +32,7 @@ const LoadingSpinner = () => (
     height: '100vh',
     fontSize: '18px',
     color: '#666',
-    backgroundColor: '#ECFAEA'
+    backgroundColor: 'white'
   }}>
     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
     <div>Loading...</div>

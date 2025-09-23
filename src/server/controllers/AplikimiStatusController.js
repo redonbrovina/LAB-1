@@ -31,6 +31,33 @@ class AplikimiStatusController {
             });
         }
     }
+
+    async createAplikimiStatus(req, res) {
+        try {
+            const newStatus = await this.aplikimiStatusService.createStatus(req.body);
+            res.status(201).json(newStatus);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    async updateAplikimiStatus(req, res) {
+        try {
+            const updatedStatus = await this.aplikimiStatusService.updateStatus(req.params.id, req.body);
+            res.status(200).json(updatedStatus);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    async deleteAplikimiStatus(req, res) {
+        try {
+            await this.aplikimiStatusService.deleteStatus(req.params.id);
+            res.status(204).send();
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
 }
 
 module.exports = AplikimiStatusController;

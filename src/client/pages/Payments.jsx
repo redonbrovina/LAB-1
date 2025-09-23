@@ -338,11 +338,7 @@ export default function Payments() {
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
                       <input
-                        type="number"
-                        step="0.01"
-                        min="0.01"
                         value={formData.shuma_pageses}
-                        onChange={(e) => setFormData({...formData, shuma_pageses: e.target.value})}
                         className="w-full border rounded-lg px-8 py-2 pl-8"
                         placeholder="0.00"
                         required

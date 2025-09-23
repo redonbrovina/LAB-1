@@ -108,6 +108,7 @@ export default function AdminPayments() {
   // Pagination handlers
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPagination(prev => ({ ...prev, currentPage: newPage }));
       fetchData(newPage);
     }
   };
@@ -170,7 +171,8 @@ export default function AdminPayments() {
         };
         await paymentAPI.create(paymentData);
       }
-      await fetchData();
+      setPagination(prev => ({ ...prev, currentPage: 1 }));
+      await fetchData(1);
       setShowForm(false);
       setEditingPayment(null);
       setFormData({ porosiaID: "", menyra_pagesesID: "", shuma_pageses: "", numri_llogarise: "" });
@@ -211,7 +213,8 @@ export default function AdminPayments() {
     if (window.confirm("Delete this admin payment?")) {
       try {
         await paymentAPI.delete(id);
-        await fetchData();
+        setPagination(prev => ({ ...prev, currentPage: 1 }));
+        await fetchData(1);
         alert("Payment deleted successfully!");
       } catch (error) {
         console.error("Error deleting payment:", error);
@@ -240,7 +243,10 @@ export default function AdminPayments() {
           </div>
           <div className="flex gap-3">
             <button
-              onClick={fetchData}
+              onClick={() => {
+                setPagination(prev => ({ ...prev, currentPage: 1 }));
+                fetchData(1);
+              }}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
             >
               🔄 Refresh Data
@@ -348,7 +354,8 @@ export default function AdminPayments() {
                     <th className="text-left py-3 px-4">Amount</th>
                     <th className="text-left py-3 px-4">Account Number</th>
                     <th className="text-left py-3 px-4">Payment Date</th>
-                    <th className="text-left py-3 px-4">Type</th>
+                    <th className="text-left py-3 px-4">Payment Type</th>
+                    <th className="text-left py-3 px-4">User ID</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -356,19 +363,20 @@ export default function AdminPayments() {
                     const paymentMethod = paymentMethods.find(method => method.menyra_pagesesID === payment.menyra_pagesesID);
                     return (
                       <tr key={payment.pagesaID || index} className="border-b hover:bg-gray-50">
-                        <td className="py-3 px-4">{payment.pagesaID || index + 1}</td>
-                        <td className="py-3 px-4">{payment.porosiaID || 'N/A'}</td>
-                        <td className="py-3 px-4">{paymentMethod?.menyra_pageses || 'N/A'}</td>
-                        <td className="py-3 px-4 font-semibold">${payment.shuma_pageses || '0.00'}</td>
-                        <td className="py-3 px-4">{payment.numri_llogarise || 'N/A'}</td>
-                        <td className="py-3 px-4">{payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}</td>
-                        <td className="py-3 px-4">
+                        <td className="py-3 px-4 text-center">{payment.pagesaID || index + 1}</td>
+                        <td className="py-3 px-4 text-center">{payment.porosiaID || 'N/A'}</td>
+                        <td className="py-3 px-4 text-center">{paymentMethod?.menyra_pageses || 'N/A'}</td>
+                        <td className="py-3 px-4 font-semibold text-center">${payment.shuma_pageses || '0.00'}</td>
+                        <td className="py-3 px-4 text-center">{payment.numri_llogarise || 'N/A'}</td>
+                        <td className="py-3 px-4 text-center">{payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}</td>
+                        <td className="py-3 px-4 text-center">
                           <span className={`px-2 py-1 rounded-full text-xs ${
                             payment.klientiID ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
                           }`}>
                             {payment.klientiID ? 'Client Payment' : 'Admin Payment'}
                           </span>
                         </td>
+                        <td className="py-3 px-4 text-center">{payment.klientiID || payment.adminID || 'N/A'}</td>
                       </tr>
                     );
                   })}
@@ -378,7 +386,7 @@ export default function AdminPayments() {
           )}
         </div>
 
-        {/* Add/Edit Payment Modal */}
+        {/* Add Payment Modal */}
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl p-6 w-full max-w-md">
