@@ -1,4 +1,5 @@
 const PagesaRepository = require("../repositories/PagesaRepository");
+const { Porosia, MenyraPageses } = require("../models");
 
 class PagesaService {
     constructor() {
@@ -7,6 +8,25 @@ class PagesaService {
 
     async getAll() {
         return await this.pagesaRepo.getAllPagesat();
+    }
+
+    async getPaginated(options) {
+        return await this.pagesaRepo.getPaginated({
+            include: [
+                {
+                    model: Porosia,
+                    as: 'porosia',
+                    attributes: ['porosiaID', 'cmimi_total']
+                },
+                {
+                    model: MenyraPageses,
+                    as: 'menyraPageses',
+                    attributes: ['menyra_pageses']
+                }
+            ],
+            order: [['koha_pageses', 'DESC']],
+            ...options
+        });
     }
 
     async getById(id) {

@@ -77,7 +77,7 @@ export default function AdminDashboard() {
   const fetchRecentOrders = async () => {
     try {
       const response = await apiGet("/porosite");
-      const recent = response.slice(0, 3); // Get last 5 orders
+      const recent = response.slice(0, 3); // Get last 3 orders
       setRecentOrders(recent);
     } catch (error) {
       console.error('Error fetching recent orders:', error);

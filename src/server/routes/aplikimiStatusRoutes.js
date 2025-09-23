@@ -10,5 +10,8 @@ router.use(requireRole('admin'));
 
 router.get('/', controller.getAll.bind(controller));
 router.get('/:id', controller.getById.bind(controller));
+router.post('/', controller.createAplikimiStatus.bind(controller));
+router.put('/:id', controller.updateAplikimiStatus.bind(controller));
+router.delete('/:id', controller.deleteAplikimiStatus.bind(controller));
 
 module.exports = router;

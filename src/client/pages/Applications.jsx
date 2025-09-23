@@ -26,7 +26,7 @@ export default function Applications() {
     const [allApplications, setAllApplications] = useState([]);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editingApplication, setEditingApplication] = useState(null);
-    const [status, setStatus] = useState('all');
+    const [status, setStatus] = useState('pending');
     const [searchTerm, setSearchTerm] = useState('');
 
     const fetchApplications = async () => {
