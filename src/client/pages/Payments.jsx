@@ -258,13 +258,6 @@ export default function Payments() {
           <h1 className="text-3xl font-bold" style={{ color: "#808080" }}>
             Payment Management
           </h1>
-          <button
-            onClick={() => setShowForm(true)}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700"
-          >
-            <Plus size={20} />
-            Add Payment
-          </button>
         </div>
 
         {/* Stats Cards */}
