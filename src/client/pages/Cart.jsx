@@ -171,7 +171,7 @@ export default function Cart() {
       console.log('Clearing cart...');
       await clearCart();
       
-      alert(`Porosia u krijua me sukses! ID e porosisë: ${newOrder.porosiaID}\nEmail-i i konfirmimit u dërgua në ${user.email || 'email-in tuaj'}`);
+      alert(`Porosia u krijua me sukses! ID e porosisë: ${newOrder.porosiaID}\nJu lutemi shkoni te Payments për të përfunduar pagesën.`);
     } catch (err) {
       console.error('Error creating order:', err);
       console.error('Error details:', err.message);
