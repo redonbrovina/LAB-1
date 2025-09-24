@@ -24,26 +24,44 @@ export default function Products() {
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const { user } = useAuth();
 
+  // Pagination state
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 12,
+    hasNextPage: false,
+    hasPrevPage: false
+  });
+
   useEffect(() => {
     loadProducts();
   }, []);
 
-  const loadProducts = async () => {
+  const loadProducts = async (page = pagination.currentPage) => {
     try {
       setLoading(true);
       setError('');
       console.log("Loading products for client...", new Date().toISOString());
-      const [productsData, categoriesData] = await Promise.all([
-        productsAPI.getAll(),
-        categoriesAPI.getAll()
-      ]);
       
-      console.log("Products data:", productsData);
-      console.log("Categories data:", categoriesData);
-      
-      
-      setProducts(Array.isArray(productsData) ? productsData : []);
-      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+      // Only load paginated products if no search results are active
+      if (!searchResults) {
+        const [productsResponse, categoriesData] = await Promise.all([
+          productsAPI.getPaginated(page, pagination.itemsPerPage),
+          categoriesAPI.getAll()
+        ]);
+        
+        console.log("Products response:", productsResponse);
+        console.log("Categories data:", categoriesData);
+        
+        setProducts(Array.isArray(productsResponse.data) ? productsResponse.data : []);
+        setPagination(productsResponse.pagination);
+        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+      } else {
+        // If search results are active, just load categories
+        const categoriesData = await categoriesAPI.getAll();
+        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+      }
     } catch (err) {
       setError('Gabim në ngarkimin e produkteve');
       console.error('Error loading products:', err);
@@ -135,10 +153,21 @@ export default function Products() {
 
   const handleSearchResults = (results, query) => {
     setSearchResults(results);
+    // Reset pagination when searching
+    setPagination(prev => ({
+      ...prev,
+      currentPage: 1,
+      totalPages: 1,
+      totalItems: results ? results.length : 0,
+      hasNextPage: false,
+      hasPrevPage: false
+    }));
   };
 
   const handleSearchClear = () => {
     setSearchResults(null);
+    // Reload products with pagination when clearing search
+    loadProducts(1);
   };
 
   const handleFilterChange = (newFilters) => {
@@ -206,6 +235,13 @@ export default function Products() {
     return filtered;
   };
 
+  // Pagination handlers
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      loadProducts(newPage);
+    }
+  };
+
   const displayProducts = searchResults ? searchResults : products;
   const filteredProducts = applyFilters(displayProducts);
 
@@ -220,7 +256,7 @@ export default function Products() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <h1 className="text-xl sm:text-2xl font-bold" style={{ color: "#808080" }}>
-            {searchResults ? `Rezultatet e kërkimit (${searchResults.length})` : 'Shop'}
+            {searchResults ? `Rezultatet e kërkimit (${searchResults.length})` : `Shop (${pagination.totalItems} produkte)`}
           </h1>
           <div className="flex items-center gap-2 sm:gap-4">
             {/* View Mode Toggle */}
@@ -240,7 +276,7 @@ export default function Products() {
             </div>
             
             <button 
-              onClick={loadProducts}
+              onClick={() => loadProducts(1)}
               className="px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
             >
               🔄 <span className="hidden sm:inline">Refresh</span>
@@ -330,6 +366,55 @@ export default function Products() {
             )}
           </div>
         </div>
+
+        {/* Pagination - Only show when not searching */}
+        {!searchResults && !loading && pagination.totalPages > 1 && (
+          <div className="flex items-center justify-between mt-8">
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-700">
+                Duke shfaqur <span className="font-medium">{((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}</span> deri në <span className="font-medium">{Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)}</span> nga <span className="font-medium">{pagination.totalItems}</span> rezultate
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <button 
+                onClick={() => handlePageChange(pagination.currentPage - 1)}
+                disabled={!pagination.hasPrevPage}
+                className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Mëparshëm
+              </button>
+              
+              {/* Page numbers */}
+              {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                const pageNum = Math.max(1, pagination.currentPage - 2) + i;
+                if (pageNum > pagination.totalPages) return null;
+                
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`px-3 py-1 text-sm rounded ${
+                      pageNum === pagination.currentPage
+                        ? 'bg-green-500 text-white'
+                        : 'border border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+              
+              <button 
+                onClick={() => handlePageChange(pagination.currentPage + 1)}
+                disabled={!pagination.hasNextPage}
+                className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Tjetër
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* No Products Message */}
         {!loading && filteredProducts.length === 0 && (

@@ -14,6 +14,17 @@ class ProduktiController {
         }
     }
 
+    async getPaginated(req, res) {
+        try {
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 12;
+            const result = await this.produktiService.getPaginated(page, limit);
+            res.json(result);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
     async getById(req, res) {
         try {
             const data = await this.produktiService.getById(req.params.id);

@@ -29,6 +29,9 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [showFullPaymentHistory, setShowFullPaymentHistory] = useState(false);
+  
+  // Pagination state for orders
+  const [visibleOrdersCount, setVisibleOrdersCount] = useState(5);
 
   // Load dashboard data
   useEffect(() => {
@@ -148,6 +151,19 @@ export default function Dashboard() {
         return 'text-gray-600 bg-gray-100';
     }
   };
+
+  // Pagination functions for orders
+  const showMoreOrders = () => {
+    setVisibleOrdersCount(prev => prev + 5);
+  };
+
+  const resetOrdersPagination = () => {
+    setVisibleOrdersCount(5);
+  };
+
+  // Get visible orders based on pagination
+  const visibleOrders = orders.slice(0, visibleOrdersCount);
+  const hasMoreOrders = orders.length > visibleOrdersCount;
 
   // Calculate stats
   const totalCartValue = cartItems.reduce((sum, item) => sum + (item.cmimi * item.sasia), 0);
@@ -345,6 +361,16 @@ export default function Dashboard() {
                             </div>
                           </div>
                         ))}
+                        {orders.length > 3 && (
+                          <div className="pt-2">
+                            <button
+                              onClick={() => setActiveTab('orders')}
+                              className="text-sm text-green-600 hover:text-green-700 font-medium"
+                            >
+                              Shiko të gjitha porositë ({orders.length})
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <p className="text-center py-4" style={{ color: "#808080" }}>Nuk ka porosi të fundit</p>
@@ -371,6 +397,16 @@ export default function Dashboard() {
                             </div>
                           </div>
                         ))}
+                        {payments.length > 3 && (
+                          <div className="pt-2">
+                            <button
+                              onClick={() => setActiveTab('payments')}
+                              className="text-sm text-green-600 hover:text-green-700 font-medium"
+                            >
+                              Shiko të gjitha pagesat ({payments.length})
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <p className="text-center py-4" style={{ color: "#808080" }}>Nuk ka pagesa të fundit</p>
@@ -480,11 +516,16 @@ export default function Dashboard() {
                 <h3 className="text-lg font-semibold" style={{ color: "#808080" }}>
                   Historia e porosive ({orders.length} porosi)
                 </h3>
+                {orders.length > 0 && (
+                  <p className="text-sm mt-1" style={{ color: "#808080" }}>
+                    Duke shfaqur {visibleOrders.length} nga {orders.length} porositë
+                  </p>
+                )}
               </div>
               <div className="p-6">
                 {orders.length > 0 ? (
                   <div className="space-y-4">
-                    {orders.map((order) => (
+                    {visibleOrders.map((order) => (
                       <div key={order.porosiaID} className="border rounded-lg p-4" style={{ borderColor: "#808080" }}>
                         <div className="flex justify-between items-start mb-4">
                           <div>
@@ -521,6 +562,31 @@ export default function Dashboard() {
                         )}
                       </div>
                     ))}
+                    
+                    {/* Show More Button */}
+                    {hasMoreOrders && (
+                      <div className="flex justify-center pt-4">
+                        <button
+                          onClick={showMoreOrders}
+                          className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center gap-2"
+                        >
+                          <Package size={16} />
+                          Trego më shumë porosi
+                        </button>
+                      </div>
+                    )}
+                    
+                    {/* Show Less Button (when showing all orders) */}
+                    {!hasMoreOrders && orders.length > 5 && (
+                      <div className="flex justify-center pt-4">
+                        <button
+                          onClick={resetOrdersPagination}
+                          className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                        >
+                          Fsheh porositë e tjera
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="text-center py-12">

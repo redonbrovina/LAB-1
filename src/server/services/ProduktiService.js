@@ -38,6 +38,11 @@ class ProduktiService {
         return await this.produktiRepo.searchProduktet(query);
     }
 
+    // Get paginated products
+    async getPaginated(page = 1, limit = 12) {
+        return await this.produktiRepo.getPaginatedProduktet(page, limit);
+    }
+
     // Get products with category details
     async getAllWithCategory() {
         return await this.produktiRepo.getAllProduktet();

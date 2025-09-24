@@ -151,6 +151,43 @@ class ProduktiRepository extends BaseRepository {
             order: [['emri', 'ASC']]
         });
     }
+
+    // Get paginated products
+    async getPaginatedProduktet(page = 1, limit = 12) {
+        const offset = (page - 1) * limit;
+        
+        const { count, rows } = await this.model.findAndCountAll({
+            include: [
+                {
+                    model: Kategoria,
+                    as: 'kategoria',
+                    attributes: ['emri']
+                },
+                {
+                    model: ProduktVariacioni,
+                    as: 'variacionet',
+                    attributes: ['produkt_variacioniID', 'cmimi']
+                }
+            ],
+            order: [['emri', 'ASC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
+
+        const totalPages = Math.ceil(count / limit);
+
+        return {
+            data: rows,
+            pagination: {
+                currentPage: parseInt(page),
+                totalPages: totalPages,
+                totalItems: count,
+                itemsPerPage: parseInt(limit),
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1
+            }
+        };
+    }
 }
 
 module.exports = ProduktiRepository;
