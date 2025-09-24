@@ -12,6 +12,9 @@ export default function Payments() {
   const [showForm, setShowForm] = useState(false);
   const { user } = useAuth();
 
+  // Pagination state for payments
+  const [visiblePaymentsCount, setVisiblePaymentsCount] = useState(5);
+
   const [formData, setFormData] = useState({
     porosiaID: "",
     menyra_pagesesID: "",
@@ -123,6 +126,19 @@ export default function Payments() {
     }
   };
 
+  // Pagination functions for payments
+  const showMorePayments = () => {
+    setVisiblePaymentsCount(prev => prev + 5);
+  };
+
+  const resetPaymentsPagination = () => {
+    setVisiblePaymentsCount(5);
+  };
+
+  // Get visible payments based on pagination
+  const visiblePayments = payments.slice(0, visiblePaymentsCount);
+  const hasMorePayments = payments.length > visiblePaymentsCount;
+
   if (loading) {
     return (
       <div className="flex h-screen" style={{ backgroundColor: "#ECFAEA" }}>
@@ -186,7 +202,14 @@ export default function Payments() {
 
         {/* Payments Table */}
         <div className="bg-white shadow rounded-2xl p-6">
-          <h2 className="text-xl font-semibold mb-4">Payment History</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Payment History</h2>
+            {payments.length > 0 && (
+              <div className="text-sm text-gray-600">
+                {payments.length} pagesa total
+              </div>
+            )}
+          </div>
           
           {payments.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
@@ -210,7 +233,7 @@ export default function Payments() {
                     </tr>
                   </thead>
                   <tbody>
-                    {payments.map((payment, index) => {
+                    {visiblePayments.map((payment, index) => {
                       const paymentMethod = paymentMethods.find(method => method.menyra_pagesesID === payment.menyra_pagesesID);
                       return (
                         <tr key={payment.pagesaID || index} className="border-b hover:bg-gray-50">
@@ -231,7 +254,7 @@ export default function Payments() {
 
               {/* Mobile Cards */}
               <div className="lg:hidden space-y-4">
-                {payments.map((payment, index) => {
+                {visiblePayments.map((payment, index) => {
                   const paymentMethod = paymentMethods.find(method => method.menyra_pagesesID === payment.menyra_pagesesID);
                   return (
                     <div key={payment.pagesaID || index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -273,6 +296,38 @@ export default function Payments() {
                   );
                 })}
               </div>
+
+              {/* Show More Button */}
+              {hasMorePayments && (
+                <div className="flex justify-center pt-6">
+                  <button
+                    onClick={showMorePayments}
+                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center gap-2"
+                  >
+                    <DollarSign size={16} />
+                    Trego më shumë pagesa
+                  </button>
+                </div>
+              )}
+
+              {/* Show Less Button (when showing all payments) */}
+              {!hasMorePayments && payments.length > 5 && (
+                <div className="flex justify-center pt-6">
+                  <button
+                    onClick={resetPaymentsPagination}
+                    className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                  >
+                    Fsheh pagesat e tjera
+                  </button>
+                </div>
+              )}
+
+              {/* Pagination Info */}
+              {payments.length > 0 && (
+                <div className="mt-4 text-center text-sm text-gray-600">
+                  Duke shfaqur {visiblePayments.length} nga {payments.length} pagesa
+                </div>
+              )}
             </>
           )}
         </div>
