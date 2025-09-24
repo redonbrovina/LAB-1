@@ -1,23 +1,22 @@
 import ClientNavBar from "../components/ClientNavBar";
 import { DollarSign, Plus, CreditCard, Banknote } from "lucide-react";
 import { useState, useEffect } from "react";
-import { paymentAPI, paymentMethodsAPI, ordersAPI, cartAPI, cartItemsAPI } from "../utils/api";
+import { paymentAPI, paymentMethodsAPI, cartAPI, cartItemsAPI, ordersAPI } from "../utils/api";
 import { useAuth } from "../utils/AuthContext";
 
 export default function Payments() {
   const [payments, setPayments] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
-  const [orders, setOrders] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [selectedProductForPayment, setSelectedProductForPayment] = useState(null);
   const { user, defaultPaymentMethod } = useAuth();
 
   // Pagination state for payments
   const [visiblePaymentsCount, setVisiblePaymentsCount] = useState(5);
 
   const [formData, setFormData] = useState({
-    porosiaID: "",
     menyra_pagesesID: defaultPaymentMethod || "",
     shuma_pageses: "",
     numri_llogarise: ""
@@ -31,19 +30,14 @@ export default function Payments() {
 
   const fetchData = async () => {
     try {
-      const [paymentsData, paymentMethodsData, ordersData, cartItemsData] = await Promise.all([
+      const [paymentsData, paymentMethodsData, cartItemsData] = await Promise.all([
         paymentAPI.getAll(),
         paymentMethodsAPI.getAll(),
-        ordersAPI.getAll(),
         cartItemsAPI.getAll()
       ]);
       
-      // Filter orders and payments to show only current client's data
+      // Filter payments to show only current client's data
       const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId || user?.klienti_id;
-      
-      const clientOrders = Array.isArray(ordersData) 
-        ? ordersData.filter(order => order.klientiID == clientId && order.pagesa_statusID === 1)
-        : [];
       
       // Filter payments to show only current client's payments
       const clientPayments = Array.isArray(paymentsData) 
@@ -63,7 +57,6 @@ export default function Payments() {
       
       setPayments(clientPayments);
       setPaymentMethods(Array.isArray(paymentMethodsData) ? paymentMethodsData : []);
-      setOrders(clientOrders);
       setCartItems(clientCartItems);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -96,13 +89,33 @@ export default function Payments() {
     // Calculate total price for this cart item
     const totalPrice = cartItem.sasia * cartItem.cmimi;
     
+    // Store the selected cart item for later removal
+    setSelectedProductForPayment(cartItem);
+    
     // Set form data with cart item information and default payment method
     setFormData({
-      porosiaID: "", // No order ID for cart items
       menyra_pagesesID: defaultPaymentMethod || "",
       shuma_pageses: totalPrice.toString(),
       numri_llogarise: ""
     });
+    
+    // Show the form
+    setShowForm(true);
+  };
+
+  const handlePayAllCartItems = () => {
+    // Calculate total price for all cart items
+    const totalPrice = cartItems.reduce((sum, item) => sum + (item.sasia * item.cmimi), 0);
+    
+    // Set form data with total cart amount and default payment method
+    setFormData({
+      menyra_pagesesID: defaultPaymentMethod || "",
+      shuma_pageses: totalPrice.toString(),
+      numri_llogarise: ""
+    });
+    
+    // Clear selected product since we're paying for all
+    setSelectedProductForPayment(null);
     
     // Show the form
     setShowForm(true);
@@ -119,28 +132,83 @@ export default function Payments() {
         alert('Error: Client ID not found. Please log in again.');
         return;
       }
+
+      // First, create an order with the cart items
+      let orderId = null;
+      if (selectedProductForPayment) {
+        // Single item payment - create order for this item
+        const orderData = {
+          klientiID: clientId,
+          cmimi_total: (selectedProductForPayment.sasia * selectedProductForPayment.cmimi).toString(),
+          produktet: [{
+            produkt_variacioniID: selectedProductForPayment.produkt_variacioniID,
+            sasia: selectedProductForPayment.sasia,
+            cmimi: selectedProductForPayment.cmimi
+          }]
+        };
+        const order = await ordersAPI.create(orderData);
+        orderId = order.porosiaID;
+      } else {
+        // Pay all - create order for all cart items
+        const totalAmount = cartItems.reduce((sum, item) => sum + (item.sasia * item.cmimi), 0);
+        const orderData = {
+          klientiID: clientId,
+          cmimi_total: totalAmount.toString(),
+          produktet: cartItems.map(item => ({
+            produkt_variacioniID: item.produkt_variacioniID,
+            sasia: item.sasia,
+            cmimi: item.cmimi
+          }))
+        };
+        const order = await ordersAPI.create(orderData);
+        orderId = order.porosiaID;
+      }
       
-      // For creating new payment, ensure client ID is included
+      // Now create payment with the order ID
       const paymentData = {
         ...formData,
+        porosiaID: orderId,
         klientiID: clientId,
         adminID: null
       };
       await paymentAPI.create(paymentData);
       
-      if (formData.porosiaID) {
-        await ordersAPI.update(formData.porosiaID, { pagesa_statusID: 2 });
+      // Remove cart items after payment
+      if (selectedProductForPayment && selectedProductForPayment.produkti_cartID) {
+        // Remove single cart item
+        try {
+          await cartItemsAPI.delete(selectedProductForPayment.produkti_cartID);
+          console.log('Cart item removed after payment');
+        } catch (deleteError) {
+          console.error('Error removing cart item:', deleteError);
+          // Don't fail the payment if cart item deletion fails
+        }
+      } else {
+        // Remove all cart items (pay all)
+        try {
+          for (const cartItem of cartItems) {
+            await cartItemsAPI.delete(cartItem.produkti_cartID);
+          }
+          console.log('All cart items removed after payment');
+        } catch (deleteError) {
+          console.error('Error removing cart items:', deleteError);
+          // Don't fail the payment if cart item deletion fails
+        }
       }
       
       await fetchData();
       setShowForm(false);
+      setSelectedProductForPayment(null);
       setFormData({
-        porosiaID: "",
         menyra_pagesesID: defaultPaymentMethod || "",
         shuma_pageses: "",
         numri_llogarise: ""
       });
-      alert("Payment saved successfully!");
+      if (selectedProductForPayment) {
+        alert("Payment saved successfully! Item removed from cart.");
+      } else {
+        alert("Payment saved successfully! All items removed from cart.");
+      }
     } catch (error) {
       console.error('Error saving payment:', error);
       alert(`Error saving payment: ${error.message}`);
@@ -230,15 +298,24 @@ export default function Payments() {
           </div>
         </div>
 
-        {/* Pending Cart Items */}
-        {cartItems.length > 0 && (
-          <div className="bg-white shadow rounded-2xl p-6 mb-8">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-yellow-600">Pending Payments (Cart Items)</h2>
-              <div className="text-sm text-gray-600">
-                {cartItems.length} items in cart
-              </div>
-            </div>
+         {/* Pending Cart Items */}
+         {cartItems.length > 0 && (
+           <div className="bg-white shadow rounded-2xl p-6 mb-8">
+             <div className="flex justify-between items-center mb-4">
+               <h2 className="text-xl font-semibold text-yellow-600">Pending Payments (Cart Items)</h2>
+               <div className="flex items-center gap-4">
+                 <div className="text-sm text-gray-600">
+                   {cartItems.length} items in cart
+                 </div>
+                 <button
+                   onClick={handlePayAllCartItems}
+                   className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
+                 >
+                   <DollarSign size={16} />
+                   Pay All ({cartItems.reduce((sum, item) => sum + (item.sasia * item.cmimi), 0).toFixed(2)}€)
+                 </button>
+               </div>
+             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {cartItems.map((item, index) => (
@@ -422,32 +499,29 @@ export default function Payments() {
                 Add New Payment
               </h2>
               
+              {/* Product Details Display */}
+              {selectedProductForPayment ? (
+                <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <h3 className="font-semibold text-green-800 mb-2">Produkti për Pagesë:</h3>
+                  <div className="text-sm text-green-700">
+                    <p><strong>Produkt:</strong> Product #{selectedProductForPayment.produkt_variacioniID}</p>
+                    <p><strong>Sasia:</strong> {selectedProductForPayment.sasia}</p>
+                    <p><strong>Çmimi për njësi:</strong> {selectedProductForPayment.cmimi}€</p>
+                    <p><strong>Totali:</strong> {(selectedProductForPayment.sasia * selectedProductForPayment.cmimi).toFixed(2)}€</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h3 className="font-semibold text-blue-800 mb-2">Të Gjitha Produktet në Cart:</h3>
+                  <div className="text-sm text-blue-700">
+                    <p><strong>Numri i produkteve:</strong> {cartItems.length}</p>
+                    <p><strong>Totali i cart-it:</strong> {cartItems.reduce((sum, item) => sum + (item.sasia * item.cmimi), 0).toFixed(2)}€</p>
+                  </div>
+                </div>
+              )}
+              
               <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Order</label>
-                    <select
-                      value={formData.porosiaID}
-                      onChange={(e) => {
-                        const selectedOrderId = e.target.value;
-                        const selectedOrder = orders.find(order => order.porosiaID == selectedOrderId);
-                        setFormData({
-                          ...formData, 
-                          porosiaID: selectedOrderId,
-                          shuma_pageses: selectedOrder ? selectedOrder.cmimi_total : ""
-                        });
-                      }}
-                      className="w-full border rounded-lg px-3 py-2"
-                      required
-                    >
-                      <option value="">Select an order</option>
-                      {orders.map((order) => (
-                        <option key={order.porosiaID} value={order.porosiaID}>
-                          Order #{order.porosiaID} - ${order.cmimi_total || '0.00'}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
 
                   <div>
                     <label className="block text-sm font-medium mb-2">Payment Method</label>
@@ -470,19 +544,23 @@ export default function Payments() {
                     </select>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Payment Amount</label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
-                      <input
-                        value={formData.shuma_pageses}
-                        className="w-full border rounded-lg px-8 py-2 pl-8"
-                        placeholder="0.00"
-                        required
-                      />
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">Amount will be auto-filled when you select an order</p>
-                  </div>
+                   <div>
+                     <label className="block text-sm font-medium mb-2">Payment Amount</label>
+                     <div className="relative">
+                       <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                       <input
+                         type="number"
+                         step="0.01"
+                         min="0"
+                         value={formData.shuma_pageses}
+                         onChange={(e) => setFormData({...formData, shuma_pageses: e.target.value})}
+                         className="w-full border rounded-lg px-8 py-2 pl-8"
+                         placeholder="0.00"
+                         required
+                       />
+                     </div>
+                     <p className="text-xs text-gray-500 mt-1">Enter the payment amount</p>
+                   </div>
 
                   <div>
                     <label className="block text-sm font-medium mb-2">Account Number</label>
@@ -503,21 +581,21 @@ export default function Payments() {
                   >
                     Create Payment
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowForm(false);
-                      setFormData({
-                        porosiaID: "",
-                        menyra_pagesesID: "",
-                        shuma_pageses: "",
-                        numri_llogarise: ""
-                      });
-                    }}
-                    className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
-                  >
-                    Cancel
-                  </button>
+                   <button
+                     type="button"
+                     onClick={() => {
+                       setShowForm(false);
+                       setSelectedProductForPayment(null);
+                       setFormData({
+                         menyra_pagesesID: defaultPaymentMethod || "",
+                         shuma_pageses: "",
+                         numri_llogarise: ""
+                       });
+                     }}
+                     className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
+                   >
+                     Cancel
+                   </button>
                 </div>
               </form>
             </div>

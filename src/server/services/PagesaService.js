@@ -1,9 +1,11 @@
 const PagesaRepository = require("../repositories/PagesaRepository");
+const PorosiaService = require("./PorosiaService");
 const { Porosia, MenyraPageses } = require("../models");
 
 class PagesaService {
     constructor() {
         this.pagesaRepo = new PagesaRepository();
+        this.porosiaService = new PorosiaService();
     }
 
     async getAll() {
@@ -59,6 +61,14 @@ class PagesaService {
     async delete(id) {
         await this.getById(id);
         return await this.pagesaRepo.deletePagesa(id);
+    }
+
+    async getOrderById(porosiaID) {
+        return await this.porosiaService.getPorosiaById(porosiaID);
+    }
+
+    async getOrderItems(porosiaID) {
+        return await this.porosiaService.getOrderItems(porosiaID);
     }
 }
 
