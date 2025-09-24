@@ -1,6 +1,7 @@
 const PagesaRepository = require("../repositories/PagesaRepository");
 const PorosiaService = require("./PorosiaService");
 const { Porosia, MenyraPageses } = require("../models");
+const PorosiaService = require("./PorosiaService");
 
 class PagesaService {
     constructor() {
@@ -67,9 +68,11 @@ class PagesaService {
         return await this.porosiaService.getPorosiaById(porosiaID);
     }
 
+
     async getOrderItems(porosiaID) {
         return await this.porosiaService.getOrderItems(porosiaID);
     }
+
 }
 
 module.exports = PagesaService;

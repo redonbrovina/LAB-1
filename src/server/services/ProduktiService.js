@@ -55,6 +55,7 @@ class ProduktiService {
 
     // Reduce stock for a product
     async reduceStock(productId, quantity) {
+
         try {
             console.log(`📦 Reducing stock for product ${productId} by ${quantity}`);
             
@@ -105,6 +106,21 @@ class ProduktiService {
             console.error(`❌ Error increasing stock for product ${productId}:`, error);
             throw error;
         }
+        const product = await this.getById(productId);
+        
+        if (product.sasia_ne_stok < quantity) {
+            throw new Error(`Stoku i mbetur (${product.sasia_ne_stok}) është më pak se sasia e kërkuar (${quantity})`);
+        }
+        
+        const newStock = product.sasia_ne_stok - quantity;
+        return await this.produktiRepo.updateProdukti(productId, { sasia_ne_stok: newStock });
+    }
+
+    // Increase stock for a product (useful for order cancellation)
+    async increaseStock(productId, quantity) {
+        const product = await this.getById(productId);
+        const newStock = product.sasia_ne_stok + quantity;
+        return await this.produktiRepo.updateProdukti(productId, { sasia_ne_stok: newStock });
     }
 }
 

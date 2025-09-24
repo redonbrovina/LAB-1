@@ -7,6 +7,13 @@ const service = new PagesaService();
 const emailService = new EmailService();
 const klientiService = new KlientiService();
 const produktiService = new ProduktiService();
+=======
+const KlientiService = require("../services/KlientiService");
+const EmailService = require("../services/EmailService");
+
+const service = new PagesaService();
+const klientiService = new KlientiService();
+const emailService = new EmailService();
 
 const PagesaController = {
   async create(req, res) {
@@ -85,6 +92,20 @@ const PagesaController = {
         } catch (error) {
           console.error('❌ Error in post-payment processing:', error);
           // Don't fail the payment if post-processing fails
+      // Send order confirmation email after payment is created
+      if (porosiaID && klientiID) {
+        try {
+          console.log('📧 Payment created for order, sending confirmation email...');
+          const orderData = await service.getOrderById(porosiaID);
+          const clientData = await klientiService.getKlientiById(klientiID);
+          
+          if (orderData && clientData) {
+            await emailService.sendOrderConfirmationEmail(orderData, clientData);
+            console.log('✅ Order confirmation email sent successfully after payment');
+          }
+        } catch (emailError) {
+          console.error('❌ Error sending order confirmation email after payment:', emailError);
+          // Don't fail the payment if email fails
         }
       }
       

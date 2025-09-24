@@ -138,6 +138,55 @@ export default function Cart() {
 
     // Redirect to Payments page
     navigate('/payments');
+    try {
+      console.log('Starting order creation...');
+      console.log('Cart:', cart);
+      console.log('Cart items:', cartItems);
+      console.log('Valid cart items:', validCartItems);
+      
+      const clientId = user.klientiID || user.id || user.clientId || user.userId;
+      console.log('Client ID:', clientId);
+      
+      // Calculate total price using only valid cart items
+      const totalPrice = validCartItems.reduce((sum, item) => sum + (item.sasia * item.cmimi), 0);
+      console.log('Total price:', totalPrice);
+      
+      // Create order
+      const orderData = {
+        klientiID: clientId,
+        porosia_statusID: 1, // Assuming 1 is "pending" status
+        pagesa_statusID: 1,  // Assuming 1 is "pending" payment status
+        cmimi_total: totalPrice
+      };
+      
+      console.log('Creating order with data:', orderData);
+      const newOrder = await ordersAPI.create(orderData);
+      console.log('Order created successfully:', newOrder);
+      
+      // Move cart items to order items
+      for (const item of validCartItems) {
+        const orderItemData = {
+          porosiaID: newOrder.porosiaID,
+          produkt_variacioniID: item.produkt_variacioniID,
+          sasia: item.sasia,
+          cmimi: item.cmimi
+        };
+        
+        console.log('Creating order item:', orderItemData);
+        await orderItemsAPI.create(orderItemData);
+      }
+      
+      // Clear cart after successful order creation
+      console.log('Clearing cart...');
+      await clearCart();
+      
+      alert(`Porosia u krijua me sukses! ID e porosisë: ${newOrder.porosiaID}\nJu lutemi shkoni te Payments për të përfunduar pagesën.`);
+    } catch (err) {
+      console.error('Error creating order:', err);
+      console.error('Error details:', err.message);
+      console.error('Error stack:', err.stack);
+      alert(`Gabim në krijimin e porosisë: ${err.message}`);
+    }
   };
 
   if (!user) {
