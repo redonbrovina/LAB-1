@@ -1,12 +1,14 @@
 const PorosiaService = require('../services/PorosiaService');
 const KlientiService = require('../services/KlientiService');
 const EmailService = require('../services/EmailService');
+const ProduktiService = require('../services/ProduktiService');
 
 class PorosiaController {
     constructor() {
         this.service = new PorosiaService();
         this.klientiService = new KlientiService();
         this.emailService = new EmailService();
+        this.produktiService = new ProduktiService();
     }
 
     async getAll(req, res) {

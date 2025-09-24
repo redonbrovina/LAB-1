@@ -5,6 +5,7 @@ import { useAuth } from "../utils/AuthContext";
 
 export default function AdminPayments() {
   const [payments, setPayments] = useState([]);
+  const [allPayments, setAllPayments] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,11 +50,16 @@ export default function AdminPayments() {
         paymentsData = response.data;
         setPagination(response.pagination);
         console.log("Payments data:", paymentsData);
+        
+        // Also fetch all payments for accurate counting
+        const allPaymentsData = await paymentAPI.getAll();
+        setAllPayments(Array.isArray(allPaymentsData) ? allPaymentsData : []);
       } catch (error) {
         console.error("Error fetching payments:", error);
         // Fallback to getAll if paginated fails
         try {
           paymentsData = await paymentAPI.getAll();
+          setAllPayments(Array.isArray(paymentsData) ? paymentsData : []);
           setPagination({
             currentPage: 1,
             totalPages: 1,
@@ -140,10 +146,10 @@ export default function AdminPayments() {
   };
 
   const getFilterCounts = () => {
-    const clientCount = payments.filter(payment => payment.klientiID).length;
-    const adminCount = payments.filter(payment => !payment.klientiID).length;
+    const clientCount = allPayments.filter(payment => payment.klientiID).length;
+    const adminCount = allPayments.filter(payment => !payment.klientiID).length;
     return {
-      all: payments.length,
+      all: allPayments.length,
       client: clientCount,
       admin: adminCount
     };
@@ -306,7 +312,7 @@ export default function AdminPayments() {
               <DollarSign size={24} />
               Total Payments
             </div>
-            <p className="text-2xl font-bold mt-2">{payments.length}</p>
+            <p className="text-2xl font-bold mt-2">{allPayments.length}</p>
           </div>
 
           <div className="bg-white shadow rounded-2xl p-6">
