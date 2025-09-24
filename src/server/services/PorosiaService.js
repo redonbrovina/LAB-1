@@ -1,8 +1,10 @@
 const PorosiaRepository = require('../repositories/PorosiaRepository');
+const ProduktiPorosiseRepository = require('../repositories/ProduktiPorosiseRepository');
 
 class PorosiaService {
     constructor() {
         this.porosiaRepo = new PorosiaRepository();
+        this.produktiPorosiseRepo = new ProduktiPorosiseRepository();
     }
 
     async getAllPorosite() {
@@ -27,6 +29,10 @@ class PorosiaService {
 
     async deletePorosia(id) {
         return await this.porosiaRepo.deletePorosia(id);
+    }
+
+    async getOrderItems(porosiaID) {
+        return await this.produktiPorosiseRepo.getByPorosiaId(porosiaID);
     }
 }
 

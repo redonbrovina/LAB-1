@@ -1,11 +1,13 @@
 import ClientNavBar from "../components/ClientNavBar";
-import { CreditCard, Wallet, Smartphone, CheckCircle, Info } from "lucide-react";
+import { CreditCard, Wallet, Smartphone, CheckCircle, Info, Star } from "lucide-react";
 import { useState, useEffect } from "react";
 import { paymentMethodsAPI } from "../utils/api";
+import { useAuth } from "../utils/AuthContext";
 
 export default function PaymentMethods() {
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { defaultPaymentMethod, updateDefaultPaymentMethod } = useAuth();
 
   useEffect(() => {
     fetchPaymentMethods();
@@ -45,6 +47,10 @@ export default function PaymentMethods() {
       return <Smartphone size={24} className="text-purple-600" />;
     }
     return <CreditCard size={24} className="text-gray-600" />;
+  };
+
+  const handleSetDefault = (paymentMethodId) => {
+    updateDefaultPaymentMethod(paymentMethodId);
   };
 
   if (loading) {
@@ -98,10 +104,16 @@ export default function PaymentMethods() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.isArray(paymentMethods) && paymentMethods.map((method, index) => (
-                <div key={method.menyra_pagesesID || index} className="border rounded-2xl p-6 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-gray-50">
+                <div key={method.menyra_pagesesID || index} className={`border rounded-2xl p-6 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-gray-50 ${defaultPaymentMethod == method.menyra_pagesesID ? 'ring-2 ring-yellow-400 bg-gradient-to-br from-yellow-50 to-white' : ''}`}>
                   <div className="flex items-center justify-between mb-4">
                     {getPaymentMethodIcon(method.menyra_pageses || 'Default')}
                     <div className="flex items-center gap-2">
+                      {defaultPaymentMethod == method.menyra_pagesesID && (
+                        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium flex items-center gap-1">
+                          <Star size={12} fill="currentColor" />
+                          Default
+                        </span>
+                      )}
                       <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
                         Available
                       </span>
@@ -116,7 +128,7 @@ export default function PaymentMethods() {
                     {method.pershkrimi || 'Standard payment method available for your orders'}
                   </p>
                   
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-3">
                     <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                       Ready to Use
                     </span>
@@ -124,6 +136,23 @@ export default function PaymentMethods() {
                       ID: {method.menyra_pagesesID}
                     </span>
                   </div>
+                  
+                  {defaultPaymentMethod != method.menyra_pagesesID && (
+                    <button
+                      onClick={() => handleSetDefault(method.menyra_pagesesID)}
+                      className="w-full px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                    >
+                      <Star size={16} />
+                      Set as Default
+                    </button>
+                  )}
+                  
+                  {defaultPaymentMethod == method.menyra_pagesesID && (
+                    <div className="w-full px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-sm font-medium flex items-center justify-center gap-2">
+                      <Star size={16} fill="currentColor" />
+                      Default Payment Method
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

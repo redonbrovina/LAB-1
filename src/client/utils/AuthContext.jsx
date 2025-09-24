@@ -30,6 +30,10 @@ export const AuthProvider = ({ children }) => {
     return null;
   });
 
+  const [defaultPaymentMethod, setDefaultPaymentMethod] = useState(() => {
+    return localStorage.getItem('defaultPaymentMethod') || null;
+  });
+
   const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem('refreshToken');
     console.log('AuthContext refreshAccessToken called, refresh token available:', !!refreshToken);
@@ -79,7 +83,9 @@ export const AuthProvider = ({ children }) => {
       // Always remove tokens from localStorage
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('defaultPaymentMethod');
       setUser(null);
+      setDefaultPaymentMethod(null);
     }
   };
 
@@ -91,8 +97,13 @@ export const AuthProvider = ({ children }) => {
     return user !== null;
   };
 
+  const updateDefaultPaymentMethod = (paymentMethodId) => {
+    setDefaultPaymentMethod(paymentMethodId);
+    localStorage.setItem('defaultPaymentMethod', paymentMethodId);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, getToken, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, login, logout, getToken, isAuthenticated, defaultPaymentMethod, updateDefaultPaymentMethod }}>
       {children}
     </AuthContext.Provider>
   );

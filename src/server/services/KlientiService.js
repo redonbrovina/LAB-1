@@ -48,6 +48,11 @@ class KlientiService {
         await this.getKlientiById(klientiID);
         return await this.klientiRepository.deleteKlienti(klientiID);
     }
+
+    // Alias method for compatibility
+    async getById(klientiID) {
+        return await this.getKlientiById(klientiID);
+    }
 }
 
 module.exports = KlientiService;

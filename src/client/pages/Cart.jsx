@@ -1,8 +1,9 @@
 import ClientNavBar from "../components/ClientNavBar"; 
 import React, { useState, useEffect } from "react";
-import { cartAPI, cartItemsAPI, productsAPI, ordersAPI, orderItemsAPI } from "../utils/api";
+import { cartAPI, cartItemsAPI, productsAPI } from "../utils/api";
 import { useAuth } from "../utils/AuthContext";
-import { ShoppingCart, Plus, Minus, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ShoppingCart, Plus, Minus, Trash2, CreditCard, ArrowRight } from "lucide-react";
 
 export default function Cart() {
   const [cart, setCart] = useState(null);
@@ -10,6 +11,7 @@ export default function Cart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -115,9 +117,14 @@ export default function Cart() {
     }
   };
 
-  const createOrder = async () => {
+  const handleCheckout = () => {
+    if (!user) {
+      alert('Duhet të jeni të kyçur për të vazhduar me checkout.');
+      return;
+    }
+
     if (!cart || cartItems.length === 0) {
-      alert('Cart-i është bosh. Shtoni produkte për të krijuar një porosi.');
+      alert('Cart-i është bosh. Shtoni produkte për të vazhduar me checkout.');
       return;
     }
 
@@ -129,6 +136,8 @@ export default function Cart() {
       return;
     }
 
+    // Redirect to Payments page
+    navigate('/payments');
     try {
       console.log('Starting order creation...');
       console.log('Cart:', cart);
@@ -384,21 +393,23 @@ export default function Cart() {
                     </div>
                   )}
                   
-                  {/* Confirm Order Button */}
+                  {/* Checkout Button */}
                   {cartItems.length > 0 && (
-                    <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+                    <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                       <div className="text-center">
-                        <h3 className="text-lg font-semibold text-green-800 mb-2">
-                          Ready to Order?
+                        <h3 className="text-lg font-semibold text-blue-800 mb-2">
+                          Ready to Checkout?
                         </h3>
-                        <p className="text-green-600 mb-4">
-                          Review your items and confirm your order
+                        <p className="text-blue-600 mb-4">
+                          Review your items and proceed to payment
                         </p>
                         <button
-                          onClick={createOrder}
-                          className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold text-lg shadow-lg transition-colors duration-200"
+                          onClick={handleCheckout}
+                          className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold text-lg shadow-lg transition-colors duration-200 flex items-center justify-center gap-2 mx-auto"
                         >
-                          📦 Confirm Order
+                          <CreditCard size={20} />
+                          Checkout
+                          <ArrowRight size={20} />
                         </button>
                       </div>
                     </div>
