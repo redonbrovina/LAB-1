@@ -1,13 +1,14 @@
 import ClientNavBar from "../components/ClientNavBar";
 import { DollarSign, Plus, CreditCard, Banknote } from "lucide-react";
 import { useState, useEffect } from "react";
-import { paymentAPI, paymentMethodsAPI, ordersAPI } from "../utils/api";
+import { paymentAPI, paymentMethodsAPI, ordersAPI, cartAPI, cartItemsAPI } from "../utils/api";
 import { useAuth } from "../utils/AuthContext";
 
 export default function Payments() {
   const [payments, setPayments] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const { user } = useAuth();
@@ -30,10 +31,11 @@ export default function Payments() {
 
   const fetchData = async () => {
     try {
-      const [paymentsData, paymentMethodsData, ordersData] = await Promise.all([
+      const [paymentsData, paymentMethodsData, ordersData, cartItemsData] = await Promise.all([
         paymentAPI.getAll(),
         paymentMethodsAPI.getAll(),
-        ordersAPI.getAll()
+        ordersAPI.getAll(),
+        cartItemsAPI.getAll()
       ]);
       
       // Filter orders and payments to show only current client's data
@@ -47,10 +49,22 @@ export default function Payments() {
       const clientPayments = Array.isArray(paymentsData) 
         ? paymentsData.filter(payment => payment.klientiID == clientId)
         : [];
+
+      // Get user's cart and filter cart items
+      const carts = await cartAPI.getAll();
+      const cartsArray = Array.isArray(carts) ? carts : [];
+      const userCart = cartsArray.find(c => c.klientiID === clientId);
+      
+      const clientCartItems = userCart 
+        ? Array.isArray(cartItemsData) 
+          ? cartItemsData.filter(item => item.cartID === userCart.cartID)
+          : []
+        : [];
       
       setPayments(clientPayments);
       setPaymentMethods(Array.isArray(paymentMethodsData) ? paymentMethodsData : []);
       setOrders(clientOrders);
+      setCartItems(clientCartItems);
     } catch (error) {
       console.error('Error fetching data:', error);
       alert('Error fetching data. Please try again.');
@@ -76,6 +90,22 @@ export default function Payments() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCartItemClick = (cartItem) => {
+    // Calculate total price for this cart item
+    const totalPrice = cartItem.sasia * cartItem.cmimi;
+    
+    // Set form data with cart item information
+    setFormData({
+      porosiaID: "", // No order ID for cart items
+      menyra_pagesesID: "",
+      shuma_pageses: totalPrice.toString(),
+      numri_llogarise: ""
+    });
+    
+    // Show the form
+    setShowForm(true);
   };
 
   const handleSubmit = async (e) => {
@@ -195,10 +225,62 @@ export default function Payments() {
               Pending
             </div>
             <p className="text-2xl font-bold mt-2">
-              {payments.filter(p => p.status === 'pending').length}
+              {cartItems.length}
             </p>
           </div>
         </div>
+
+        {/* Pending Cart Items */}
+        {cartItems.length > 0 && (
+          <div className="bg-white shadow rounded-2xl p-6 mb-8">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-yellow-600">Pending Payments (Cart Items)</h2>
+              <div className="text-sm text-gray-600">
+                {cartItems.length} items in cart
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {cartItems.map((item, index) => (
+                <div 
+                  key={item.produkti_cartID || index} 
+                  className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 cursor-pointer hover:bg-yellow-100 transition-colors"
+                  onClick={() => handleCartItemClick(item)}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="font-medium text-yellow-800">
+                      Product #{item.produkt_variacioniID}
+                    </div>
+                    <div className="text-xs text-yellow-600 bg-yellow-200 px-2 py-1 rounded">
+                      Pending
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Quantity:</span>
+                      <span className="font-medium">{item.sasia}</span>
+                    </div>
+                    
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Price:</span>
+                      <span className="font-medium">€{item.cmimi}</span>
+                    </div>
+                    
+                    <div className="flex justify-between text-sm font-semibold text-yellow-800 border-t border-yellow-200 pt-2">
+                      <span>Total:</span>
+                      <span>€{(item.sasia * item.cmimi).toFixed(2)}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-3 text-xs text-yellow-600 text-center">
+                    Click to add payment
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Payments Table */}
         <div className="bg-white shadow rounded-2xl p-6">

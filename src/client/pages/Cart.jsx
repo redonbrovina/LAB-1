@@ -1,8 +1,9 @@
 import ClientNavBar from "../components/ClientNavBar"; 
 import React, { useState, useEffect } from "react";
-import { cartAPI, cartItemsAPI, productsAPI, ordersAPI, orderItemsAPI } from "../utils/api";
+import { cartAPI, cartItemsAPI, productsAPI } from "../utils/api";
 import { useAuth } from "../utils/AuthContext";
-import { ShoppingCart, Plus, Minus, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ShoppingCart, Plus, Minus, Trash2, CreditCard, ArrowRight } from "lucide-react";
 
 export default function Cart() {
   const [cart, setCart] = useState(null);
@@ -10,6 +11,7 @@ export default function Cart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -115,9 +117,14 @@ export default function Cart() {
     }
   };
 
-  const createOrder = async () => {
+  const handleCheckout = () => {
+    if (!user) {
+      alert('Duhet të jeni të kyçur për të vazhduar me checkout.');
+      return;
+    }
+
     if (!cart || cartItems.length === 0) {
-      alert('Cart-i është bosh. Shtoni produkte për të krijuar një porosi.');
+      alert('Cart-i është bosh. Shtoni produkte për të vazhduar me checkout.');
       return;
     }
 
@@ -129,55 +136,8 @@ export default function Cart() {
       return;
     }
 
-    try {
-      console.log('Starting order creation...');
-      console.log('Cart:', cart);
-      console.log('Cart items:', cartItems);
-      console.log('Valid cart items:', validCartItems);
-      
-      const clientId = user.klientiID || user.id || user.clientId || user.userId;
-      console.log('Client ID:', clientId);
-      
-      // Calculate total price using only valid cart items
-      const totalPrice = validCartItems.reduce((sum, item) => sum + (item.sasia * item.cmimi), 0);
-      console.log('Total price:', totalPrice);
-      
-      // Create order
-      const orderData = {
-        klientiID: clientId,
-        porosia_statusID: 1, // Assuming 1 is "pending" status
-        pagesa_statusID: 1,  // Assuming 1 is "pending" payment status
-        cmimi_total: totalPrice
-      };
-      
-      console.log('Creating order with data:', orderData);
-      const newOrder = await ordersAPI.create(orderData);
-      console.log('Order created successfully:', newOrder);
-      
-      // Move cart items to order items
-      for (const item of validCartItems) {
-        const orderItemData = {
-          porosiaID: newOrder.porosiaID,
-          produkt_variacioniID: item.produkt_variacioniID,
-          sasia: item.sasia,
-          cmimi: item.cmimi
-        };
-        
-        console.log('Creating order item:', orderItemData);
-        await orderItemsAPI.create(orderItemData);
-      }
-      
-      // Clear cart after successful order creation
-      console.log('Clearing cart...');
-      await clearCart();
-      
-      alert(`Porosia u krijua me sukses! ID e porosisë: ${newOrder.porosiaID}\nEmail-i i konfirmimit u dërgua në ${user.email || 'email-in tuaj'}`);
-    } catch (err) {
-      console.error('Error creating order:', err);
-      console.error('Error details:', err.message);
-      console.error('Error stack:', err.stack);
-      alert(`Gabim në krijimin e porosisë: ${err.message}`);
-    }
+    // Redirect to Payments page
+    navigate('/payments');
   };
 
   if (!user) {
@@ -384,21 +344,23 @@ export default function Cart() {
                     </div>
                   )}
                   
-                  {/* Confirm Order Button */}
+                  {/* Checkout Button */}
                   {cartItems.length > 0 && (
-                    <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+                    <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                       <div className="text-center">
-                        <h3 className="text-lg font-semibold text-green-800 mb-2">
-                          Ready to Order?
+                        <h3 className="text-lg font-semibold text-blue-800 mb-2">
+                          Ready to Checkout?
                         </h3>
-                        <p className="text-green-600 mb-4">
-                          Review your items and confirm your order
+                        <p className="text-blue-600 mb-4">
+                          Review your items and proceed to payment
                         </p>
                         <button
-                          onClick={createOrder}
-                          className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold text-lg shadow-lg transition-colors duration-200"
+                          onClick={handleCheckout}
+                          className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold text-lg shadow-lg transition-colors duration-200 flex items-center justify-center gap-2 mx-auto"
                         >
-                          📦 Confirm Order
+                          <CreditCard size={20} />
+                          Checkout
+                          <ArrowRight size={20} />
                         </button>
                       </div>
                     </div>
