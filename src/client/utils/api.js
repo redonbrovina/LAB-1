@@ -217,6 +217,7 @@ export const apiDelete = (endpoint) => apiRequest(endpoint, { method: 'DELETE' }
 export const ordersAPI = {
   getAll: () => apiGet('/porosite'),
   getById: (id) => apiGet(`/porosite/${id}`),
+  getByClientId: (clientId) => apiGet(`/porosite/klienti/${clientId}`),
   create: (data) => apiPost('/porosite', data),
   update: (id, data) => apiPut(`/porosite/${id}`, data),
   delete: (id) => apiDelete(`/porosite/${id}`),

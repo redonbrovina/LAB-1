@@ -34,6 +34,10 @@ class PorosiaService {
     async getOrderItems(porosiaID) {
         return await this.produktiPorosiseRepo.getByPorosiaId(porosiaID);
     }
+
+    async getOrderItemsWithProductInfo(porosiaID) {
+        return await this.produktiPorosiseRepo.getOrderItemsWithProductInfo(porosiaID);
+    }
 }
 
 module.exports = PorosiaService;

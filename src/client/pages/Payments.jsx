@@ -1,16 +1,16 @@
 import ClientNavBar from "../components/ClientNavBar";
 import { DollarSign, Plus, CreditCard, Banknote } from "lucide-react";
 import { useState, useEffect } from "react";
-import { paymentAPI, paymentMethodsAPI, cartAPI, cartItemsAPI, ordersAPI } from "../utils/api";
+import { paymentAPI, paymentMethodsAPI, ordersAPI } from "../utils/api";
 import { useAuth } from "../utils/AuthContext";
 
 export default function Payments() {
   const [payments, setPayments] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
+  const [pendingOrders, setPendingOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [selectedProductForPayment, setSelectedProductForPayment] = useState(null);
+  const [selectedOrderForPayment, setSelectedOrderForPayment] = useState(null);
   const { user, defaultPaymentMethod } = useAuth();
 
   // Pagination state for payments
@@ -30,13 +30,12 @@ export default function Payments() {
 
   const fetchData = async () => {
     try {
-      const [paymentsData, paymentMethodsData, cartItemsData] = await Promise.all([
+      const [paymentsData, paymentMethodsData] = await Promise.all([
         paymentAPI.getAll(),
-        paymentMethodsAPI.getAll(),
-        cartItemsAPI.getAll()
+        paymentMethodsAPI.getAll()
       ]);
       
-      // Filter payments to show only current client's data
+      // Get user's client ID
       const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId || user?.klienti_id;
       
       // Filter payments to show only current client's payments
@@ -44,20 +43,18 @@ export default function Payments() {
         ? paymentsData.filter(payment => payment.klientiID == clientId)
         : [];
 
-      // Get user's cart and filter cart items
-      const carts = await cartAPI.getAll();
-      const cartsArray = Array.isArray(carts) ? carts : [];
-      const userCart = cartsArray.find(c => c.klientiID === clientId);
+      // Fetch pending orders for this client (pagesa_statusID = 1 = "Ne pritje")
+      const allOrders = await ordersAPI.getByClientId(clientId);
+      const ordersArray = Array.isArray(allOrders) ? allOrders : [];
       
-      const clientCartItems = userCart 
-        ? Array.isArray(cartItemsData) 
-          ? cartItemsData.filter(item => item.cartID === userCart.cartID)
-          : []
-        : [];
+      // Filter orders with pagesa_statusID = 1 (Ne pritje - pending)
+      const pendingOrdersList = ordersArray.filter(order => 
+        order.pagesa_statusID === 1
+      );
       
       setPayments(clientPayments);
       setPaymentMethods(Array.isArray(paymentMethodsData) ? paymentMethodsData : []);
-      setCartItems(clientCartItems);
+      setPendingOrders(pendingOrdersList);
     } catch (error) {
       console.error('Error fetching data:', error);
       alert('Error fetching data. Please try again.');
@@ -85,37 +82,16 @@ export default function Payments() {
     }
   };
 
-  const handleCartItemClick = (cartItem) => {
-    // Calculate total price for this cart item
-    const totalPrice = cartItem.sasia * cartItem.cmimi;
+  const handleOrderClick = (order) => {
+    // Store the selected order for payment
+    setSelectedOrderForPayment(order);
     
-    // Store the selected cart item for later removal
-    setSelectedProductForPayment(cartItem);
-    
-    // Set form data with cart item information and default payment method
+    // Set form data with order information and default payment method
     setFormData({
       menyra_pagesesID: defaultPaymentMethod || "",
-      shuma_pageses: totalPrice.toString(),
+      shuma_pageses: order.cmimi_total || "0",
       numri_llogarise: ""
     });
-    
-    // Show the form
-    setShowForm(true);
-  };
-
-  const handlePayAllCartItems = () => {
-    // Calculate total price for all cart items
-    const totalPrice = cartItems.reduce((sum, item) => sum + (item.sasia * item.cmimi), 0);
-    
-    // Set form data with total cart amount and default payment method
-    setFormData({
-      menyra_pagesesID: defaultPaymentMethod || "",
-      shuma_pageses: totalPrice.toString(),
-      numri_llogarise: ""
-    });
-    
-    // Clear selected product since we're paying for all
-    setSelectedProductForPayment(null);
     
     // Show the form
     setShowForm(true);
@@ -133,38 +109,10 @@ export default function Payments() {
         return;
       }
 
-      // First, create an order with the cart items
-      let orderId = null;
-      if (selectedProductForPayment) {
-        // Single item payment - create order for this item
-        const orderData = {
-          klientiID: clientId,
-          cmimi_total: (selectedProductForPayment.sasia * selectedProductForPayment.cmimi).toString(),
-          produktet: [{
-            produkt_variacioniID: selectedProductForPayment.produkt_variacioniID,
-            sasia: selectedProductForPayment.sasia,
-            cmimi: selectedProductForPayment.cmimi
-          }]
-        };
-        const order = await ordersAPI.create(orderData);
-        orderId = order.porosiaID;
-      } else {
-        // Pay all - create order for all cart items
-        const totalAmount = cartItems.reduce((sum, item) => sum + (item.sasia * item.cmimi), 0);
-        const orderData = {
-          klientiID: clientId,
-          cmimi_total: totalAmount.toString(),
-          produktet: cartItems.map(item => ({
-            produkt_variacioniID: item.produkt_variacioniID,
-            sasia: item.sasia,
-            cmimi: item.cmimi
-          }))
-        };
-        const order = await ordersAPI.create(orderData);
-        orderId = order.porosiaID;
-      }
+      // Pay for the selected pending order
+      const orderId = selectedOrderForPayment.porosiaID;
       
-      // Now create payment with the order ID
+      // Create payment with the order ID
       const paymentData = {
         ...formData,
         porosiaID: orderId,
@@ -173,42 +121,19 @@ export default function Payments() {
       };
       await paymentAPI.create(paymentData);
       
-      // Remove cart items after payment
-      if (selectedProductForPayment && selectedProductForPayment.produkti_cartID) {
-        // Remove single cart item
-        try {
-          await cartItemsAPI.delete(selectedProductForPayment.produkti_cartID);
-          console.log('Cart item removed after payment');
-        } catch (deleteError) {
-          console.error('Error removing cart item:', deleteError);
-          // Don't fail the payment if cart item deletion fails
-        }
-      } else {
-        // Remove all cart items (pay all)
-        try {
-          for (const cartItem of cartItems) {
-            await cartItemsAPI.delete(cartItem.produkti_cartID);
-          }
-          console.log('All cart items removed after payment');
-        } catch (deleteError) {
-          console.error('Error removing cart items:', deleteError);
-          // Don't fail the payment if cart item deletion fails
-        }
-      }
+      // Update order payment status to "Paid" (2)
+      await ordersAPI.update(orderId, { pagesa_statusID: 2 });
       
       await fetchData();
       setShowForm(false);
-      setSelectedProductForPayment(null);
+      setSelectedOrderForPayment(null);
       setFormData({
         menyra_pagesesID: defaultPaymentMethod || "",
         shuma_pageses: "",
         numri_llogarise: ""
       });
-      if (selectedProductForPayment) {
-        alert("Payment saved successfully! Item removed from cart.");
-      } else {
-        alert("Payment saved successfully! All items removed from cart.");
-      }
+      
+      alert(`Payment saved successfully for Order #${selectedOrderForPayment.porosiaID}!`);
     } catch (error) {
       console.error('Error saving payment:', error);
       alert(`Error saving payment: ${error.message}`);
@@ -281,70 +206,58 @@ export default function Payments() {
           </div>
 
           <div className="bg-white shadow rounded-2xl p-6">
-            <div className="flex items-center gap-3 text-yellow-600 font-semibold">
+            <div className="flex items-center gap-3 text-red-600 font-semibold">
               <Banknote size={24} />
-              Pending
+              Pending Orders
             </div>
             <p className="text-2xl font-bold mt-2">
-              {cartItems.length}
+              {pendingOrders.length}
             </p>
           </div>
         </div>
 
-         {/* Pending Cart Items */}
-         {cartItems.length > 0 && (
-           <div className="bg-white shadow rounded-2xl p-6 mb-8">
-             <div className="flex justify-between items-center mb-4">
-               <h2 className="text-xl font-semibold text-yellow-600">Pending Payments (Cart Items)</h2>
-               <div className="flex items-center gap-4">
-                 <div className="text-sm text-gray-600">
-                   {cartItems.length} items in cart
-                 </div>
-                 <button
-                   onClick={handlePayAllCartItems}
-                   className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
-                 >
-                   <DollarSign size={16} />
-                   Pay All ({cartItems.reduce((sum, item) => sum + (item.sasia * item.cmimi), 0).toFixed(2)}€)
-                 </button>
-               </div>
-             </div>
+        {/* Pending Orders */}
+        {pendingOrders.length > 0 && (
+          <div className="bg-white shadow rounded-2xl p-6 mb-8">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-red-600">Pending Orders</h2>
+              <div className="text-sm text-gray-600">
+                {pendingOrders.length} unpaid orders
+              </div>
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {cartItems.map((item, index) => (
+              {pendingOrders.map((order, index) => (
                 <div 
-                  key={item.produkti_cartID || index} 
-                  className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 cursor-pointer hover:bg-yellow-100 transition-colors"
-                  onClick={() => handleCartItemClick(item)}
+                  key={order.porosiaID || index} 
+                  className="bg-red-50 border border-red-200 rounded-lg p-4 cursor-pointer hover:bg-red-100 transition-colors"
+                  onClick={() => handleOrderClick(order)}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <div className="font-medium text-yellow-800">
-                      Product #{item.produkt_variacioniID}
+                    <div className="font-medium text-red-800">
+                      Order #{order.porosiaID}
                     </div>
-                    <div className="text-xs text-yellow-600 bg-yellow-200 px-2 py-1 rounded">
-                      Pending
+                    <div className="text-xs text-red-600 bg-red-200 px-2 py-1 rounded">
+                      Pending Payment
                     </div>
                   </div>
                   
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Quantity:</span>
-                      <span className="font-medium">{item.sasia}</span>
+                      <span className="text-gray-600">Order Date:</span>
+                      <span className="font-medium">
+                        {order.koha_krijimit ? new Date(order.koha_krijimit).toLocaleDateString() : 'N/A'}
+                      </span>
                     </div>
                     
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Price:</span>
-                      <span className="font-medium">€{item.cmimi}</span>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm font-semibold text-yellow-800 border-t border-yellow-200 pt-2">
-                      <span>Total:</span>
-                      <span>€{(item.sasia * item.cmimi).toFixed(2)}</span>
+                    <div className="flex justify-between text-sm font-semibold text-red-800 border-t border-red-200 pt-2">
+                      <span>Total Amount:</span>
+                      <span>€{order.cmimi_total || '0.00'}</span>
                     </div>
                   </div>
                   
-                  <div className="mt-3 text-xs text-yellow-600 text-center">
-                    Click to add payment
+                  <div className="mt-3 text-xs text-red-600 text-center">
+                    Click to pay for this order
                   </div>
                 </div>
               ))}
@@ -492,26 +405,15 @@ export default function Payments() {
                 Add New Payment
               </h2>
               
-              {/* Product Details Display */}
-              {selectedProductForPayment ? (
-                <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <h3 className="font-semibold text-green-800 mb-2">Produkti për Pagesë:</h3>
-                  <div className="text-sm text-green-700">
-                    <p><strong>Produkt:</strong> Product #{selectedProductForPayment.produkt_variacioniID}</p>
-                    <p><strong>Sasia:</strong> {selectedProductForPayment.sasia}</p>
-                    <p><strong>Çmimi për njësi:</strong> {selectedProductForPayment.cmimi}€</p>
-                    <p><strong>Totali:</strong> {(selectedProductForPayment.sasia * selectedProductForPayment.cmimi).toFixed(2)}€</p>
-                  </div>
+              {/* Payment Details Display */}
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <h3 className="font-semibold text-red-800 mb-2">Order Payment:</h3>
+                <div className="text-sm text-red-700">
+                  <p><strong>Order ID:</strong> #{selectedOrderForPayment.porosiaID}</p>
+                  <p><strong>Order Date:</strong> {selectedOrderForPayment.koha_krijimit ? new Date(selectedOrderForPayment.koha_krijimit).toLocaleDateString() : 'N/A'}</p>
+                  <p><strong>Total Amount:</strong> €{selectedOrderForPayment.cmimi_total || '0.00'}</p>
                 </div>
-              ) : (
-                <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h3 className="font-semibold text-blue-800 mb-2">Të Gjitha Produktet në Cart:</h3>
-                  <div className="text-sm text-blue-700">
-                    <p><strong>Numri i produkteve:</strong> {cartItems.length}</p>
-                    <p><strong>Totali i cart-it:</strong> {cartItems.reduce((sum, item) => sum + (item.sasia * item.cmimi), 0).toFixed(2)}€</p>
-                  </div>
-                </div>
-              )}
+              </div>
               
               <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
@@ -578,7 +480,7 @@ export default function Payments() {
                      type="button"
                      onClick={() => {
                        setShowForm(false);
-                       setSelectedProductForPayment(null);
+                       setSelectedOrderForPayment(null);
                        setFormData({
                          menyra_pagesesID: defaultPaymentMethod || "",
                          shuma_pageses: "",

@@ -47,7 +47,26 @@ class ProduktCartRepository extends BaseRepository {
                 {
                     model: ProduktVariacioni,
                     as: 'produktVariacioni',
-                    attributes: ['produkt_variacioniID', 'cmimi']
+                    attributes: ['produkt_variacioniID', 'cmimi', 'produktiID', 'sasia_ne_stok']
+                }
+            ]
+        });
+    }
+
+    async getCartItemsWithProductInfo(cartID) {
+        return await this.getByField('cartID', cartID, {
+            include: [
+                {
+                    model: ProduktVariacioni,
+                    as: 'produktVariacioni',
+                    attributes: ['produkt_variacioniID', 'cmimi', 'produktiID'],
+                    include: [
+                        {
+                            model: require('../models').Produkti,
+                            as: 'produkti',
+                            attributes: ['produktiID', 'emri', 'sasia_ne_stok']
+                        }
+                    ]
                 }
             ]
         });

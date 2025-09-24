@@ -1,6 +1,6 @@
 import ClientNavBar from "../components/ClientNavBar"; 
 import React, { useState, useEffect } from "react";
-import { cartAPI, cartItemsAPI, productsAPI } from "../utils/api";
+import { cartAPI, cartItemsAPI, productsAPI, ordersAPI, orderItemsAPI } from "../utils/api";
 import { useAuth } from "../utils/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { ShoppingCart, Plus, Minus, Trash2, CreditCard, ArrowRight } from "lucide-react";
@@ -117,7 +117,7 @@ export default function Cart() {
     }
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!user) {
       alert('Duhet të jeni të kyçur për të vazhduar me checkout.');
       return;
@@ -136,10 +136,9 @@ export default function Cart() {
       return;
     }
 
-    // Redirect to Payments page
-    navigate('/payments');
+    // Create order with all cart items
     try {
-      console.log('Starting order creation...');
+      console.log('Creating order from cart...');
       console.log('Cart:', cart);
       console.log('Cart items:', cartItems);
       console.log('Valid cart items:', validCartItems);
@@ -154,8 +153,8 @@ export default function Cart() {
       // Create order
       const orderData = {
         klientiID: clientId,
-        porosia_statusID: 1, // Assuming 1 is "pending" status
-        pagesa_statusID: 1,  // Assuming 1 is "pending" payment status
+        porosia_statusID: 1, // pending status
+        pagesa_statusID: 1,  // Ne pritje (pending payment)
         cmimi_total: totalPrice
       };
       
@@ -163,7 +162,7 @@ export default function Cart() {
       const newOrder = await ordersAPI.create(orderData);
       console.log('Order created successfully:', newOrder);
       
-      // Move cart items to order items
+      // Create order items for all cart items and reduce stock
       for (const item of validCartItems) {
         const orderItemData = {
           porosiaID: newOrder.porosiaID,
@@ -174,18 +173,31 @@ export default function Cart() {
         
         console.log('Creating order item:', orderItemData);
         await orderItemsAPI.create(orderItemData);
+        
+        // Reduce stock for this product variation
+        try {
+          console.log(`Reducing stock for variation ${item.produkt_variacioniID} by ${item.sasia}`);
+          await productsAPI.reduceStock(item.produkt_variacioniID, item.sasia);
+          console.log(`✅ Stock reduced successfully for variation ${item.produkt_variacioniID}`);
+        } catch (stockError) {
+          console.error(`❌ Error reducing stock for variation ${item.produkt_variacioniID}:`, stockError);
+          // Continue with other items even if stock reduction fails
+        }
       }
       
       // Clear cart after successful order creation
       console.log('Clearing cart...');
       await clearCart();
       
-      alert(`Porosia u krijua me sukses! ID e porosisë: ${newOrder.porosiaID}\nJu lutemi shkoni te Payments për të përfunduar pagesën.`);
+      alert(`Order created successfully! Order ID: ${newOrder.porosiaID}\nRedirecting to Payments page to complete payment.`);
+      
+      // Redirect to Payments page
+      navigate('/payments');
     } catch (err) {
       console.error('Error creating order:', err);
       console.error('Error details:', err.message);
       console.error('Error stack:', err.stack);
-      alert(`Gabim në krijimin e porosisë: ${err.message}`);
+      alert(`Error creating order: ${err.message}`);
     }
   };
 

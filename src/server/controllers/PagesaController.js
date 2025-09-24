@@ -7,13 +7,6 @@ const service = new PagesaService();
 const emailService = new EmailService();
 const klientiService = new KlientiService();
 const produktiService = new ProduktiService();
-=======
-const KlientiService = require("../services/KlientiService");
-const EmailService = require("../services/EmailService");
-
-const service = new PagesaService();
-const klientiService = new KlientiService();
-const emailService = new EmailService();
 
 const PagesaController = {
   async create(req, res) {
@@ -58,29 +51,14 @@ const PagesaController = {
         adminID
       });
       
-      // Reduce stock and send email if this is a client payment with an order
+      // Send email if this is a client payment with an order
       if (klientiID && porosiaID) {
         try {
-          console.log('📦 Payment completed, reducing stock and sending email...');
+          console.log('📧 Payment completed, sending confirmation email...');
           
           // Get order details
           const orderData = await service.getOrderById(porosiaID);
           console.log('📦 Order data:', JSON.stringify(orderData, null, 2));
-          
-          // Get order items to reduce stock
-          const orderItems = await service.getOrderItems(porosiaID);
-          console.log('📦 Order items for stock reduction:', JSON.stringify(orderItems, null, 2));
-          
-          // Reduce stock for each order item
-          for (const item of orderItems) {
-            try {
-              await produktiService.reduceStock(item.produkt_variacioniID, item.sasia);
-              console.log(`✅ Stock reduced for product ${item.produkt_variacioniID} by ${item.sasia}`);
-            } catch (stockError) {
-              console.error(`❌ Error reducing stock for product ${item.produkt_variacioniID}:`, stockError);
-              // Continue with other items even if one fails
-            }
-          }
           
           // Get client details
           const clientData = await klientiService.getById(klientiID);
@@ -92,20 +70,6 @@ const PagesaController = {
         } catch (error) {
           console.error('❌ Error in post-payment processing:', error);
           // Don't fail the payment if post-processing fails
-      // Send order confirmation email after payment is created
-      if (porosiaID && klientiID) {
-        try {
-          console.log('📧 Payment created for order, sending confirmation email...');
-          const orderData = await service.getOrderById(porosiaID);
-          const clientData = await klientiService.getKlientiById(klientiID);
-          
-          if (orderData && clientData) {
-            await emailService.sendOrderConfirmationEmail(orderData, clientData);
-            console.log('✅ Order confirmation email sent successfully after payment');
-          }
-        } catch (emailError) {
-          console.error('❌ Error sending order confirmation email after payment:', emailError);
-          // Don't fail the payment if email fails
         }
       }
       

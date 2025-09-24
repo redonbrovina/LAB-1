@@ -1,5 +1,6 @@
 const KlientiService = require('../services/KlientiService');
 const ShtetiService = require('../services/ShtetiService');
+const RefreshTokenService = require('../services/RefreshTokenService');
 const PasswordUtils = require('../utils/PasswordUtils');
 const jwt = require('jsonwebtoken');
 
@@ -7,6 +8,7 @@ class KlientiController {
     constructor() {
         this.klientiService = new KlientiService();
         this.shtetiService = new ShtetiService();
+        this.refreshTokenService = new RefreshTokenService();
     }
 
     async login(req, res) {
@@ -56,15 +58,7 @@ class KlientiController {
             );
 
             // Generate refresh token
-            const refreshToken = jwt.sign(
-                {
-                    klientiID: klienti.klientiID,
-                    email: klienti.email,
-                    role: 'klient'
-                },
-                process.env.JWT_SECRET || 'your-secret-key',
-                { expiresIn: '7d' }
-            );
+            const refreshToken = await this.refreshTokenService.createRefreshToken(klienti.klientiID, 'klient');
 
             // Return client data without password
             const { password: _, ...clientData } = klienti.toJSON();
@@ -72,7 +66,7 @@ class KlientiController {
             res.json({
                 message: 'Login successful',
                 accessToken: token,
-                refreshToken: refreshToken,
+                refreshToken: refreshToken.token,
                 user: {
                     ...clientData,
                     role: 'klient'

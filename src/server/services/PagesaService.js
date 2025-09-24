@@ -1,7 +1,6 @@
 const PagesaRepository = require("../repositories/PagesaRepository");
 const PorosiaService = require("./PorosiaService");
 const { Porosia, MenyraPageses } = require("../models");
-const PorosiaService = require("./PorosiaService");
 
 class PagesaService {
     constructor() {
@@ -71,6 +70,14 @@ class PagesaService {
 
     async getOrderItems(porosiaID) {
         return await this.porosiaService.getOrderItems(porosiaID);
+    }
+
+    async getOrderItemsWithProductInfo(porosiaID) {
+        return await this.porosiaService.getOrderItemsWithProductInfo(porosiaID);
+    }
+
+    async updateOrderPaymentStatus(porosiaID, pagesa_statusID) {
+        return await this.porosiaService.updateOrderPaymentStatus(porosiaID, pagesa_statusID);
     }
 
 }

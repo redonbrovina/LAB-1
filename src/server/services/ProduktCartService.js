@@ -27,6 +27,10 @@ class ProduktCartService {
         return await this.produktCartRepository.getByCartId(cartID);
     }
 
+    async getCartItemsWithProductInfo(cartID) {
+        return await this.produktCartRepository.getCartItemsWithProductInfo(cartID);
+    }
+
     async create(data) {
         return await this.produktCartRepository.createCartItem(data);
     }
