@@ -11,14 +11,14 @@ export default function Payments() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const { user } = useAuth();
+  const { user, defaultPaymentMethod } = useAuth();
 
   // Pagination state for payments
   const [visiblePaymentsCount, setVisiblePaymentsCount] = useState(5);
 
   const [formData, setFormData] = useState({
     porosiaID: "",
-    menyra_pagesesID: "",
+    menyra_pagesesID: defaultPaymentMethod || "",
     shuma_pageses: "",
     numri_llogarise: ""
   });
@@ -96,10 +96,10 @@ export default function Payments() {
     // Calculate total price for this cart item
     const totalPrice = cartItem.sasia * cartItem.cmimi;
     
-    // Set form data with cart item information
+    // Set form data with cart item information and default payment method
     setFormData({
       porosiaID: "", // No order ID for cart items
-      menyra_pagesesID: "",
+      menyra_pagesesID: defaultPaymentMethod || "",
       shuma_pageses: totalPrice.toString(),
       numri_llogarise: ""
     });
@@ -136,7 +136,7 @@ export default function Payments() {
       setShowForm(false);
       setFormData({
         porosiaID: "",
-        menyra_pagesesID: "",
+        menyra_pagesesID: defaultPaymentMethod || "",
         shuma_pageses: "",
         numri_llogarise: ""
       });
