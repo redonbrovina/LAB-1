@@ -73,21 +73,10 @@ export const paymentAPI = {
   }),
 };
 
-// Stock Movement API functions
+// Stock Movement API functions - Using existing product API for stock updates
 export const stockMovementAPI = {
-  getAll: () => apiCall('/levizje-stok'),
-  getById: (id) => apiCall(`/levizje-stok/${id}`),
-  create: (data) => apiCall('/levizje-stok', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
-  update: (id, data) => apiCall(`/levizje-stok/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(data),
-  }),
-  delete: (id) => apiCall(`/levizje-stok/${id}`, {
-    method: 'DELETE',
-  }),
+  // Note: Using existing productsAPI.increaseStock() and productsAPI.reduceStock() methods
+  // No separate stock movement tracking - using direct product stock updates
 };
 
 // Payment Methods API functions
@@ -261,6 +250,8 @@ export const productsAPI = {
   create: (data) => apiPost('/produkte', data),
   update: (id, data) => apiPut(`/produkte/${id}`, data),
   delete: (id) => apiDelete(`/produkte/${id}`),
+  increaseStock: (id, quantity) => apiPut(`/produkte/${id}/increase-stock`, { quantity }),
+  reduceStock: (id, quantity) => apiPut(`/produkte/${id}/reduce-stock`, { quantity }),
 };
 
 // Categories API functions
