@@ -166,6 +166,11 @@ export default function Products() {
 
   const handleSearchClear = () => {
     setSearchResults(null);
+    // Reset pagination when clearing search
+    setPagination(prev => ({
+      ...prev,
+      currentPage: 1
+    }));
     // Reload products with pagination when clearing search
     loadProducts(1);
   };
@@ -256,7 +261,7 @@ export default function Products() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <h1 className="text-xl sm:text-2xl font-bold" style={{ color: "#808080" }}>
-            {searchResults ? `Rezultatet e kërkimit (${searchResults.length})` : `Shop (${pagination.totalItems} produkte)`}
+            Shop
           </h1>
           <div className="flex items-center gap-2 sm:gap-4">
             {/* View Mode Toggle */}
@@ -296,6 +301,7 @@ export default function Products() {
             onSearchResults={handleSearchResults}
             onSearchClear={handleSearchClear}
             placeholder="Kërko produkte sipas emrit ose përshkrimit..."
+            showResults={false} 
           />
         </div>
 
