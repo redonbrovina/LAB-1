@@ -3,12 +3,14 @@ import { useState, useEffect } from "react";
 import { apiGet, apiDelete } from "../utils/api";
 import { useAuth } from "../utils/AuthContext";
 import EditAdminModal from "../admin/EditAdminModal";
+import AddNewAdminModal from "../admin/AddNewAdminModal";
 
 export default function AdminSettings() {
     const { logout } = useAuth();
     const [admin, setAdmin] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showAddAdminModal, setShowAddAdminModal] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     const fetchAdminProfile = async () => {
@@ -29,6 +31,10 @@ export default function AdminSettings() {
 
     const handleEditClick = () => {
         setShowEditModal(true);
+    };
+
+    const handleAddAdminClick = () => {
+        setShowAddAdminModal(true);
     };
 
     const handleDeleteClick = () => {
@@ -61,6 +67,16 @@ export default function AdminSettings() {
 
     const handleCloseModal = () => {
         setShowEditModal(false);
+    };
+
+    const handleCloseAddAdminModal = () => {
+        setShowAddAdminModal(false);
+    };
+
+    const handleAdminCreated = (newAdmin) => {
+        console.log('New admin created:', newAdmin);
+        // You could add a success message or refresh the admin list here
+        setShowAddAdminModal(false);
     };
 
     if (loading) {
@@ -167,6 +183,38 @@ export default function AdminSettings() {
                 </div>
             </div>
 
+            {/* Add New Admin Card */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <UserPlus className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900">Add New Admin</h3>
+                    </div>
+                </div>
+                <div className="p-6">
+                    <div className="flex items-start gap-3 mb-4">
+                        <UserPlus className="h-5 w-5 text-blue-500 mt-0.5" />
+                        <div>
+                            <p className="text-gray-700 leading-relaxed">
+                                Create a new administrator account with email, password, and personal code. The new admin will have full access to the system.
+                            </p>
+                            <p className="text-sm text-gray-500 mt-2">
+                                Personal code is required for admin authentication and cannot be changed after creation.
+                            </p>
+                        </div>
+                    </div>
+                    <button 
+                        onClick={handleAddAdminClick}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    >
+                        <UserPlus size={18} />
+                        Add New Administrator
+                    </button>
+                </div>
+            </div>
+
             {/* Delete Account Card */}
             <div className="bg-white rounded-lg shadow-sm border border-red-200 overflow-hidden">
                 <div className="px-6 py-4 border-b border-red-100 bg-red-50">
@@ -205,6 +253,13 @@ export default function AdminSettings() {
                 onClose={handleCloseModal}
                 admin={admin}
                 onAdminUpdated={handleAdminUpdated}
+            />
+
+            {/* Add New Admin Modal */}
+            <AddNewAdminModal
+                isOpen={showAddAdminModal}
+                onClose={handleCloseAddAdminModal}
+                onAdminCreated={handleAdminCreated}
             />
 
             {/* Delete Confirmation Modal */}

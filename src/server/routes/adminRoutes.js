@@ -10,6 +10,8 @@ router.post('/login', controller.adminLogin.bind(controller));
 router.use(authenticateToken);
 router.use(requireRole('admin'));
 
+router.post('/', controller.createAdmin.bind(controller));
+
 router.get('/dashboard-stats', controller.getDashboardStats.bind(controller));
 router.get('/profile', controller.getCurrentAdmin.bind(controller));
 router.get('/:adminID', controller.getAdminById.bind(controller));

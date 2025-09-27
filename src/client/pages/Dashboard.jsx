@@ -199,7 +199,7 @@ export default function Dashboard() {
                   Dashboard
                 </h1>
                 <p style={{ color: "#808080" }}>
-                  Mirë se vini, {user?.emri_kompanise || 'Klient'}!
+                  Mirë se vini, Klient!
                 </p>
               </div>
               <button

@@ -7,10 +7,26 @@ class ShtetiController {
 
     async getAllShtetet(req, res) {
         try {
-            const shtetet = await this.shtetiService.getAllShtetet();
-            res.status(200).json(shtetet);
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            
+            const result = await this.shtetiService.getAllShtetetPaginated(page, limit);
+            res.status(200).json(result);
         } catch (error) {
             res.status(500).json({ error: error.message });
+        }
+    }
+
+    async getShtetiById(req, res) {
+        try {
+            const shteti = await this.shtetiService.getShtetiById(req.params.id);
+            res.status(200).json(shteti);
+        } catch (error) {
+            if (error.message === "Shteti nuk u gjet") {
+                res.status(404).json({ error: error.message });
+            } else {
+                res.status(500).json({ error: error.message });
+            }
         }
     }
 

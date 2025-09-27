@@ -281,12 +281,6 @@ export default function Products() {
             >
               🔄 <span className="hidden sm:inline">Refresh</span>
             </button>
-            <button className="p-2 rounded-full bg-white shadow">
-              <span role="img" aria-label="bell">🔔</span>
-            </button>
-            <button className="p-2 rounded-full bg-white shadow">
-              <span role="img" aria-label="user">👤</span>
-            </button>
           </div>
         </div>
 
