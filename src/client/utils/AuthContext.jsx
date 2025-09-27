@@ -9,7 +9,7 @@ function parseJwt(token) {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const token = localStorage.getItem('accessToken');
+    const token = sessionStorage.getItem('accessToken');
     if (token) {
       try {
         const decoded = parseJwt(token);
@@ -22,8 +22,8 @@ export const AuthProvider = ({ children }) => {
         }
         return decoded;
       } catch (error) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('refreshToken');
         return null;
       }
     }
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
   });
 
   const refreshAccessToken = async () => {
-    const refreshToken = localStorage.getItem('refreshToken');
+    const refreshToken = sessionStorage.getItem('refreshToken');
     console.log('AuthContext refreshAccessToken called, refresh token available:', !!refreshToken);
     
     if (!refreshToken) {
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('AuthContext calling refresh endpoint...');
       const response = await publicApiPost('/form/refresh-token', { refreshToken });
-      localStorage.setItem('accessToken', response.accessToken);
+      sessionStorage.setItem('accessToken', response.accessToken);
       setUser(parseJwt(response.accessToken));
       console.log('AuthContext refresh successful');
       return response.accessToken;
@@ -60,9 +60,9 @@ export const AuthProvider = ({ children }) => {
 
   const login = (accessToken, refreshToken) => {
     console.log('AuthContext login called with accessToken:', accessToken?.substring(0, 20) + '...');
-    localStorage.setItem('accessToken', accessToken);
+    sessionStorage.setItem('accessToken', accessToken);
     if (refreshToken) {
-      localStorage.setItem('refreshToken', refreshToken);
+      sessionStorage.setItem('refreshToken', refreshToken);
     }
     const decoded = parseJwt(accessToken);
     console.log('Login - Decoded JWT token:', decoded);
@@ -73,16 +73,16 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
+      const refreshToken = sessionStorage.getItem('refreshToken');
       if (refreshToken) {
         await publicApiPost('/form/logout', { refreshToken });
       }
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      // Always remove tokens from localStorage
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      // Always remove tokens from sessionStorage
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('refreshToken');
       localStorage.removeItem('defaultPaymentMethod');
       setUser(null);
       setDefaultPaymentMethod(null);
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const getToken = () => {
-    return localStorage.getItem('accessToken');
+    return sessionStorage.getItem('accessToken');
   };
 
   const isAuthenticated = () => {

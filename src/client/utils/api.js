@@ -101,7 +101,7 @@ export const paymentMethodsAPI = {
 
 
 export const apiRequest = async (endpoint, options = {}) => {
-  let token = localStorage.getItem('accessToken');
+  let token = sessionStorage.getItem('accessToken');
   
   console.log(`Making API request to: ${API_BASE_URL}${endpoint}`);
   console.log('Token available:', !!token);
@@ -124,7 +124,7 @@ export const apiRequest = async (endpoint, options = {}) => {
     // Handle token expiration
     if (response.status === 401) {
       console.log('Token expired, attempting refresh...');
-      const refreshToken = localStorage.getItem('refreshToken');
+      const refreshToken = sessionStorage.getItem('refreshToken');
       
       if (refreshToken) {
         try {
@@ -133,7 +133,7 @@ export const apiRequest = async (endpoint, options = {}) => {
           const newAccessToken = refreshResponse.accessToken;
           
           console.log('Token refreshed successfully, new token:', newAccessToken.substring(0, 20) + '...');
-          localStorage.setItem('accessToken', newAccessToken);
+          sessionStorage.setItem('accessToken', newAccessToken);
           
           // Retry the original request with new token
           config.headers['Authorization'] = `Bearer ${newAccessToken}`;
@@ -148,15 +148,15 @@ export const apiRequest = async (endpoint, options = {}) => {
           return await retryResponse.json();
         } catch (refreshError) {
           console.error('Token refresh failed:', refreshError);
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
+          sessionStorage.removeItem('accessToken');
+          sessionStorage.removeItem('refreshToken');
           window.location.href = '/login';
           throw new Error('Authentication required');
         }
       } else {
         console.log('No refresh token available, redirecting to login');
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('refreshToken');
         window.location.href = '/login';
         throw new Error('Authentication required');
       }

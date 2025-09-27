@@ -47,8 +47,8 @@ export default function AdminSettings() {
             console.log('Admin deleted successfully');
             
             // Clear authentication state locally (don't call server logout since account is deleted)
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
+            sessionStorage.removeItem('accessToken');
+            sessionStorage.removeItem('refreshToken');
             
             // Redirect to admin login page
             window.location.href = '/admin-login';
