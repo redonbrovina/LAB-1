@@ -119,7 +119,26 @@ class AdminController {
 
     async createAdmin(req, res) {
         try {
-            const newAdmin = await this.adminService.createAdmin(req.body);
+            const { password, ...otherData } = req.body;
+            
+            // Validate password strength
+            const passwordValidation = PasswordUtils.validatePasswordStrength(password);
+            if (!passwordValidation.isValid) {
+                return res.status(400).json({
+                    message: passwordValidation.message
+                });
+            }
+            
+            // Hash the password
+            const hashedPassword = await PasswordUtils.hashPassword(password);
+            
+            // Create admin with hashed password
+            const adminData = {
+                ...otherData,
+                pass: hashedPassword
+            };
+            
+            const newAdmin = await this.adminService.createAdmin(adminData);
             res.status(201).json(newAdmin);
         } catch (error) {
             res.status(500).json({

@@ -9,6 +9,10 @@ class ShtetiService {
         return await this.shtetiRepository.getAllShtetet();
     }
 
+    async getAllShtetetPaginated(page, limit) {
+        return await this.shtetiRepository.getAllShtetetPaginated(page, limit);
+    }
+
     async getShtetiById(shtetiID) {
         const shteti = await this.shtetiRepository.getShtetiById(shtetiID);
         if (!shteti) throw new Error("Shteti nuk u gjet");

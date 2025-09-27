@@ -11,11 +11,11 @@ import ProductsAdmin from '../../components/ProductsAdmin';
 import AdminUsers from '../AdminUsers';
 import AdminCreateClient from '../AdminCreateClient';
 import AdminSettings from '../AdminSettings';
+import ReferenceData from '../ReferenceData';
 
 const AdminPages = () => {
   const location = useLocation();
   
-  // Route to the appropriate component based on current path
   switch (location.pathname) {
     case '/admin':
       return <AdminDashboard />;
@@ -37,6 +37,8 @@ const AdminPages = () => {
       return <AdminCreateClient />;
     case '/admin/settings':
       return <AdminSettings />;
+    case '/admin/reference-data':
+      return <ReferenceData />;
     default:
       return <AdminDashboard />;
   }

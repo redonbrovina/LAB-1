@@ -152,7 +152,7 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b rounded-lg">
+      <div className="bg-white shadow-sm rounded-lg">
         <div className="px-4 lg:px-6 py-4">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
@@ -170,12 +170,6 @@ export default function AdminDashboard() {
                 className="px-3 sm:px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
               >
                 🔄 <span className="hidden sm:inline">Refresh Data</span>
-              </button>
-              <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
-                <span role="img" aria-label="bell">🔔</span>
-              </button>
-              <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
-                <span role="img" aria-label="user">👤</span>
               </button>
             </div>
           </div>
