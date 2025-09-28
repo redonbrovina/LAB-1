@@ -27,8 +27,7 @@ export default function ProductCard({
     setIsLiked(!isLiked);
   };
 
-  const hasVariations = product.variacionet && product.variacionet.length > 0;
-  const price = hasVariations ? product.variacionet[0].cmimi : null;
+  const price = product.cmimi;
   const stock = product.sasia_ne_stok || 0;
   
   const incrementQuantity = () => {

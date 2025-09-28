@@ -112,7 +112,7 @@ export default function ProductsAdmin() {
       emri: p.emri || '',
       pershkrimi: p.pershkrimi || '',
       kategoriaID: p.KategoriaID ?? p.kategoriaID ?? '',
-      cmimi: p.variacionet?.[0]?.cmimi || '',
+      cmimi: p.cmimi || '',
       sasia_ne_stok: p.sasia_ne_stok || '', // Fixed: use p.sasia_ne_stok instead of p.variacionet[0].sasia_ne_stok
       imazhi: (p && p.imazhi) ? p.imazhi : '/src/client/assets/images/default-pill-bottle.svg',
     });
@@ -273,7 +273,7 @@ export default function ProductsAdmin() {
                         </td>
                         <td className="py-2 pr-4">{p.emri}</td>
                         <td className="py-2 pr-4">{categoryMap.get(catId) || catId || '-'}</td>
-                        <td className="py-2 pr-4">€{p.variacionet?.[0]?.cmimi || '0.00'}</td>
+                        <td className="py-2 pr-4">€{p.cmimi || '0.00'}</td>
                         <td className="py-2 pr-4">{p.sasia_ne_stok || '0'}</td>
                         <td className="py-2 pr-4 max-w-xl truncate" title={p.pershkrimi || ''}>{p.pershkrimi || '-'}</td>
                         <td className="py-2 pr-4 space-x-2">
@@ -329,7 +329,7 @@ export default function ProductsAdmin() {
                         <div className="space-y-2">
                           <div className="flex justify-between items-center">
                             <span className="text-sm font-medium text-gray-700">Price:</span>
-                            <span className="font-semibold text-gray-900">€{p.variacionet?.[0]?.cmimi || '0.00'}</span>
+                            <span className="font-semibold text-gray-900">€{p.cmimi || '0.00'}</span>
                           </div>
                           
                           <div className="flex justify-between items-center">

@@ -441,7 +441,7 @@ export default function AdminPayments() {
                       <p className="font-medium text-gray-700">Products from this supplier:</p>
                       {products.filter(p => p.furnitoriID == formData.furnitoriID).map(product => (
                         <div key={product.produktiID} className="text-gray-600">
-                          • {product.emri} - €{product.variacionet && product.variacionet.length > 0 ? product.variacionet[0].cmimi || 'N/A' : 'N/A'} (Stock: {product.sasia_ne_stok || 0})
+                          • {product.emri} - €{product.cmimi || 'N/A'} (Stock: {product.sasia_ne_stok || 0})
                         </div>
                       ))}
                     </div>
@@ -456,8 +456,8 @@ export default function AdminPayments() {
                       const selectedProductId = e.target.value;
                       const selectedProduct = products.find(p => p.produktiID == selectedProductId);
                       
-                      if (selectedProduct && selectedProduct.variacionet && selectedProduct.variacionet.length > 0) {
-                        const price = selectedProduct.variacionet[0].cmimi;
+                      if (selectedProduct && selectedProduct.cmimi) {
+                        const price = selectedProduct.cmimi;
                         setFormData(prev => ({
                           ...prev,
                           produktiID: selectedProductId,
@@ -485,7 +485,7 @@ export default function AdminPayments() {
                       .filter(p => p.furnitoriID == formData.furnitoriID)
                       .map((product) => (
                         <option key={product.produktiID} value={product.produktiID}>
-                          {product.emri} - €{product.variacionet && product.variacionet.length > 0 ? product.variacionet[0].cmimi || 'N/A' : 'N/A'} (Stock: {product.sasia_ne_stok || 0})
+                          {product.emri} - €{product.cmimi || 'N/A'} (Stock: {product.sasia_ne_stok || 0})
                         </option>
                       ))}
                   </select>

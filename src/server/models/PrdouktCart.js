@@ -46,10 +46,6 @@ ProduktCart.associate = function(models) {
         foreignKey: 'cartID',
         as: 'cart'
     });
-    ProduktCart.belongsTo(models.ProduktVariacioni, { 
-        foreignKey: 'produkt_variacioniID',
-        as: 'produktVariacioni'
-    });
 };
 
 module.exports = ProduktCart;

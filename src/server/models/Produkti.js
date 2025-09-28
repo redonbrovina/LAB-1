@@ -67,10 +67,6 @@ Produkti.associate = function(models) {
         foreignKey: 'dozaID',
         as: 'doza'
     });
-    Produkti.hasMany(models.ProduktVariacioni, { 
-        foreignKey: 'produktiID',
-        as: 'variacionet'
-    });
 };
 
 module.exports = Produkti;

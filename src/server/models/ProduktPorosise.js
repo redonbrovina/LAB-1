@@ -45,10 +45,6 @@ ProduktPorosise.associate = function(models) {
         foreignKey: 'porosiaID',
         as: 'porosia'
     });
-    ProduktPorosise.belongsTo(models.ProduktVariacioni, { 
-        foreignKey: 'produkt_variacioniID',
-        as: 'produktVariacioni'
-    });
 };
 
 module.exports = ProduktPorosise;

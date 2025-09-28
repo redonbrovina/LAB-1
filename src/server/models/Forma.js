@@ -19,9 +19,9 @@ const Forma = sequelize.define("Forma", {
 
 // Define relationships after model is created
 Forma.associate = function(models) {
-    Forma.hasMany(models.ProduktVariacioni, { 
+    Forma.hasMany(models.Produkti, { 
         foreignKey: 'formaID',
-        as: 'variacionet'
+        as: 'produktet'
     });
 };
 

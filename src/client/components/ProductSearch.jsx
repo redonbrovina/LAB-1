@@ -131,9 +131,9 @@ export default function ProductSearch({
                       <p className="text-xs text-gray-500">
                         {product.kategoria?.emri || 'Uncategorized'}
                       </p>
-                      {product.variacionet && product.variacionet.length > 0 && (
+                      {product.cmimi && (
                         <p className="text-xs text-green-600 font-medium">
-                          €{product.variacionet[0].cmimi}
+                          €{product.cmimi}
                         </p>
                       )}
                     </div>

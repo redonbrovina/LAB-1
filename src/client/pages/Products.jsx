@@ -90,9 +90,9 @@ export default function Products() {
       return;
     }
 
-    if (!product.variacionet || product.variacionet.length === 0) {
-      alert('Product has no available variation. Please add variation in admin panel.');
-      console.log('Product has no variations:', product);
+    if (!product.cmimi) {
+      alert('Product has no price. Please add price in admin panel.');
+      console.log('Product has no price:', product);
       return;
     }
 
@@ -124,18 +124,14 @@ export default function Products() {
       }
 
       // Add product to cart
-      const productVariation = product.variacionet[0];
-      console.log('Product variation:', productVariation);
-      
-      if (!productVariation.produkt_variacioniID) {
-        throw new Error('Product has no variation ID');
-      }
+      // Use unified product structure
+      console.log('Product:', product);
       
       const cartItemData = {
         cartID: userCart.cartID,
-        produkt_variacioniID: productVariation.produkt_variacioniID,
+        produktiID: product.produktiID,
         sasia: quantity,
-        cmimi: productVariation.cmimi
+        cmimi: product.cmimi
       };
       
       console.log('Adding to cart:', cartItemData);
@@ -185,8 +181,8 @@ export default function Products() {
     // Price range filter
     if (filters.priceRange) {
       filtered = filtered.filter(p => {
-        if (!p.variacionet || p.variacionet.length === 0) return false;
-        const price = p.variacionet[0].cmimi;
+        if (!p.cmimi) return false;
+        const price = p.cmimi;
         const [min, max] = filters.priceRange.split('-').map(Number);
         if (max) {
           return price >= min && price <= max;
@@ -220,12 +216,12 @@ export default function Products() {
         case 'name-desc':
           return b.emri.localeCompare(a.emri);
         case 'price-low':
-          const priceA = a.variacionet && a.variacionet.length > 0 ? a.variacionet[0].cmimi : 0;
-          const priceB = b.variacionet && b.variacionet.length > 0 ? b.variacionet[0].cmimi : 0;
+          const priceA = a.cmimi || 0;
+          const priceB = b.cmimi || 0;
           return priceA - priceB;
         case 'price-high':
-          const priceA2 = a.variacionet && a.variacionet.length > 0 ? a.variacionet[0].cmimi : 0;
-          const priceB2 = b.variacionet && b.variacionet.length > 0 ? b.variacionet[0].cmimi : 0;
+          const priceA2 = a.cmimi || 0;
+          const priceB2 = b.cmimi || 0;
           return priceB2 - priceA2;
         default:
           return 0;
@@ -317,7 +313,7 @@ export default function Products() {
 
                
                {/* Variation Warning */}
-               {products.length > 0 && products.filter(p => p.variacionet && p.variacionet.length > 0).length === 0 && (
+               {products.length > 0 && products.filter(p => p.cmimi).length === 0 && (
                  <div className="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded-lg">
                    <div className="flex items-center">
                      <span className="text-yellow-600 text-xl mr-3">⚠️</span>
