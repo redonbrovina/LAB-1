@@ -148,7 +148,7 @@ const PagesaController = {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { shuma_pageses, numri_llogarise, klientiID } = req.body;
+      const { shuma_pageses, numri_llogarise, menyra_pagesesID, koha_pageses } = req.body;
       
       // Validate shuma_pageses if provided
       if (shuma_pageses !== undefined && shuma_pageses <= 0) {
@@ -157,11 +157,14 @@ const PagesaController = {
         });
       }
 
-      const pagesa = await service.update(id, {
-        shuma_pageses,
-        numri_llogarise,
-        klientiID
-      });
+      // Only allow updating meaningful fields
+      const allowedUpdates = {};
+      if (shuma_pageses !== undefined) allowedUpdates.shuma_pageses = shuma_pageses;
+      if (numri_llogarise !== undefined) allowedUpdates.numri_llogarise = numri_llogarise;
+      if (menyra_pagesesID !== undefined) allowedUpdates.menyra_pagesesID = menyra_pagesesID;
+      if (koha_pageses !== undefined) allowedUpdates.koha_pageses = koha_pageses;
+
+      const pagesa = await service.update(id, allowedUpdates);
       
       res.json(pagesa);
     } catch (err) {
@@ -172,6 +175,7 @@ const PagesaController = {
       }
     }
   },
+
 
   async delete(req, res) {
     try {

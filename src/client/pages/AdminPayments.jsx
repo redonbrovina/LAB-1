@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DollarSign, CreditCard, Banknote, Plus, Eye, Package, Truck } from "lucide-react";
+import { DollarSign, CreditCard, Banknote, Plus, Package, Truck, Edit, Trash2 } from "lucide-react";
 import { paymentAPI, paymentMethodsAPI, furnitoriAPI, productsAPI } from "../utils/api";
 import { useAuth } from "../utils/AuthContext";
 
@@ -12,6 +12,8 @@ export default function AdminPayments() {
   const [loading, setLoading] = useState(true);
   const [paymentFilter, setPaymentFilter] = useState('all'); // 'all', 'client', 'admin'
   const [showForm, setShowForm] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
   const { user } = useAuth();
 
   // Pagination state
@@ -33,6 +35,13 @@ export default function AdminPayments() {
     sasia: "",
     cmimiPerNjesi: "",
     pershkrimi: ""
+  });
+
+  const [editFormData, setEditFormData] = useState({
+    shuma_pageses: "",
+    numri_llogarise: "",
+    menyra_pagesesID: "",
+    koha_pageses: ""
   });
 
   useEffect(() => {
@@ -174,6 +183,49 @@ export default function AdminPayments() {
     }
   };
 
+  const handleEditPayment = (payment) => {
+    setSelectedPayment(payment);
+    setEditFormData({
+      shuma_pageses: payment.shuma_pageses || "",
+      numri_llogarise: payment.numri_llogarise || "",
+      menyra_pagesesID: payment.menyra_pagesesID || "",
+      koha_pageses: payment.koha_pageses ? new Date(payment.koha_pageses).toISOString().slice(0, 16) : ""
+    });
+    setShowEditModal(true);
+  };
+
+  const handleUpdatePayment = async (e) => {
+    e.preventDefault();
+    try {
+      await paymentAPI.update(selectedPayment.pagesaID, editFormData);
+      alert("Payment updated successfully!");
+      setShowEditModal(false);
+      setSelectedPayment(null);
+      await fetchData(pagination.currentPage);
+    } catch (error) {
+      console.error("Error updating payment:", error);
+      alert(`Error updating payment: ${error.message}`);
+    }
+  };
+
+  const handleDeletePayment = (payment) => {
+    if (window.confirm(`Are you sure you want to delete payment #${payment.pagesaID} for $${payment.shuma_pageses}? This action cannot be undone.`)) {
+      handleConfirmDelete(payment);
+    }
+  };
+
+  const handleConfirmDelete = async (payment) => {
+    try {
+      await paymentAPI.delete(payment.pagesaID);
+      alert("Payment deleted successfully!");
+      await fetchData(pagination.currentPage);
+    } catch (error) {
+      console.error("Error deleting payment:", error);
+      alert(`Error deleting payment: ${error.message}`);
+    }
+  };
+
+
   if (!user) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -201,7 +253,7 @@ export default function AdminPayments() {
           <h1 className="text-xl lg:text-2xl font-bold" style={{ color: "#808080" }}>
             Admin Payments
           </h1>
-          <p className="text-gray-600 mt-1">Manage supplier payments and track expenses</p>
+          <p className="text-gray-600 mt-1">Manage admin payments and track expenses</p>
         </div>
         <div className="flex gap-3">
           <button
@@ -265,7 +317,7 @@ export default function AdminPayments() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white shadow rounded-2xl p-6">
-          <div className="flex items-center gap-3 text-red-600 font-semibold">
+          <div className="flex items-center gap-3 text-gray-600 font-semibold">
             <DollarSign size={24} />
             Total Payments
           </div>
@@ -282,8 +334,8 @@ export default function AdminPayments() {
 
         <div className="bg-white shadow rounded-2xl p-6">
           <div className="flex items-center gap-3 text-green-600 font-semibold">
-            <Truck size={24} />
-            Supplier Payments
+            <Banknote size={24} />
+            Admin Payments
           </div>
           <p className="text-2xl font-bold mt-2">{getFilterCounts().admin}</p>
         </div>
@@ -293,17 +345,12 @@ export default function AdminPayments() {
       <div className="bg-white shadow rounded-2xl p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Payment History</h2>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
-            <p className="text-sm text-blue-700">
-              <strong>Note:</strong> Admin can only CREATE and VIEW payments. All payments are permanent for audit trail.
-            </p>
-          </div>
         </div>
 
         {getFilteredPayments().length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             {payments.length === 0 
-              ? "No payments found. Create your first supplier payment."
+              ? "No payments found. Create your first admin payment."
               : `No ${paymentFilter} payments found. Try a different filter.`
             }
           </div>
@@ -311,14 +358,13 @@ export default function AdminPayments() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b">
-                  <th className="text-left py-3 px-4">ID</th>
-                  <th className="text-left py-3 px-4">Type</th>
-                  <th className="text-left py-3 px-4">Amount</th>
-                  <th className="text-left py-3 px-4">Payment Method</th>
-                  <th className="text-left py-3 px-4">Date</th>
-                  <th className="text-left py-3 px-4">Details</th>
-                  <th className="text-left py-3 px-4">Actions</th>
+                <tr className="border-b bg-gray-50">
+                  <th className="text-left py-3 px-4 font-semibold">ID</th>
+                  <th className="text-left py-3 px-4 font-semibold">Type</th>
+                  <th className="text-left py-3 px-4 font-semibold">Amount</th>
+                  <th className="text-left py-3 px-4 font-semibold">Payment Method</th>
+                  <th className="text-left py-3 px-4 font-semibold">Date</th>
+                  <th className="text-left py-3 px-4 font-semibold">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -328,38 +374,39 @@ export default function AdminPayments() {
                   const product = products.find(p => p.produktiID === payment.produktiID);
                   
                   return (
-                    <tr key={payment.pagesaID || index} className="border-b hover:bg-gray-50">
-                      <td className="py-3 px-4 text-center">{payment.pagesaID || index + 1}</td>
+                    <tr key={payment.pagesaID || index} className="border-b hover:bg-gray-50 transition-colors">
+                      <td className="py-3 px-4 text-center font-medium">{payment.pagesaID || index + 1}</td>
                       <td className="py-3 px-4 text-center">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           payment.klientiID ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
                         }`}>
-                          {payment.klientiID ? 'Client Payment' : 'Supplier Payment'}
+                          {payment.klientiID ? 'Client Payment' : 'Admin Payment'}
                         </span>
                       </td>
-                      <td className="py-3 px-4 font-semibold text-center">${payment.shuma_pageses || '0.00'}</td>
+                      <td className="py-3 px-4 font-semibold text-center text-lg">
+                        ${payment.shuma_pageses || '0.00'}
+                      </td>
                       <td className="py-3 px-4 text-center">{paymentMethod?.menyra_pageses || 'N/A'}</td>
                       <td className="py-3 px-4 text-center">
                         {payment.koha_pageses ? new Date(payment.koha_pageses).toLocaleDateString() : 'N/A'}
                       </td>
                       <td className="py-3 px-4 text-center">
-                        {payment.klientiID ? (
-                          <span className="text-blue-600">Client Order</span>
-                        ) : (
-                          <div className="text-sm">
-                            {supplier && <div className="text-green-600">{supplier.emri}</div>}
-                            {product && <div className="text-gray-600">{product.emri}</div>}
-                            {payment.sasia && <div className="text-gray-500">Qty: {payment.sasia}</div>}
-                          </div>
-                        )}
-                      </td>
-                      <td className="py-3 px-4 text-center">
-                        <button
-                          className="text-blue-600 hover:text-blue-800 p-1"
-                          title="View Details"
-                        >
-                          <Eye size={16} />
-                        </button>
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => handleEditPayment(payment)}
+                            className="text-green-600 hover:text-green-800 p-1 rounded hover:bg-green-50 transition-colors"
+                            title="Edit Payment"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDeletePayment(payment)}
+                            className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50 transition-colors"
+                            title="Delete Payment"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -370,11 +417,98 @@ export default function AdminPayments() {
         )}
       </div>
 
+      {/* Edit Payment Modal */}
+      {showEditModal && selectedPayment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+            <h2 className="text-xl font-semibold mb-4">Edit Payment</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Update payment details. Only certain fields can be modified.
+            </p>
+            
+            <form onSubmit={handleUpdatePayment}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Payment Amount (€) *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={editFormData.shuma_pageses}
+                    onChange={(e) => setEditFormData({...editFormData, shuma_pageses: e.target.value})}
+                    className="w-full border rounded-lg px-3 py-2"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Payment Method</label>
+                  <select
+                    value={editFormData.menyra_pagesesID}
+                    onChange={(e) => setEditFormData({...editFormData, menyra_pagesesID: e.target.value})}
+                    className="w-full border rounded-lg px-3 py-2"
+                  >
+                    <option value="">Select payment method</option>
+                    {paymentMethods.map((method) => (
+                      <option key={method.menyra_pagesesID} value={method.menyra_pagesesID}>
+                        {method.menyra_pageses}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Account Number</label>
+                  <input
+                    type="text"
+                    value={editFormData.numri_llogarise}
+                    onChange={(e) => setEditFormData({...editFormData, numri_llogarise: e.target.value})}
+                    className="w-full border rounded-lg px-3 py-2"
+                    placeholder="Account number"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Payment Date</label>
+                  <input
+                    type="datetime-local"
+                    value={editFormData.koha_pageses}
+                    onChange={(e) => setEditFormData({...editFormData, koha_pageses: e.target.value})}
+                    className="w-full border rounded-lg px-3 py-2"
+                  />
+                </div>
+
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+                >
+                  Update Payment
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setSelectedPayment(null);
+                  }}
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+
       {/* Add Payment Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-semibold mb-4">Create Supplier Payment</h2>
+            <h2 className="text-xl font-semibold mb-4">Create Admin Payment</h2>
             <p className="text-sm text-gray-600 mb-4">
               Create a payment for purchasing products from suppliers. Stock will be automatically updated.
             </p>
