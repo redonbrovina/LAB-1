@@ -62,7 +62,7 @@ export default function EditAdminModal({ isOpen, onClose, admin, onAdminUpdated 
       const hasUpperCase = /[A-Z]/.test(formData.newPassword);
       const hasLowerCase = /[a-z]/.test(formData.newPassword);
       const hasNumbers = /\d/.test(formData.newPassword);
-      const hasSpecialChar = /[!@#$%^&*(),.?+-=_":{}|<>]/.test(formData.newPassword);
+      const hasSpecialChar = /[!@#$%^&*(),.?+\-_":{}|<>]/.test(formData.newPassword);
 
       if (formData.newPassword.length < minLength) {
         setError(`New password must be at least ${minLength} characters long`);

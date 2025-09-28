@@ -84,7 +84,7 @@ export default function Signup() {
         const hasUpperCase = /[A-Z]/.test(formData.password);
         const hasLowerCase = /[a-z]/.test(formData.password);
         const hasNumbers = /\d/.test(formData.password);
-        const hasSpecialChar = /[!@#$%^&*(),.?+-=_":{}|<>]/.test(formData.password);
+        const hasSpecialChar = /[!@#$%^&*(),.?+\-_":{}|<>]/.test(formData.password);
 
         if (formData.password.length < minLength) {
             setErrorMessage(`Password must be at least ${minLength} characters long`);
