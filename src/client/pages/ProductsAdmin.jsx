@@ -231,7 +231,6 @@ export default function ProductsAdmin() {
       <div className="bg-white shadow rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-red-600">Lista e Produkteve</h3>
-          <button className="px-3 py-2 text-sm bg-gray-100 rounded-lg" onClick={loadAll}>Refresh</button>
         </div>
         {loading ? (
           <div className="text-gray-500">Duke u ngarkuar...</div>

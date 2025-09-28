@@ -149,16 +149,6 @@ export default function AdminDashboard() {
               <p className="text-gray-600 text-sm sm:text-base">Analytics & Overview</p>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
-              <button 
-                onClick={() => {
-                  fetchApplications();
-                  fetchDashboardStats();
-                  fetchRecentOrders();
-                }}
-                className="px-3 sm:px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
-              >
-                🔄 <span className="hidden sm:inline">Refresh Data</span>
-              </button>
             </div>
           </div>
         </div>

@@ -229,12 +229,6 @@ export default function Cart() {
                    Your Cart
                  </h1>
                  <div className="flex gap-3">
-                   <button
-                     onClick={loadCart}
-                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
-                   >
-                     🔄 Refresh Cart
-                   </button>
                    {cartItems.length > 0 && (
                      <button
                        onClick={clearCart}

@@ -132,7 +132,6 @@ export default function SuppliersAdmin() {
               onChange={e => setSearchTerm(e.target.value)}
               className="border rounded-lg px-3 py-2"
             />
-            <button className="px-3 py-2 text-sm bg-gray-100 rounded-lg" onClick={loadAll}>Refresh</button>
           </div>
         </div>
         {loading ? (

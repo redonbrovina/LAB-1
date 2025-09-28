@@ -58,9 +58,9 @@ export default function Orders() {
         pagesa_statusID: orderData.pagesa_statusID
       };
       
-      console.log('🔄 Frontend: Updating order ID:', orderId);
-      console.log('🔄 Frontend: Update data:', updateData);
-      console.log('🔄 Frontend: Full order data:', orderData);
+      console.log('Frontend: Updating order ID:', orderId);
+      console.log('Frontend: Update data:', updateData);
+      console.log('Frontend: Full order data:', orderData);
       
       const response = await apiPut(`/porosite/${orderId}`, updateData);
       console.log('✅ Frontend: Order updated successfully:', response);
@@ -172,12 +172,6 @@ export default function Orders() {
             <div className="text-sm text-gray-500">
               Total: {orders.length} porosi
             </div>
-            <button 
-              onClick={fetchOrders}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
-            >
-              🔄 Refresh
-            </button>
           </div>
         </div>
 

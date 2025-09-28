@@ -271,12 +271,6 @@ export default function Products() {
               </button>
             </div>
             
-            <button 
-              onClick={() => loadProducts(1)}
-              className="px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
-            >
-              🔄 <span className="hidden sm:inline">Refresh</span>
-            </button>
           </div>
         </div>
 

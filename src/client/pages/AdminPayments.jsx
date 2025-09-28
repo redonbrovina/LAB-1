@@ -257,15 +257,6 @@ export default function AdminPayments() {
         </div>
         <div className="flex gap-3">
           <button
-            onClick={() => {
-              setPagination(prev => ({ ...prev, currentPage: 1 }));
-              fetchData(1);
-            }}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
-          >
-            🔄 Refresh
-          </button>
-          <button
             onClick={() => setShowForm(true)}
             className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700"
           >

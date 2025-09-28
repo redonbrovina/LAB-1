@@ -146,12 +146,6 @@ export default function Applications() {
                         </div>
                     </div>
                 </div>
-                <button 
-                    onClick={fetchApplications}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2 w-full sm:w-auto justify-center"
-                >
-                    🔄 Refresh
-                </button>
             </div>
 
             {/* Results Counter */}
