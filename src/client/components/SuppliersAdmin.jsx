@@ -92,30 +92,30 @@ export default function SuppliersAdmin() {
         {error && <div className="mb-3 text-sm text-red-600">{error}</div>}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Emri i Furnitorit</label>
+            <label className="block text-sm text-gray-600 mb-1">Supplier Name</label>
             <input
               className="w-full border rounded-lg px-3 py-2"
               value={form.emri}
               onChange={e => setForm({ ...form, emri: e.target.value })}
-              placeholder="p.sh. Pharma Albania"
+              placeholder="e.g. Pharma Albania"
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600 mb-1">ID i Shtetit</label>
+            <label className="block text-sm text-gray-600 mb-1">Country ID</label>
             <input
               className="w-full border rounded-lg px-3 py-2"
               type="number"
               value={form.shtetiID}
               onChange={e => setForm({ ...form, shtetiID: e.target.value })}
-              placeholder="Opsionale"
+              placeholder="Optional"
             />
           </div>
           <div className="md:col-span-2 flex gap-3">
             <button type="submit" className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
-              {editingId ? 'Ruaj Ndryshimet' : 'Shto Furnitorin'}
+              {editingId ? 'Save Changes' : 'Add Supplier'}
             </button>
             {editingId && (
-              <button type="button" className="px-4 py-2 bg-gray-200 rounded-lg" onClick={resetForm}>Anulo</button>
+              <button type="button" className="px-4 py-2 bg-gray-200 rounded-lg" onClick={resetForm}>Cancel</button>
             )}
           </div>
         </form>
@@ -132,7 +132,7 @@ export default function SuppliersAdmin() {
               onChange={e => setSearchTerm(e.target.value)}
               className="border rounded-lg px-3 py-2"
             />
-            <button className="px-3 py-2 text-sm bg-gray-100 rounded-lg" onClick={loadAll}>Rifresko</button>
+            <button className="px-3 py-2 text-sm bg-gray-100 rounded-lg" onClick={loadAll}>Refresh</button>
           </div>
         </div>
         {loading ? (
@@ -157,8 +157,8 @@ export default function SuppliersAdmin() {
                       <td className="py-2 pr-4">{s.emri}</td>
                       <td className="py-2 pr-4">{s.shteti.emri_shtetit || '-'}</td>
                       <td className="py-2 lg:pr-2 lg:sticky lg:right-0 lg:bg-white lg:shadow-lg lg:pl-4 space-x-2">
-                        <button className="px-3 py-1 text-xs bg-blue-500 text-white rounded" onClick={() => handleEdit(s)}>Edito</button>
-                        <button className="px-3 py-1 text-xs bg-red-500 text-white rounded" onClick={() => handleDelete(id)}>Fshij</button>
+                        <button className="px-3 py-1 text-xs bg-blue-500 text-white rounded" onClick={() => handleEdit(s)}>Edit</button>
+                        <button className="px-3 py-1 text-xs bg-red-500 text-white rounded" onClick={() => handleDelete(id)}>Delete</button>
                       </td>
                     </tr>
                   );
