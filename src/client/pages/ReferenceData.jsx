@@ -8,6 +8,7 @@ export default function ReferenceData() {
     const [shteti, setShteti] = useState([]);
     const [kategoria, setKategoria] = useState([]);
     const [aplikimiStatus, setAplikimiStatus] = useState([]);
+    const [pagesaStatus, setPagesaStatus] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
@@ -24,16 +25,18 @@ export default function ReferenceData() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [dozaData, shtetiData, kategoriaData, aplikimiStatusData] = await Promise.all([
+            const [dozaData, shtetiData, kategoriaData, aplikimiStatusData, pagesaStatusData] = await Promise.all([
                 apiGet('/doza/'),
                 apiGet(`/shteti/?page=${currentPage}&limit=${itemsPerPage}`),
                 apiGet('/kategorite/'),
-                apiGet('/aplikimi-status/')
+                apiGet('/aplikimi-status/'),
+                apiGet('/pagesa-status/')
             ]);
             setDoza(dozaData);
             setShteti(shtetiData.data || shtetiData);
             setKategoria(kategoriaData);
             setAplikimiStatus(aplikimiStatusData);
+            setPagesaStatus(pagesaStatusData);
             
             // Set pagination info for countries
             if (shtetiData.total) {
@@ -65,6 +68,7 @@ export default function ReferenceData() {
             case 'shteti': return shteti;
             case 'kategoria': return kategoria;
             case 'aplikimi-status': return aplikimiStatus;
+            case 'pagesa-status': return pagesaStatus;
             default: return [];
         }
     };
@@ -78,6 +82,8 @@ export default function ReferenceData() {
             case 'kategoria':
                 return ['ID', 'Category Name', 'Actions'];
             case 'aplikimi-status':
+                return ['ID', 'Status Name', 'Actions'];
+            case 'pagesa-status':
                 return ['ID', 'Status Name', 'Actions'];
             default:
                 return [];
@@ -103,6 +109,10 @@ export default function ReferenceData() {
                 return [
                     { name: 'statusi', label: 'Status Name', type: 'text', required: true, maxLength: 50 }
                 ];
+            case 'pagesa-status':
+                return [
+                    { name: 'statusi', label: 'Status Name', type: 'text', required: true, maxLength: 50 }
+                ];
             default:
                 return [];
         }
@@ -118,6 +128,8 @@ export default function ReferenceData() {
                 return 'kategorite';
             case 'aplikimi-status':
                 return 'aplikimi-status';
+            case 'pagesa-status':
+                return 'pagesa-status';
             default:
                 return activeTab;
         }
@@ -301,6 +313,11 @@ export default function ReferenceData() {
                                             {item.statusi}
                                         </td>
                                     )}
+                                    {activeTab === 'pagesa-status' && (
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            {item.statusi}
+                                        </td>
+                                    )}
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div className="flex items-center gap-2">
                                             <button
@@ -420,7 +437,8 @@ export default function ReferenceData() {
                             { id: 'doza', label: 'Dosage' },
                             { id: 'shteti', label: 'Country' },
                             { id: 'kategoria', label: 'Category' },
-                            { id: 'aplikimi-status', label: 'Application Status' }
+                            { id: 'aplikimi-status', label: 'Application Status' },
+                            { id: 'pagesa-status', label: 'Payment Status' }
                         ].map((tab) => (
                             <button
                                 key={tab.id}
