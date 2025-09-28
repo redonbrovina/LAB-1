@@ -1,5 +1,5 @@
 import ApplicationEditModal from "../admin/ApplicationEditModal";
-import { apiGet } from "../utils/api";
+import { apiGet, apiDelete } from "../utils/api";
 import { useEffect, useState } from "react";
 
 // Status styling dictionary
@@ -88,6 +88,21 @@ export default function Applications() {
         setShowEditModal(false);
         setEditingApplication(null);
     }
+
+    const handleDeleteApplication = async (application) => {
+        if (!window.confirm(`Are you sure you want to delete the application for ${application.emri_kompanise}? This action cannot be undone.`)) {
+            return;
+        }
+
+        try {
+            await apiDelete(`/aplikimi/${application.aplikimiID}`);
+            // Refresh the applications list
+            fetchApplications();
+        } catch (error) {
+            console.error('Error deleting application:', error);
+            alert('Failed to delete application. Please try again.');
+        }
+    };
 
     return (
         <div className="p-4 lg:p-6">
@@ -212,6 +227,12 @@ export default function Applications() {
                                                 >
                                                     Review
                                                 </button>
+                                                <button
+                                                    onClick={() => handleDeleteApplication(application)}
+                                                    className="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 px-3 py-1 rounded-md transition-colors duration-200 flex items-center gap-1"
+                                                >
+                                                    Delete
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -271,12 +292,20 @@ export default function Applications() {
                                         </div>
                                     </div>
                                     
-                                    <button
-                                        onClick={() => handleEditApplication(application)}
-                                        className="w-full text-blue-600 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-2 rounded-md transition-colors duration-200 flex items-center justify-center gap-1"
-                                    >
-                                        Review Application
-                                    </button>
+                                    <div className="flex space-x-2">
+                                        <button
+                                            onClick={() => handleEditApplication(application)}
+                                            className="flex-1 text-blue-600 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-2 rounded-md transition-colors duration-200 flex items-center justify-center gap-1"
+                                        >
+                                            Review
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteApplication(application)}
+                                            className="flex-1 text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 px-3 py-2 rounded-md transition-colors duration-200 flex items-center justify-center gap-1"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
