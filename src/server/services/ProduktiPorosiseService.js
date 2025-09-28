@@ -14,7 +14,7 @@ class ProduktiPorosiseService {
 
     async getById(id) {
         const item = await this.repo.getById(id);
-        if (!item) throw new Error("Produkti nuk u gjet");
+        if (!item) throw new Error("Product not found");
         return item;
     }
 
@@ -22,7 +22,7 @@ class ProduktiPorosiseService {
         // Get the product variation to find the main product ID
         const variation = await ProduktVariacioni.findByPk(data.produkt_variacioniID);
         if (!variation) {
-            throw new Error('Variacioni i produktit nuk u gjet');
+            throw new Error('Product variation not found');
         }
 
         // Reduce stock for the main product

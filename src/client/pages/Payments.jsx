@@ -390,7 +390,7 @@ export default function Payments() {
               {/* Pagination Info */}
               {payments.length > 0 && (
                 <div className="mt-4 text-center text-sm text-gray-600">
-                  Duke shfaqur {visiblePayments.length} nga {payments.length} pagesa
+                  Showing {visiblePayments.length} of {payments.length} payments
                 </div>
               )}
             </>

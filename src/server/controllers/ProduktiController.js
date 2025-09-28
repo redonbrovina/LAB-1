@@ -30,7 +30,7 @@ class ProduktiController {
             const data = await this.produktiService.getById(req.params.id);
             res.json(data);
         } catch (err) {
-            if (err.message === "Produkti nuk u gjet") {
+            if (err.message === "Product not found") {
                 res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });
@@ -61,7 +61,7 @@ class ProduktiController {
             const data = await this.produktiService.update(req.params.id, req.body);
             res.json(data);
         } catch (err) {
-            if (err.message === "Produkti nuk u gjet") {
+            if (err.message === "Product not found") {
                 res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });
@@ -72,9 +72,9 @@ class ProduktiController {
     async delete(req, res) {
         try {
             await this.produktiService.delete(req.params.id);
-            res.json({ message: "Produkti u fshi me sukses" });
+            res.json({ message: "Product deleted successfully" });
         } catch (err) {
-            if (err.message === "Produkti nuk u gjet") {
+            if (err.message === "Product not found") {
                 res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });
@@ -100,7 +100,7 @@ class ProduktiController {
             const data = await this.produktiService.getProductWithVariations(req.params.id);
             res.json(data);
         } catch (err) {
-            if (err.message === "Produkti nuk u gjet") {
+            if (err.message === "Product not found") {
                 res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });
@@ -117,7 +117,7 @@ class ProduktiController {
             const data = await this.produktiService.increaseStock(req.params.id, quantity);
             res.json(data);
         } catch (err) {
-            if (err.message === "Produkti nuk u gjet") {
+            if (err.message === "Product not found") {
                 res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });
@@ -134,9 +134,9 @@ class ProduktiController {
             const data = await this.produktiService.reduceStock(req.params.id, quantity);
             res.json(data);
         } catch (err) {
-            if (err.message === "Produkti nuk u gjet") {
+            if (err.message === "Product not found") {
                 res.status(404).json({ message: err.message });
-            } else if (err.message === "Sasia në stok është e pamjaftueshme") {
+            } else if (err.message === "Insufficient stock quantity") {
                 res.status(400).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });

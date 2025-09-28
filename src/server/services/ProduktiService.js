@@ -11,7 +11,7 @@ class ProduktiService {
 
     async getById(id) {
         const produkti = await this.produktiRepo.getProduktiById(id);
-        if (!produkti) throw new Error("Produkti nuk u gjet");
+        if (!produkti) throw new Error("Product not found");
         return produkti;
     }
 

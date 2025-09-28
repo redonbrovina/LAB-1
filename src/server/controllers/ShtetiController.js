@@ -22,7 +22,7 @@ class ShtetiController {
             const shteti = await this.shtetiService.getShtetiById(req.params.id);
             res.status(200).json(shteti);
         } catch (error) {
-            if (error.message === "Shteti nuk u gjet") {
+            if (error.message === "Country not found") {
                 res.status(404).json({ error: error.message });
             } else {
                 res.status(500).json({ error: error.message });

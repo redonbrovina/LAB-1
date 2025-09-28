@@ -19,7 +19,7 @@ class PorosiaStatusController {
             const status = await this.statusService.getById(req.params.id);
             res.json(status);
         } catch (err) {
-            if (err.message === "Statusi i porosise nuk u gjet") {
+            if (err.message === "Order status not found") {
                 res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });
@@ -41,7 +41,7 @@ class PorosiaStatusController {
             const updated = await this.statusService.update(req.params.id, req.body);
             res.json(updated);
         } catch (err) {
-            if (err.message === "Statusi i porosise nuk u gjet") {
+            if (err.message === "Order status not found") {
                 res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });
@@ -52,9 +52,9 @@ class PorosiaStatusController {
     async delete(req, res) {
         try {
             await this.statusService.delete(req.params.id);
-            res.json({ message: "Statusi u fshi me sukses" });
+            res.json({ message: "Status deleted successfully" });
         } catch (err) {
-            if (err.message === "Statusi i porosise nuk u gjet") {
+            if (err.message === "Order status not found") {
                 res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });

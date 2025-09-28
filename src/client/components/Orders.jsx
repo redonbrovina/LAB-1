@@ -66,11 +66,11 @@ export default function Orders() {
   // Get status badge styling
   const getStatusBadge = (statusId) => {
     const statusMap = {
-      1: { text: 'Në proces', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
-      2: { text: 'Përfunduar', color: 'bg-green-100 text-green-800', icon: CheckCircle },
-      3: { text: 'Anuluar', color: 'bg-red-100 text-red-800', icon: XCircle }
+      1: { text: 'In Process', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
+      2: { text: 'Completed', color: 'bg-green-100 text-green-800', icon: CheckCircle },
+      3: { text: 'Cancelled', color: 'bg-red-100 text-red-800', icon: XCircle }
     };
-    return statusMap[statusId] || { text: 'E panjohur', color: 'bg-gray-100 text-gray-800', icon: Clock };
+    return statusMap[statusId] || { text: 'Unknown', color: 'bg-gray-100 text-gray-800', icon: Clock };
   };
 
   // Format date
@@ -174,22 +174,22 @@ export default function Orders() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    ID Porosie
+                    Order ID
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Klienti
+                    Client
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Data
+                    Date
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Shuma
+                    Amount
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Statusi
+                    Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Veprime
+                    Actions
                   </th>
                 </tr>
               </thead>
@@ -206,7 +206,7 @@ export default function Orders() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div>
                           <div className="font-medium text-gray-900">#{order.klientiID}</div>
-                          <div className="text-xs text-gray-400">ID Klienti</div>
+                          <div className="text-xs text-gray-400">ID</div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -230,7 +230,7 @@ export default function Orders() {
                           className="text-red-600 hover:text-red-900 flex items-center gap-1"
                         >
                           <Eye size={16} />
-                          Shiko
+                          View
                         </button>
                       </td>
                     </tr>
@@ -269,7 +269,7 @@ export default function Orders() {
                           <div className="text-sm text-gray-600">{formatDate(order.koha_krijimit)}</div>
                         </div>
                         <div className="text-right">
-                          <div className="text-sm font-medium text-gray-700">Shuma:</div>
+                          <div className="text-sm font-medium text-gray-700">Amount:</div>
                           <div className="text-sm font-bold text-gray-900">{formatPrice(order.cmimi_total)}</div>
                         </div>
                       </div>
@@ -283,7 +283,7 @@ export default function Orders() {
                         className="w-full text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-md transition-colors duration-200 flex items-center justify-center gap-1"
                       >
                         <Eye size={16} />
-                        Shiko Detajet
+                        View Details
                       </button>
                     </div>
                   );
@@ -323,11 +323,11 @@ export default function Orders() {
                 {/* Order Info */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">ID Porosie</label>
+                    <label className="block text-sm font-medium text-gray-700">Order ID</label>
                     <p className="text-sm text-gray-900">#{selectedOrder.porosiaID}</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">ID Klienti</label>
+                    <label className="block text-sm font-medium text-gray-700">ID</label>
                     <p className="text-sm text-gray-900">#{selectedOrder.klientiID}</p>
                   </div>
                   <div>
@@ -335,14 +335,14 @@ export default function Orders() {
                     <p className="text-sm text-gray-900">{formatDate(selectedOrder.koha_krijimit)}</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Shuma Totale</label>
+                    <label className="block text-sm font-medium text-gray-700">Total Amount</label>
                     <p className="text-sm font-medium text-gray-900">{formatPrice(selectedOrder.cmimi_total)}</p>
                   </div>
                 </div>
 
                 {/* Current Status */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Statusi Aktual</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Current Status</label>
                   {(() => {
                     const status = getStatusBadge(selectedOrder.porosia_statusID);
                     const StatusIcon = status.icon;
@@ -357,7 +357,7 @@ export default function Orders() {
 
                 {/* Status Update */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Ndrysho Statusin</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Change Status</label>
                   <div className="flex flex-wrap gap-2">
                     {[
                       { id: 1, label: 'Në proces', color: 'bg-yellow-500 hover:bg-yellow-600' },

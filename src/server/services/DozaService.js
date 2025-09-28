@@ -11,7 +11,7 @@ class DozaService {
 
     async getById(id) {
         const doza = await this.dozaRepo.getDozaById(id);
-        if (!doza) throw new Error("Doza nuk u gjet");
+        if (!doza) throw new Error("Dose not found");
         return doza;
     }
 

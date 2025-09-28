@@ -15,7 +15,7 @@ class ShtetiService {
 
     async getShtetiById(shtetiID) {
         const shteti = await this.shtetiRepository.getShtetiById(shtetiID);
-        if (!shteti) throw new Error("Shteti nuk u gjet");
+        if (!shteti) throw new Error("Country not found");
         return shteti;
     }
 
