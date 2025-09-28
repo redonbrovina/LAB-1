@@ -7,6 +7,7 @@ export default function ReferenceData() {
     const [doza, setDoza] = useState([]);
     const [shteti, setShteti] = useState([]);
     const [kategoria, setKategoria] = useState([]);
+    const [aplikimiStatus, setAplikimiStatus] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
@@ -23,14 +24,16 @@ export default function ReferenceData() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [dozaData, shtetiData, kategoriaData] = await Promise.all([
+            const [dozaData, shtetiData, kategoriaData, aplikimiStatusData] = await Promise.all([
                 apiGet('/doza/'),
                 apiGet(`/shteti/?page=${currentPage}&limit=${itemsPerPage}`),
-                apiGet('/kategorite/')
+                apiGet('/kategorite/'),
+                apiGet('/aplikimi-status/')
             ]);
             setDoza(dozaData);
             setShteti(shtetiData.data || shtetiData);
             setKategoria(kategoriaData);
+            setAplikimiStatus(aplikimiStatusData);
             
             // Set pagination info for countries
             if (shtetiData.total) {
@@ -61,6 +64,7 @@ export default function ReferenceData() {
             case 'doza': return doza;
             case 'shteti': return shteti;
             case 'kategoria': return kategoria;
+            case 'aplikimi-status': return aplikimiStatus;
             default: return [];
         }
     };
@@ -73,6 +77,8 @@ export default function ReferenceData() {
                 return ['ID', 'Country Name', 'ISO Code', 'Actions'];
             case 'kategoria':
                 return ['ID', 'Category Name', 'Actions'];
+            case 'aplikimi-status':
+                return ['ID', 'Status Name', 'Actions'];
             default:
                 return [];
         }
@@ -93,6 +99,10 @@ export default function ReferenceData() {
                 return [
                     { name: 'emri', label: 'Category Name', type: 'text', required: true }
                 ];
+            case 'aplikimi-status':
+                return [
+                    { name: 'statusi', label: 'Status Name', type: 'text', required: true, maxLength: 50 }
+                ];
             default:
                 return [];
         }
@@ -106,6 +116,8 @@ export default function ReferenceData() {
                 return 'shteti';
             case 'kategoria':
                 return 'kategorite';
+            case 'aplikimi-status':
+                return 'aplikimi-status';
             default:
                 return activeTab;
         }
@@ -145,7 +157,8 @@ export default function ReferenceData() {
 
         try {
             if (editingItem) {
-                await apiPut(`/${getApiEndpoint()}/${editingItem[`${activeTab}ID`]}`, formData);
+                const itemId = editingItem[`${activeTab}ID`] || editingItem[`${activeTab.replace('-', '_')}ID`];
+                await apiPut(`/${getApiEndpoint()}/${itemId}`, formData);
             } else {
                 await apiPost(`/${getApiEndpoint()}/`, formData);
             }
@@ -259,9 +272,9 @@ export default function ReferenceData() {
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                             {data.map((item, index) => (
-                                <tr key={item[`${activeTab}ID`]} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                <tr key={item[`${activeTab}ID`] || item[`${activeTab.replace('-', '_')}ID`]} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {item[`${activeTab}ID`]}
+                                        {item[`${activeTab}ID`] || item[`${activeTab.replace('-', '_')}ID`]}
                                     </td>
                                     {activeTab === 'doza' && (
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -283,6 +296,11 @@ export default function ReferenceData() {
                                             {item.emri}
                                         </td>
                                     )}
+                                    {activeTab === 'aplikimi-status' && (
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            {item.statusi}
+                                        </td>
+                                    )}
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div className="flex items-center gap-2">
                                             <button
@@ -292,7 +310,7 @@ export default function ReferenceData() {
                                                 <Edit3 size={16} />
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(item[`${activeTab}ID`])}
+                                                onClick={() => handleDelete(item[`${activeTab}ID`] || item[`${activeTab.replace('-', '_')}ID`])}
                                                 className="text-red-600 hover:text-red-900 transition-colors"
                                             >
                                                 <Trash2 size={16} />
@@ -401,7 +419,8 @@ export default function ReferenceData() {
                         {[
                             { id: 'doza', label: 'Dosage' },
                             { id: 'shteti', label: 'Country' },
-                            { id: 'kategoria', label: 'Category' }
+                            { id: 'kategoria', label: 'Category' },
+                            { id: 'aplikimi-status', label: 'Application Status' }
                         ].map((tab) => (
                             <button
                                 key={tab.id}
