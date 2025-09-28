@@ -25,7 +25,7 @@ const formaRoutes = require('./src/server/routes/formaRoutes');
 const shtetiRoutes = require('./src/server/routes/shtetiRoutes');
 
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5000'],
+    origin: ['http://localhost:5173', 'http://localhost:5000'],
     methods: ['GET','POST','PUT','DELETE'],
     credentials: true
 }));
