@@ -5,7 +5,6 @@ import { apiGet, apiPost, apiPut, apiDelete } from "../utils/api";
 export default function ReferenceData() {
     const [activeTab, setActiveTab] = useState('doza');
     const [doza, setDoza] = useState([]);
-    const [forma, setForma] = useState([]);
     const [shteti, setShteti] = useState([]);
     const [kategoria, setKategoria] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -24,14 +23,12 @@ export default function ReferenceData() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [dozaData, formaData, shtetiData, kategoriaData] = await Promise.all([
+            const [dozaData, shtetiData, kategoriaData] = await Promise.all([
                 apiGet('/doza/'),
-                apiGet('/forma/'),
                 apiGet(`/shteti/?page=${currentPage}&limit=${itemsPerPage}`),
                 apiGet('/kategorite/')
             ]);
             setDoza(dozaData);
-            setForma(formaData);
             setShteti(shtetiData.data || shtetiData);
             setKategoria(kategoriaData);
             
@@ -62,7 +59,6 @@ export default function ReferenceData() {
     const getCurrentData = () => {
         switch (activeTab) {
             case 'doza': return doza;
-            case 'forma': return forma;
             case 'shteti': return shteti;
             case 'kategoria': return kategoria;
             default: return [];
@@ -73,8 +69,6 @@ export default function ReferenceData() {
         switch (activeTab) {
             case 'doza':
                 return ['ID', 'Dose (ml)', 'Actions'];
-            case 'forma':
-                return ['ID', 'Form Type', 'Actions'];
             case 'shteti':
                 return ['ID', 'Country Name', 'ISO Code', 'Actions'];
             case 'kategoria':
@@ -89,10 +83,6 @@ export default function ReferenceData() {
             case 'doza':
                 return [
                     { name: 'doza', label: 'Dose (ml)', type: 'number', step: '0.01', required: true }
-                ];
-            case 'forma':
-                return [
-                    { name: 'lloji_formes', label: 'Form Type', type: 'text', required: true }
                 ];
             case 'shteti':
                 return [
@@ -112,8 +102,6 @@ export default function ReferenceData() {
         switch (activeTab) {
             case 'doza':
                 return 'doza';
-            case 'forma':
-                return 'forma';
             case 'shteti':
                 return 'shteti';
             case 'kategoria':
@@ -280,11 +268,6 @@ export default function ReferenceData() {
                                             {item.doza} ml
                                         </td>
                                     )}
-                                    {activeTab === 'forma' && (
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {item.lloji_formes}
-                                        </td>
-                                    )}
                                     {activeTab === 'shteti' && (
                                         <>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -417,7 +400,6 @@ export default function ReferenceData() {
                     <nav className="flex space-x-8 px-6">
                         {[
                             { id: 'doza', label: 'Dosage' },
-                            { id: 'forma', label: 'Form' },
                             { id: 'shteti', label: 'Country' },
                             { id: 'kategoria', label: 'Category' }
                         ].map((tab) => (

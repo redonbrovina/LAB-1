@@ -1,5 +1,5 @@
 const BaseRepository = require("./BaseRepository");
-const { Produkti, Kategoria, Forma } = require("../models");
+const { Produkti, Kategoria } = require("../models");
 
 class ProduktiRepository extends BaseRepository {
     constructor() {
@@ -14,11 +14,6 @@ class ProduktiRepository extends BaseRepository {
                     as: 'kategoria',
                     attributes: ['emri']
                 },
-                {
-                    model: Forma,
-                    as: 'forma',
-                    attributes: ['formaID', 'lloji_formes']
-                }
             ],
             order: [['emri', 'ASC']]
         });
@@ -32,11 +27,6 @@ class ProduktiRepository extends BaseRepository {
                     as: 'kategoria',
                     attributes: ['emri']
                 },
-                {
-                    model: Forma,
-                    as: 'forma',
-                    attributes: ['formaID', 'lloji_formes']
-                }
             ]
         });
     }
@@ -49,11 +39,6 @@ class ProduktiRepository extends BaseRepository {
                     as: 'kategoria',
                     attributes: ['emri']
                 },
-                {
-                    model: Forma,
-                    as: 'forma',
-                    attributes: ['formaID', 'lloji_formes']
-                }
             ]
         });
     }
@@ -61,18 +46,18 @@ class ProduktiRepository extends BaseRepository {
     async createProdukti(data) {
         console.log('Creating product with data:', data);
         
-        // Create the product with unified structure (formaID and cmimi directly)
+        // Create the product
         const produkti = await this.insert(data);
         console.log('Product created:', produkti);
         
-        // Return the product with its form
+        // Return the product
         const result = await this.getProduktiById(produkti.produktiID);
         console.log('Final result:', result);
         return result;
     }
 
     async updateProdukti(produktiID, data) {
-        // Update the product with unified structure (formaID and cmimi directly)
+        // Update the product
         const result = await this.updateById(produktiID, data);
         
         // Return the updated product with its form
@@ -99,11 +84,6 @@ class ProduktiRepository extends BaseRepository {
                     as: 'kategoria',
                     attributes: ['emri']
                 },
-                {
-                    model: Forma,
-                    as: 'forma',
-                    attributes: ['formaID', 'lloji_formes']
-                }
             ],
             order: [['emri', 'ASC']]
         });
@@ -120,11 +100,6 @@ class ProduktiRepository extends BaseRepository {
                     as: 'kategoria',
                     attributes: ['emri']
                 },
-                {
-                    model: Forma,
-                    as: 'forma',
-                    attributes: ['formaID', 'lloji_formes']
-                }
             ],
             order: [['emri', 'ASC']],
             limit: parseInt(limit),

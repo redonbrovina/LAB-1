@@ -3,7 +3,6 @@ const Aplikimi = require('./Aplikimi');
 const AplikimiStatus = require('./AplikimiStatus');
 const Cart = require('./Cart');
 const Doza = require('./Doza');
-const Forma = require('./Forma');
 const Furnitori = require('./Furnitori');
 const Kategoria = require('./Kategoria');
 const Klienti = require('./Klienti');
@@ -25,7 +24,6 @@ const models = {
     AplikimiStatus,
     Cart,
     Doza,
-    Forma,
     Furnitori,
     Kategoria,
     Klienti,

@@ -20,7 +20,6 @@ const furnitoriRoutes = require('./src/server/routes/furnitoriRoutes');
 const produktiRoutes = require('./src/server/routes/produktiRoutes');
 const kategoriaRoutes = require('./src/server/routes/kategoriaRoutes');
 const dozaRoutes = require('./src/server/routes/dozaRoutes');
-const formaRoutes = require('./src/server/routes/formaRoutes');
 const shtetiRoutes = require('./src/server/routes/shtetiRoutes');
 
 app.use(cors({
@@ -49,7 +48,6 @@ app.use('/api/furnitore', furnitoriRoutes);
 app.use('/api/produkte', produktiRoutes);
 app.use('/api/kategorite', kategoriaRoutes);
 app.use('/api/doza', dozaRoutes);
-app.use('/api/forma', formaRoutes);
 app.use('/api/shteti', shtetiRoutes);
 
 const port = process.env.PORT || 5000;
