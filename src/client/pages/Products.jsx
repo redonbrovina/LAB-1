@@ -312,21 +312,6 @@ export default function Products() {
         )}
 
                
-               {/* Variation Warning */}
-               {products.length > 0 && products.filter(p => p.cmimi).length === 0 && (
-                 <div className="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded-lg">
-                   <div className="flex items-center">
-                     <span className="text-yellow-600 text-xl mr-3">⚠️</span>
-                     <div>
-                       <h3 className="text-yellow-800 font-semibold">No Product Variations Available</h3>
-                       <p className="text-yellow-700 text-sm mt-1">
-                         Products need variations (price and stock) to be added to cart. 
-                         Please add variations in the admin panel first.
-                       </p>
-                     </div>
-                   </div>
-                 </div>
-               )}
 
             {/* Loading State */}
             {loading ? (

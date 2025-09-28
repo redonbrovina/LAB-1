@@ -95,18 +95,6 @@ class ProduktiController {
         }
     }
 
-    async getWithVariations(req, res) {
-        try {
-            const data = await this.produktiService.getProductWithVariations(req.params.id);
-            res.json(data);
-        } catch (err) {
-            if (err.message === "Product not found") {
-                res.status(404).json({ message: err.message });
-            } else {
-                res.status(500).json({ error: err.message });
-            }
-        }
-    }
 
     async increaseStock(req, res) {
         try {

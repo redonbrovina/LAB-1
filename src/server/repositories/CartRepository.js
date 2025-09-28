@@ -1,5 +1,5 @@
 const BaseRepository = require('./BaseRepository');
-const { Cart, Klienti, ProduktCart, ProduktVariacioni, Produkti } = require("../models");
+const { Cart, Klienti, ProduktCart, Produkti } = require("../models");
 
 class CartRepository extends BaseRepository {
     constructor() {
@@ -27,8 +27,8 @@ class CartRepository extends BaseRepository {
                         model: ProduktCart,
                         as: 'produktet',
                         include: [{
-                            model: ProduktVariacioni,
-                            as: 'produktVariacioni',
+                            model: Produkti,
+                            as: 'produkti',
                             attributes: ['cmimi']
                         }]
                     }
@@ -57,14 +57,9 @@ class CartRepository extends BaseRepository {
                     model: ProduktCart,
                     as: 'produktet',
                     include: [{
-                        model: ProduktVariacioni,
-                        as: 'produktVariacioni',
-                        attributes: ['cmimi'],
-                        include: [{
-                            model: Produkti,
-                            as: 'produkti',
-                            attributes: ['emri', 'pershkrimi', 'sasia_ne_stok', 'imazhi']
-                        }]
+                        model: Produkti,
+                        as: 'produkti',
+                        attributes: ['cmimi', 'emri', 'pershkrimi', 'sasia_ne_stok', 'imazhi']
                     }]
                 }
             ]

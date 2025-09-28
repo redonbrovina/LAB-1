@@ -1,5 +1,5 @@
 const BaseRepository = require('./BaseRepository');
-const { ProduktCart, Cart, ProduktVariacioni } = require('../models');
+const { ProduktCart, Cart, Produkti } = require('../models');
 
 class ProduktCartRepository extends BaseRepository {
     constructor() {
@@ -33,9 +33,9 @@ class ProduktCartRepository extends BaseRepository {
                     attributes: ['cartID', 'koha_krijimit', 'cmimi_total']
                 },
                 {
-                    model: ProduktVariacioni,
-                    as: 'produktVariacioni',
-                    attributes: ['produkt_variacioniID', 'cmimi']
+                    model: Produkti,
+                    as: 'produkti',
+                    attributes: ['produktiID', 'emri', 'cmimi', 'imazhi']
                 }
             ]
         });
@@ -45,9 +45,9 @@ class ProduktCartRepository extends BaseRepository {
         return await this.getByField('cartID', cartID, {
             include: [
                 {
-                    model: ProduktVariacioni,
-                    as: 'produktVariacioni',
-                    attributes: ['produkt_variacioniID', 'cmimi', 'produktiID', 'sasia_ne_stok']
+                    model: Produkti,
+                    as: 'produkti',
+                    attributes: ['produktiID', 'emri', 'cmimi', 'sasia_ne_stok', 'imazhi']
                 }
             ]
         });
@@ -57,16 +57,9 @@ class ProduktCartRepository extends BaseRepository {
         return await this.getByField('cartID', cartID, {
             include: [
                 {
-                    model: ProduktVariacioni,
-                    as: 'produktVariacioni',
-                    attributes: ['produkt_variacioniID', 'cmimi', 'produktiID'],
-                    include: [
-                        {
-                            model: require('../models').Produkti,
-                            as: 'produkti',
-                            attributes: ['produktiID', 'emri', 'sasia_ne_stok']
-                        }
-                    ]
+                    model: Produkti,
+                    as: 'produkti',
+                    attributes: ['produktiID', 'emri', 'cmimi', 'sasia_ne_stok', 'imazhi']
                 }
             ]
         });
@@ -79,8 +72,8 @@ class ProduktCartRepository extends BaseRepository {
             if (!data.cartID) {
                 throw new Error('cartID is required');
             }
-            if (!data.produkt_variacioniID) {
-                throw new Error('produkt_variacioniID is required');
+            if (!data.produktiID) {
+                throw new Error('produktiID is required');
             }
             if (!data.sasia) {
                 throw new Error('sasia is required');

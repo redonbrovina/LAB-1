@@ -16,6 +16,10 @@ const ProduktPorosise = sequelize.define("ProduktPorosise", {
             key: 'porosiaID'
         }
     },
+    produkt_variacioniID: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
     produktiID: {
         type: DataTypes.INTEGER,
         allowNull: true,

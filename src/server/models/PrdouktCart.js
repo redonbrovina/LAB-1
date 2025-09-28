@@ -29,10 +29,14 @@ const ProduktCart = sequelize.define("ProduktCart", {
     },
     produkt_variacioniID: {
         type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    produktiID: {
+        type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-            model: 'ProduktVariacioni',
-            key: 'produkt_variacioniID'
+            model: 'Produkti',
+            key: 'produktiID'
         }
     }
 }, {
@@ -45,6 +49,10 @@ ProduktCart.associate = function(models) {
     ProduktCart.belongsTo(models.Cart, { 
         foreignKey: 'cartID',
         as: 'cart'
+    });
+    ProduktCart.belongsTo(models.Produkti, { 
+        foreignKey: 'produktiID',
+        as: 'produkti'
     });
 };
 

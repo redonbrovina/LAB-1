@@ -49,6 +49,15 @@ const Produkti = sequelize.define("Produkti", {
             model: "Doza",
             key: "dozaID"
         }
+    },
+    imazhi: {
+        type: DataTypes.STRING(500),
+        allowNull: true
+    },
+    cmimi: {
+        type: DataTypes.DECIMAL(8, 2),
+        allowNull: true,
+        defaultValue: 0.00
     }
 }, {
     tableName: "produkti",

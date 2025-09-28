@@ -48,11 +48,11 @@ export default function Cart() {
               const userCartItems = itemsArray.filter(item => {
                 console.log('Checking item:', item);
                 console.log('Item cartID:', item.cartID, 'User cartID:', userCart.cartID);
-                console.log('Item produkt_variacioniID:', item.produkt_variacioniID);
+                console.log('Item produktiID:', item.produktiID);
                 console.log('Match:', item.cartID === userCart.cartID);
                 
-                // Only include items that belong to this cart AND have a valid product variation ID
-                return item.cartID === userCart.cartID && item.produkt_variacioniID !== null;
+                // Only include items that belong to this cart
+                return item.cartID === userCart.cartID;
               });
         
         console.log('Filtered user cart items:', userCartItems);
@@ -128,11 +128,11 @@ export default function Cart() {
       return;
     }
 
-    // Filter out items without valid product variation ID
-    const validCartItems = cartItems.filter(item => item.produkt_variacioniID !== null);
+    // Use all cart items
+    const validCartItems = cartItems;
     
     if (validCartItems.length === 0) {
-      alert('Nuk ka produkte të vlefshëm në cart. Ju lutemi shtoni produkte me variacion të vlefshëm.');
+      alert('Nuk ka produkte të vlefshëm në cart. Ju lutemi shtoni produkte.');
       return;
     }
 
@@ -166,7 +166,7 @@ export default function Cart() {
       for (const item of validCartItems) {
         const orderItemData = {
           porosiaID: newOrder.porosiaID,
-          produkt_variacioniID: item.produkt_variacioniID,
+          produktiID: item.produktiID,
           sasia: item.sasia,
           cmimi: item.cmimi
         };
@@ -174,13 +174,13 @@ export default function Cart() {
         console.log('Creating order item:', orderItemData);
         await orderItemsAPI.create(orderItemData);
         
-        // Reduce stock for this product variation
+        // Reduce stock for this product
         try {
-          console.log(`Reducing stock for variation ${item.produkt_variacioniID} by ${item.sasia}`);
-          await productsAPI.reduceStock(item.produkt_variacioniID, item.sasia);
-          console.log(`✅ Stock reduced successfully for variation ${item.produkt_variacioniID}`);
+          console.log(`Reducing stock for product ${item.produktiID} by ${item.sasia}`);
+          await productsAPI.reduceStock(item.produktiID, item.sasia);
+          console.log(`✅ Stock reduced successfully for product ${item.produktiID}`);
         } catch (stockError) {
-          console.error(`❌ Error reducing stock for variation ${item.produkt_variacioniID}:`, stockError);
+          console.error(`❌ Error reducing stock for product ${item.produktiID}:`, stockError);
           // Continue with other items even if stock reduction fails
         }
       }
@@ -295,8 +295,8 @@ export default function Cart() {
                           <tr key={item.produkti_cartID} className="hover:bg-gray-50">
                             <td className="p-2 border-b" style={{ color: "#808080" }}>
                               <div>
-                                <div className="font-medium">Product #{item.produkt_variacioniID}</div>
-                                <div className="text-sm text-gray-500">Variation ID: {item.produkt_variacioniID}</div>
+                                <div className="font-medium">Product #{item.produktiID}</div>
+                                <div className="text-sm text-gray-500">Product ID: {item.produktiID}</div>
                               </div>
                             </td>
                             <td className="p-2 border-b" style={{ color: "#808080" }}>
@@ -343,10 +343,10 @@ export default function Cart() {
                         <div className="flex justify-between items-start mb-3">
                           <div>
                             <div className="font-medium" style={{ color: "#808080" }}>
-                              Product #{item.produkt_variacioniID}
+                              Product #{item.produktiID}
                             </div>
                             <div className="text-sm text-gray-500">
-                              Variation ID: {item.produkt_variacioniID}
+                              Product ID: {item.produktiID}
                             </div>
                           </div>
                           <button
@@ -399,7 +399,7 @@ export default function Cart() {
                       <div className="flex justify-between items-center">
                         <span className="text-lg font-semibold">Total:</span>
                         <span className="text-lg font-bold text-green-600">
-                          €{cartItems.filter(item => item.produkt_variacioniID !== null).reduce((sum, item) => sum + (item.sasia * item.cmimi), 0).toFixed(2)}
+                          €{cartItems.reduce((sum, item) => sum + (item.sasia * item.cmimi), 0).toFixed(2)}
                         </span>
                       </div>
                     </div>

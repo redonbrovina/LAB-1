@@ -17,7 +17,7 @@ class ProduktiPorosiseRepository extends BaseRepository {
                 {
                     model: Produkti,
                     as: 'produkti',
-                    attributes: ['produktiID', 'emri', 'sasia_ne_stok']
+                    attributes: ['produktiID', 'emri', 'sasia_ne_stok', 'cmimi', 'imazhi']
                 }
             ]
         });

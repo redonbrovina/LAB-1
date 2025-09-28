@@ -34,7 +34,7 @@ const Pagesa = sequelize.define("Pagesa", {
         }
     },
     numri_llogarise: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.STRING(255),
         allowNull: true
     },
     klientiID: {
@@ -52,6 +52,26 @@ const Pagesa = sequelize.define("Pagesa", {
             model: 'Admin',
             key: 'adminID'
         }
+    },
+    furnitoriID: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'Furnitori',
+            key: 'furnitoriID'
+        }
+    },
+    produktiID: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'Produkti',
+            key: 'produktiID'
+        }
+    },
+    sasia: {
+        type: DataTypes.INTEGER,
+        allowNull: true
     }
 }, {
     tableName: "pagesa",
@@ -75,6 +95,14 @@ Pagesa.associate = function(models) {
     Pagesa.belongsTo(models.Admin, { 
         foreignKey: 'adminID',
         as: 'admin'
+    });
+    Pagesa.belongsTo(models.Furnitori, { 
+        foreignKey: 'furnitoriID',
+        as: 'furnitori'
+    });
+    Pagesa.belongsTo(models.Produkti, { 
+        foreignKey: 'produktiID',
+        as: 'produkti'
     });
 };
 

@@ -477,13 +477,13 @@ export default function Dashboard() {
                       <div key={item.produkti_cartID} className="flex items-center justify-between p-4 border rounded-lg" style={{ borderColor: "#808080" }}>
                         <div className="flex items-center space-x-4">
                           <img
-                            src={item.produktVariacioni?.produkti?.imazhi || '/src/client/assets/images/default-pill-bottle.svg'}
-                            alt={item.produktVariacioni?.produkti?.emri}
+                            src={item.produkti?.imazhi || '/src/client/assets/images/default-pill-bottle.svg'}
+                            alt={item.produkti?.emri}
                             className="w-12 h-12 object-cover rounded"
                           />
                           <div>
                             <h4 className="font-medium" style={{ color: "#808080" }}>
-                              {item.produktVariacioni?.produkti?.emri}
+                              {item.produkti?.emri}
                             </h4>
                             <p className="text-sm" style={{ color: "#808080" }}>
                               {formatCurrency(item.cmimi)} per unit
@@ -593,7 +593,7 @@ export default function Dashboard() {
                             {order.produktet.map((product, index) => (
                               <div key={index} className="flex justify-between text-sm" style={{ color: "#808080" }}>
                                 <span>
-                                  {product.produktVariacioni?.produkti?.emri} x{product.sasia}
+                                  {product.produkti?.emri} x{product.sasia}
                                 </span>
                                 <span>{formatCurrency(product.cmimi * product.sasia)}</span>
                               </div>

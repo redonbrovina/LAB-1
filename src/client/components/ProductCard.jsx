@@ -140,24 +140,20 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Variations Info - Hidden since we only want one variation per product */}
 
         {/* Action Buttons */}
         <div className="flex gap-2">
           {showAddToCart && (
             <button
               onClick={handleAddToCart}
-              disabled={addingToCart || !hasVariations || stock === 0}
+              disabled={addingToCart || stock === 0}
               className="flex-1 bg-green-500 text-white py-2 px-3 rounded-lg hover:bg-green-600 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
               title={
-                !hasVariations ? 'Product has no variations' :
-                stock === 0 ? 'Product is out of stock' :
-                'Add to cart'
+                stock === 0 ? 'Product is out of stock' : 'Add to cart'
               }
             >
               <ShoppingCart size={14} />
               {addingToCart ? 'Adding...' : 
-               !hasVariations ? 'No variations' :
                stock === 0 ? 'Out of stock' : 
                `Add ${quantity} to Cart`}
             </button>

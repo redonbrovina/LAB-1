@@ -249,7 +249,6 @@ export const productsAPI = {
   getPaginated: (page = 1, limit = 12) => apiGet(`/produkte/paginated?page=${page}&limit=${limit}`),
   getById: (id) => apiGet(`/produkte/${id}`),
   getByCategory: (categoryId) => apiGet(`/produkte/kategoria/${categoryId}`),
-  getWithVariations: (id) => apiGet(`/produkte/${id}/variations`),
   search: (query) => apiGet(`/produkte/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiPost('/produkte', data),
   update: (id, data) => apiPut(`/produkte/${id}`, data),
