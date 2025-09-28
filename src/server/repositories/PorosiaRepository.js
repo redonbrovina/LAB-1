@@ -1,5 +1,5 @@
 const BaseRepository = require('./BaseRepository');
-const { Porosia, PorosiaStatus, PagesaStatus, Klienti, ProduktPorosise, ProduktVariacioni, Produkti } = require("../models");
+const { Porosia, PorosiaStatus, PagesaStatus, Klienti, ProduktPorosise, Produkti } = require("../models");
 
 class PorosiaRepository extends BaseRepository {
     constructor() {
@@ -51,9 +51,9 @@ class PorosiaRepository extends BaseRepository {
                     model: ProduktPorosise,
                     as: 'produktet',
                     include: [{
-                        model: ProduktVariacioni,
-                        as: 'produktVariacioni',
-                        attributes: ['cmimi']
+                        model: Produkti,
+                        as: 'produkti',
+                        attributes: ['emri', 'pershkrimi']
                     }]
                 }
             ]
@@ -77,13 +77,9 @@ class PorosiaRepository extends BaseRepository {
                     model: ProduktPorosise,
                     as: 'produktet',
                     include: [{
-                        model: ProduktVariacioni,
-                        as: 'produktVariacioni',
-                        include: [{
-                            model: Produkti,
-                            as: 'produkti',
-                            attributes: ['emri', 'pershkrimi']
-                        }]
+                        model: Produkti,
+                        as: 'produkti',
+                        attributes: ['emri', 'pershkrimi']
                     }]
                 }
             ],
@@ -96,11 +92,72 @@ class PorosiaRepository extends BaseRepository {
     }
 
     async updatePorosia(porosiaID, data) {
-        return await this.updateById(porosiaID, data);
+        try {
+            console.log(`PorosiaRepository.updatePorosia called for ID ${porosiaID} with data:`, data);
+            
+            // Validate ID
+            if (!porosiaID) {
+                throw new Error('Order ID is required');
+            }
+            
+            // Get primary key
+            const primaryKey = this.getPrimaryKey();
+            console.log('Primary key:', primaryKey);
+            
+            // Update the record
+            const [updatedRows] = await this.model.update(data, { 
+                where: { [primaryKey]: porosiaID } 
+            });
+            
+            console.log(`Updated ${updatedRows} rows`);
+            
+            if (updatedRows === 0) {
+                console.log('No rows were updated');
+                return null;
+            }
+            
+            // Return the updated record
+            const updatedRecord = await this.getPorosiaById(porosiaID);
+            console.log('Updated record:', updatedRecord);
+            return updatedRecord;
+        } catch (error) {
+            console.error('Error in PorosiaRepository.updatePorosia:', error);
+            console.error('Error stack:', error.stack);
+            throw error;
+        }
     }
 
     async deletePorosia(porosiaID) {
-        return await this.deleteById(porosiaID);
+        try {
+            console.log(`PorosiaRepository.deletePorosia called for ID ${porosiaID}`);
+            
+            // Validate ID
+            if (!porosiaID) {
+                throw new Error('Order ID is required');
+            }
+            
+            // Get primary key
+            const primaryKey = this.getPrimaryKey();
+            console.log('Primary key:', primaryKey);
+            
+            // Delete the record
+            const deletedRows = await this.model.destroy({ 
+                where: { [primaryKey]: porosiaID } 
+            });
+            
+            console.log(`Deleted ${deletedRows} rows`);
+            
+            if (deletedRows === 0) {
+                console.log('No rows were deleted');
+                return false;
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Error in PorosiaRepository.deletePorosia:', error);
+            console.error('Error stack:', error.stack);
+            throw error;
+        }
     }
 }
 

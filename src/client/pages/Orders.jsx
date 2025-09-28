@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
-import { apiGet, apiPut } from '../utils/api';
+import { apiGet, apiPut, apiPost, apiDelete } from '../utils/api';
 import AdminNavbar from '../admin/AdminNavbar';
-import { Eye, CheckCircle, XCircle, Clock, Package, Search, Filter } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Package, Search, Filter, Edit3, Trash2 } from 'lucide-react';
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [showModal, setShowModal] = useState(false);
-  const [updatingStatus, setUpdatingStatus] = useState(false);
+  
+  // States for CRUD operations
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingOrder, setEditingOrder] = useState(null);
+  const [clients, setClients] = useState([]);
 
   // Fetch orders from API
   const fetchOrders = async () => {
@@ -28,32 +30,79 @@ export default function Orders() {
     }
   };
 
+  // Fetch clients for dropdown
+  const fetchClients = async () => {
+    try {
+      const data = await apiGet('/klienti');
+      setClients(data);
+    } catch (err) {
+      console.error('Error fetching clients:', err);
+    }
+  };
+
   useEffect(() => {
     fetchOrders();
+    fetchClients();
   }, []);
 
 
-  // Update order status
-  const updateOrderStatus = async (orderId, newStatus) => {
+
+  // UPDATE - Update existing order
+  const updateOrder = async (orderId, orderData) => {
     try {
-      setUpdatingStatus(true);
-      console.log('Updating order:', orderId, 'to status:', newStatus);
-      const response = await apiPut(`/porosite/${orderId}`, { porosia_statusID: newStatus });
-      console.log('Update response:', response);
+      setLoading(true);
       
-      setOrders(orders.map(order => 
-        order.porosiaID === orderId 
-          ? { ...order, porosia_statusID: newStatus }
-          : order
-      ));
-      setShowModal(false);
+      // Only send status updates, not client or total amount
+      const updateData = {
+        porosia_statusID: orderData.porosia_statusID,
+        pagesa_statusID: orderData.pagesa_statusID
+      };
+      
+      console.log('🔄 Frontend: Updating order ID:', orderId);
+      console.log('🔄 Frontend: Update data:', updateData);
+      console.log('🔄 Frontend: Full order data:', orderData);
+      
+      const response = await apiPut(`/porosite/${orderId}`, updateData);
+      console.log('✅ Frontend: Order updated successfully:', response);
+      
+      // Refresh orders list
+      await fetchOrders();
+      setShowEditModal(false);
+      setEditingOrder(null);
     } catch (err) {
-      setError(`Gabim në përditësimin e statusit: ${err.message}`);
-      console.error('Error updating order:', err);
+      setError(`Gabim në përditësimin e porosisë: ${err.message}`);
+      console.error('❌ Frontend: Error updating order:', err);
+      console.error('❌ Frontend: Error details:', err.response?.data);
     } finally {
-      setUpdatingStatus(false);
+      setLoading(false);
     }
   };
+
+  // DELETE - Delete order
+  const deleteOrder = async (orderId) => {
+    if (!window.confirm('A jeni të sigurt që doni të fshini këtë porosi?')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      console.log('Frontend: Deleting order ID:', orderId);
+      
+      const response = await apiDelete(`/porosite/${orderId}`);
+      console.log('Frontend: Order deleted successfully:', response);
+      
+      // Refresh orders list
+      await fetchOrders();
+    } catch (err) {
+      setError(`Gabim në fshirjen e porosisë: ${err.message}`);
+      console.error('❌ Frontend: Error deleting order:', err);
+      console.error('❌ Frontend: Error details:', err.response?.data);
+      console.error('❌ Frontend: Full error object:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   // Filter orders based on search and status
   const filteredOrders = orders.filter(order => {
@@ -222,16 +271,25 @@ export default function Orders() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => {
-                            setSelectedOrder(order);
-                            setShowModal(true);
-                          }}
-                          className="text-red-600 hover:text-red-900 flex items-center gap-1"
-                        >
-                          <Eye size={16} />
-                          View
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingOrder(order);
+                              setShowEditModal(true);
+                            }}
+                            className="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                            title="View/Edit Order"
+                          >
+                            <Edit3 size={16} />
+                          </button>
+                          <button
+                            onClick={() => deleteOrder(order.porosiaID)}
+                            className="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                            title="Delete Order"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -274,17 +332,26 @@ export default function Orders() {
                         </div>
                       </div>
                       
-                      {/* Action Button */}
-                      <button
-                        onClick={() => {
-                          setSelectedOrder(order);
-                          setShowModal(true);
-                        }}
-                        className="w-full text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-md transition-colors duration-200 flex items-center justify-center gap-1"
-                      >
-                        <Eye size={16} />
-                        View Details
-                      </button>
+                      {/* Action Buttons */}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingOrder(order);
+                            setShowEditModal(true);
+                          }}
+                          className="flex-1 text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-md transition-colors duration-200 flex items-center justify-center"
+                          title="View/Edit Order"
+                        >
+                          <Edit3 size={16} />
+                        </button>
+                        <button
+                          onClick={() => deleteOrder(order.porosiaID)}
+                          className="flex-1 text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-md transition-colors duration-200 flex items-center justify-center"
+                          title="Delete Order"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
@@ -297,54 +364,96 @@ export default function Orders() {
           </div>
         </div>
 
-      {/* Order Details Modal */}
-      {showModal && selectedOrder && (
+
+      {/* View/Edit Order Modal */}
+      {showEditModal && editingOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h2 className="text-xl font-bold text-gray-800">
-                    Detajet e Porosisë #{selectedOrder.porosiaID}
+                    Detajet e Porosisë #{editingOrder.porosiaID}
                   </h2>
                   <p className="text-sm text-gray-600">
-                    {formatDate(selectedOrder.koha_krijimit)}
+                    {formatDate(editingOrder.koha_krijimit)}
                   </p>
                 </div>
                 <button
-                  onClick={() => setShowModal(false)}
+                  onClick={() => setShowEditModal(false)}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   <XCircle size={24} />
                 </button>
               </div>
 
-              <div className="space-y-4">
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                updateOrder(editingOrder.porosiaID, editingOrder);
+              }} className="space-y-6">
                 {/* Order Info */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Order ID</label>
-                    <p className="text-sm text-gray-900">#{selectedOrder.porosiaID}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">ID</label>
-                    <p className="text-sm text-gray-900">#{selectedOrder.klientiID}</p>
+                    <p className="text-sm text-gray-900">#{editingOrder.porosiaID}</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Data e Krijimit</label>
-                    <p className="text-sm text-gray-900">{formatDate(selectedOrder.koha_krijimit)}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Total Amount</label>
-                    <p className="text-sm font-medium text-gray-900">{formatPrice(selectedOrder.cmimi_total)}</p>
+                    <p className="text-sm text-gray-900">{formatDate(editingOrder.koha_krijimit)}</p>
                   </div>
                 </div>
 
-                {/* Current Status */}
+                {/* Read-only Fields */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Klienti</label>
+                    <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700">
+                      {clients.find(client => client.klientiID == editingOrder.klientiID)?.emri_kompanise || `Klienti #${editingOrder.klientiID}`}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Shuma Total</label>
+                    <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700">
+                      {formatPrice(editingOrder.cmimi_total)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status Updates */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Statusi i Porosisë</label>
+                    <select
+                      value={editingOrder.porosia_statusID}
+                      onChange={(e) => setEditingOrder({...editingOrder, porosia_statusID: parseInt(e.target.value)})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    >
+                      <option value={1}>Në proces</option>
+                      <option value={2}>Përfunduar</option>
+                      <option value={3}>Anuluar</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Statusi i Pagesës</label>
+                    <select
+                      value={editingOrder.pagesa_statusID}
+                      onChange={(e) => setEditingOrder({...editingOrder, pagesa_statusID: parseInt(e.target.value)})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    >
+                      <option value={1}>Në pritje</option>
+                      <option value={2}>Paguar</option>
+                      <option value={3}>Dështuar</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Current Status Display */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Current Status</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Statusi Aktual</label>
                   {(() => {
-                    const status = getStatusBadge(selectedOrder.porosia_statusID);
+                    const status = getStatusBadge(editingOrder.porosia_statusID);
                     const StatusIcon = status.icon;
                     return (
                       <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${status.color}`}>
@@ -355,47 +464,27 @@ export default function Orders() {
                   })()}
                 </div>
 
-                {/* Status Update */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Change Status</label>
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      { id: 1, label: 'Në proces', color: 'bg-yellow-500 hover:bg-yellow-600' },
-                      { id: 2, label: 'Përfunduar', color: 'bg-green-500 hover:bg-green-600' },
-                      { id: 3, label: 'Anuluar', color: 'bg-red-500 hover:bg-red-600' }
-                    ].map((status) => (
-                      <button
-                        key={status.id}
-                        onClick={() => {
-                          console.log('Button clicked:', status.label, 'for order:', selectedOrder.porosiaID);
-                          updateOrderStatus(selectedOrder.porosiaID, status.id);
-                        }}
-                        disabled={selectedOrder.porosia_statusID === status.id || updatingStatus}
-                        className={`px-3 py-1 rounded text-white text-sm font-medium transition-colors ${
-                          selectedOrder.porosia_statusID === status.id || updatingStatus
-                            ? 'opacity-50 cursor-not-allowed' 
-                            : status.color
-                        }`}
-                      >
-                        {updatingStatus ? 'Duke përditësuar...' : status.label}
-                      </button>
-                    ))}
-                  </div>
+                <div className="flex justify-end gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditModal(false)}
+                    className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+                  >
+                    Mbyll
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  >
+                    Përditëso Porosinë
+                  </button>
                 </div>
-              </div>
-
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
-                >
-                  Mbyll
-                </button>
-              </div>
+              </form>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 }

@@ -16,12 +16,12 @@ const ProduktPorosise = sequelize.define("ProduktPorosise", {
             key: 'porosiaID'
         }
     },
-    produkt_variacioniID: {
+    produktiID: {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-            model: 'ProduktVariacioni',
-            key: 'produkt_variacioniID'
+            model: 'Produkti',
+            key: 'produktiID'
         }
     },
     sasia: {
@@ -44,6 +44,10 @@ ProduktPorosise.associate = function(models) {
     ProduktPorosise.belongsTo(models.Porosia, { 
         foreignKey: 'porosiaID',
         as: 'porosia'
+    });
+    ProduktPorosise.belongsTo(models.Produkti, { 
+        foreignKey: 'produktiID',
+        as: 'produkti'
     });
 };
 
