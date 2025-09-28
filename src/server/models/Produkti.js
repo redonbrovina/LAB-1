@@ -22,7 +22,9 @@ const Produkti = sequelize.define("Produkti", {
         references: {
             model: "Kategoria",
             key: "kategoriaID"
-        }
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
     },
     furnitoriID: {
         type: DataTypes.INTEGER,

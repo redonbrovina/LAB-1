@@ -21,7 +21,9 @@ const Kategoria = sequelize.define("Kategoria", {
 Kategoria.associate = function(models) {
     Kategoria.hasMany(models.Produkti, { 
         foreignKey: 'kategoriaID',
-        as: 'produktet'
+        as: 'produktet',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
     });
 };
 
