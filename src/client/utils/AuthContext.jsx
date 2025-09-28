@@ -21,9 +21,6 @@ export const AuthProvider = ({ children }) => {
 
   const checkExistingSession = async () => {
     try {
-      if(!user){
-        return;
-      }
       const userInfoResponse = await fetch('http://localhost:5000/api/form/user-info', {
         method: 'GET',
         credentials: 'include',
