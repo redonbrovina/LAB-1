@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database/Database");
 
-const PagesaStatus = sequelize.define("PagesaStatus", {
-    pagesa_statusID: {
+const PorosiaStatus = sequelize.define("PorosiaStatus", {
+    porosia_statusID: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -13,16 +13,16 @@ const PagesaStatus = sequelize.define("PagesaStatus", {
         allowNull: true
     }
 }, {
-    tableName: "pagesa_status",
+    tableName: "porosia_status",
     timestamps: false
 });
 
 // Define relationships after model is created
-PagesaStatus.associate = function(models) {
-    PagesaStatus.hasMany(models.Porosia, { 
-        foreignKey: 'pagesa_statusID',
+PorosiaStatus.associate = function(models) {
+    PorosiaStatus.hasMany(models.Porosia, { 
+        foreignKey: 'porosia_statusID',
         as: 'porosite'
     });
 };
 
-module.exports = PagesaStatus;
+module.exports = PorosiaStatus;

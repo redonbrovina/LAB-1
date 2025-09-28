@@ -22,6 +22,10 @@ PagesaStatus.associate = function(models) {
         foreignKey: 'pagesa_statusID',
         as: 'porosite'
     });
+    PagesaStatus.hasMany(models.Pagesa, {
+        foreignKey: 'pagesa_statusID',
+        as: 'pagesat'
+    });
 };
 
 module.exports = PagesaStatus;

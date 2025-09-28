@@ -72,6 +72,14 @@ const Pagesa = sequelize.define("Pagesa", {
     sasia: {
         type: DataTypes.INTEGER,
         allowNull: true
+    },
+    pagesa_statusID: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'PagesaStatus',
+            key: 'pagesa_statusID'
+        }
     }
 }, {
     tableName: "pagesa",
@@ -103,6 +111,10 @@ Pagesa.associate = function(models) {
     Pagesa.belongsTo(models.Produkti, { 
         foreignKey: 'produktiID',
         as: 'produkti'
+    });
+    Pagesa.belongsTo(models.PagesaStatus, { 
+        foreignKey: 'pagesa_statusID',
+        as: 'pagesaStatus'
     });
 };
 
