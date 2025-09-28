@@ -68,11 +68,11 @@ export default function ReferenceData() {
     const getTableHeaders = () => {
         switch (activeTab) {
             case 'doza':
-                return ['ID', 'Doza (ml)', 'Actions'];
+                return ['ID', 'Dose (ml)', 'Actions'];
             case 'forma':
-                return ['ID', 'Lloji i Formës', 'Actions'];
+                return ['ID', 'Form Type', 'Actions'];
             case 'shteti':
-                return ['ID', 'Emri i Shtetit', 'ISO Kodi', 'Actions'];
+                return ['ID', 'Country Name', 'ISO Code', 'Actions'];
             default:
                 return [];
         }
@@ -82,16 +82,16 @@ export default function ReferenceData() {
         switch (activeTab) {
             case 'doza':
                 return [
-                    { name: 'doza', label: 'Doza (ml)', type: 'number', step: '0.01', required: true }
+                    { name: 'doza', label: 'Dose (ml)', type: 'number', step: '0.01', required: true }
                 ];
             case 'forma':
                 return [
-                    { name: 'lloji_formes', label: 'Lloji i Formës', type: 'text', required: true }
+                    { name: 'lloji_formes', label: 'Form Type', type: 'text', required: true }
                 ];
             case 'shteti':
                 return [
-                    { name: 'emri_shtetit', label: 'Emri i Shtetit', type: 'text', required: true },
-                    { name: 'iso_kodi', label: 'ISO Kodi', type: 'text', required: true, maxLength: 10 }
+                    { name: 'emri_shtetit', label: 'Country Name', type: 'text', required: true },
+                    { name: 'iso_kodi', label: 'ISO Code', type: 'text', required: true, maxLength: 10 }
                 ];
             default:
                 return [];

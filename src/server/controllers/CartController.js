@@ -63,8 +63,8 @@ class CartController {
     async delete(req, res) {
         try {
             const deleted = await this.service.deleteCart(req.params.id);
-            if (!deleted) return res.status(404).json({ message: 'Cart nuk u gjet' });
-            res.json({ message: 'Cart u fshi me sukses' });
+            if (!deleted) return res.status(404).json({ message: 'Cart not found' });
+            res.json({ message: 'Cart deleted successfully' });
         } catch (err) {
             res.status(500).json({ error: err.message });
         }

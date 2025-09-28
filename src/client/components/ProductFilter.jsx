@@ -26,21 +26,21 @@ export default function ProductFilter({
   }, [currentFilters]);
 
   const priceRanges = [
-    { value: '', label: 'Të gjitha çmimet' },
+    { value: '', label: 'All prices' },
     { value: '0-10', label: '€0 - €10' },
     { value: '10-25', label: '€10 - €25' },
     { value: '25-50', label: '€25 - €50' },
     { value: '50-100', label: '€50 - €100' },
-    { value: '100+', label: 'Mbi €100' }
+    { value: '100+', label: 'Over €100' }
   ];
 
   const sortOptions = [
-    { value: 'name', label: 'Emri (A-Z)' },
-    { value: 'name-desc', label: 'Emri (Z-A)' },
-    { value: 'price-low', label: 'Çmimi (më i ulët)' },
-    { value: 'price-high', label: 'Çmimi (më i lartë)' },
-    { value: 'newest', label: 'Më të rinjtë' },
-    { value: 'oldest', label: 'Më të vjetrit' }
+    { value: 'name', label: 'Name (A-Z)' },
+    { value: 'name-desc', label: 'Name (Z-A)' },
+    { value: 'price-low', label: 'Price (lowest)' },
+    { value: 'price-high', label: 'Price (highest)' },
+    { value: 'newest', label: 'Newest' },
+    { value: 'oldest', label: 'Oldest' }
   ];
 
   const handleFilterChange = (key, value) => {
@@ -77,10 +77,10 @@ export default function ProductFilter({
       >
         <div className="flex items-center gap-2">
           <Filter size={18} className="text-gray-600" />
-          <span className="font-medium text-gray-700">Filtrat</span>
+          <span className="font-medium text-gray-700">Filters</span>
           {hasActiveFilters && (
             <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-              Aktive
+              Active
             </span>
           )}
         </div>
@@ -96,14 +96,14 @@ export default function ProductFilter({
           {/* Category Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Kategoria
+              Category
             </label>
             <select
               value={filters.category}
               onChange={(e) => handleFilterChange('category', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             >
-              <option value="">Të gjitha kategoritë</option>
+              <option value="">All categories</option>
               {categories.map(category => (
                 <option key={category.kategoriaID} value={category.kategoriaID}>
                   {category.emri}
@@ -115,7 +115,7 @@ export default function ProductFilter({
           {/* Price Range Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Gama e Çmimit
+              Price Range
             </label>
             <select
               value={filters.priceRange}
@@ -139,14 +139,14 @@ export default function ProductFilter({
                 onChange={(e) => handleFilterChange('inStock', e.target.checked)}
                 className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
               />
-              <span className="text-sm text-gray-700">Vetëm në stok</span>
+              <span className="text-sm text-gray-700">Only in stock</span>
             </label>
           </div>
 
           {/* Sort Options */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Rendit sipas
+              Sort by
             </label>
             <select
               value={filters.sortBy}
@@ -169,7 +169,7 @@ export default function ProductFilter({
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-colors"
               >
                 <X size={14} />
-                Pastro Filtrat
+                Clear Filters
               </button>
             </div>
           )}

@@ -15,7 +15,7 @@ class ProduktVariacioniService {
 
     async getById(id) {
         const variacioni = await this.variacioniRepo.getVariacioniById(id);
-        if (!variacioni) throw new Error("Variacioni i produktit nuk u gjet");
+        if (!variacioni) throw new Error("Product variation not found");
         return variacioni;
     }
 

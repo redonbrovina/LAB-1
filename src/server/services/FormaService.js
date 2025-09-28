@@ -11,7 +11,7 @@ class FormaService {
 
     async getById(id) {
         const forma = await this.formaRepo.getFormaById(id);
-        if (!forma) throw new Error("Forma nuk u gjet");
+        if (!forma) throw new Error("Form not found");
         return forma;
     }
 

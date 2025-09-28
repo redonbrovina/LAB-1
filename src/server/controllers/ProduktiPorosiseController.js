@@ -46,8 +46,8 @@ class ProduktiPorosiseController {
     async delete(req, res) {
         try {
             const deleted = await this.service.delete(req.params.id);
-            if (!deleted) return res.status(404).json({ message: 'Produkti nuk u gjet' });
-            res.json({ message: 'Produkti u fshi me sukses' });
+            if (!deleted) return res.status(404).json({ message: 'Product not found' });
+            res.json({ message: 'Product deleted successfully' });
         } catch (err) {
             res.status(500).json({ error: err.message });
         }

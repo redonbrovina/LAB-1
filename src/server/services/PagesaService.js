@@ -33,7 +33,7 @@ class PagesaService {
 
     async getById(id) {
         const pagesa = await this.pagesaRepo.getPagesaById(id);
-        if (!pagesa) throw new Error("Pagesa nuk u gjet");
+        if (!pagesa) throw new Error("Payment not found");
         return pagesa;
     }
 

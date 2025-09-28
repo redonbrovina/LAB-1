@@ -11,7 +11,7 @@ class PorosiaStatusService {
 
     async getById(id) {
         const status = await this.statusRepo.getStatusById(id);
-        if (!status) throw new Error("Statusi i porosise nuk u gjet");
+        if (!status) throw new Error("Order status not found");
         return status;
     }
 

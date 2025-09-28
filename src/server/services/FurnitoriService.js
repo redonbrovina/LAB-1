@@ -11,7 +11,7 @@ class FurnitoriService {
 
     async getById(id) {
         const furnitori = await this.furnitoriRepo.getFurnitoriById(id);
-        if (!furnitori) throw new Error("Furnitori nuk u gjet");
+        if (!furnitori) throw new Error("Supplier not found");
         return furnitori;
     }
 

@@ -16,7 +16,7 @@ const PagesaController = {
       // Validate required fields
       if (!menyra_pagesesID || !shuma_pageses) {
         return res.status(400).json({ 
-          error: "menyra_pagesesID dhe shuma_pageses janë të detyrueshëm" 
+          error: "Payment method ID and payment amount are required" 
         });
       }
 
@@ -37,7 +37,7 @@ const PagesaController = {
       // Admin payments should not have porosiaID (they are for business expenses)
       if (adminID && porosiaID) {
         return res.status(400).json({ 
-          error: "Pagesat e adminit nuk mund të lidhen me porosi klientësh" 
+          error: "Admin payments cannot be linked to client orders" 
         });
       }
 
@@ -107,7 +107,7 @@ const PagesaController = {
       const pagesa = await service.getById(id);
       res.json(pagesa);
     } catch (err) {
-      if (err.message === "Pagesa nuk u gjet") {
+      if (err.message === "Payment not found") {
         res.status(404).json({ error: err.message });
       } else {
         res.status(500).json({ error: err.message });
@@ -165,7 +165,7 @@ const PagesaController = {
       
       res.json(pagesa);
     } catch (err) {
-      if (err.message === "Pagesa nuk u gjet") {
+      if (err.message === "Payment not found") {
         res.status(404).json({ error: err.message });
       } else {
         res.status(500).json({ error: err.message });
@@ -179,7 +179,7 @@ const PagesaController = {
       await service.delete(id);
       res.status(204).send();
     } catch (err) {
-      if (err.message === "Pagesa nuk u gjet") {
+      if (err.message === "Payment not found") {
         res.status(404).json({ error: err.message });
       } else {
         res.status(500).json({ error: err.message });

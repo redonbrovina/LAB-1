@@ -15,7 +15,7 @@ class KlientiService {
 
     async getKlientiById(klientiID) {
         const klienti = await this.klientiRepository.getKlientiById(klientiID);
-        if (!klienti) throw new Error("Klienti nuk u gjet");
+        if (!klienti) throw new Error("Client not found");
         return klienti;
     }
 

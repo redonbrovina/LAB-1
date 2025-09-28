@@ -112,7 +112,7 @@ class AdminController {
             const admin = await this.adminService.getAdminById(adminID);
             return res.status(200).json(admin);
         } catch (error) {
-            if (error.message === "Admin nuk u gjet") {
+            if (error.message === "Admin not found") {
                 res.status(404).json({ message: error.message });
             } else {
                 res.status(500).json({
@@ -128,7 +128,7 @@ class AdminController {
             const admin = await this.adminService.getAdminById(parseInt(req.params.adminID));
             return res.status(200).json(admin);
         } catch (error) {
-            if (error.message === "Admin nuk u gjet") {
+            if (error.message === "Admin not found") {
                 res.status(404).json({ message: error.message });
             } else {
                 res.status(500).json({
@@ -232,7 +232,7 @@ class AdminController {
                 return res.status(200).json(updatedAdmin);
             }
         } catch (error) {
-            if (error.message === "Admin nuk u gjet") {
+            if (error.message === "Admin not found") {
                 res.status(404).json({ message: error.message });
             } else {
                 res.status(500).json({
@@ -259,7 +259,7 @@ class AdminController {
             await this.adminService.deleteAdmin(parseInt(adminID));
             return res.status(204).send();
         } catch (error) {
-            if (error.message === "Admin nuk u gjet") {
+            if (error.message === "Admin not found") {
                 res.status(404).json({ message: error.message });
             } else {
                 res.status(500).json({

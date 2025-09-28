@@ -28,7 +28,7 @@ class ProduktVariacioniController {
             const variacioni = await this.variacioniService.getById(req.params.id);
             res.json(variacioni);
         } catch (err) {
-            if (err.message === "Variacioni i produktit nuk u gjet") {
+            if (err.message === "Product variation not found") {
                 res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });
@@ -50,7 +50,7 @@ class ProduktVariacioniController {
             const updatedVar = await this.variacioniService.update(req.params.id, req.body);
             res.json(updatedVar);
         } catch (err) {
-            if (err.message === "Variacioni i produktit nuk u gjet") {
+            if (err.message === "Product variation not found") {
                 res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });
@@ -61,9 +61,9 @@ class ProduktVariacioniController {
     async delete(req, res) {
         try {
             await this.variacioniService.delete(req.params.id);
-            res.json({ message: "Variacioni u fshi me sukses" });
+            res.json({ message: "Variation deleted successfully" });
         } catch (err) {
-            if (err.message === "Variacioni i produktit nuk u gjet") {
+            if (err.message === "Product variation not found") {
                 res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });

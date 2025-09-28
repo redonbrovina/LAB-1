@@ -19,7 +19,7 @@ class KlientiController {
             if (!email || !password) {
                 console.log('Missing email or password');
                 return res.status(400).json({
-                    message: 'Email dhe password janë të detyrueshëm'
+                    message: 'Email and password are required'
                 });
             }
 
@@ -29,7 +29,7 @@ class KlientiController {
             if (!klienti) {
                 console.log('No client found with email:', email);
                 return res.status(401).json({
-                    message: 'Email ose password i gabuar'
+                    message: 'Invalid email or password'
                 });
             }
 
@@ -47,7 +47,7 @@ class KlientiController {
             if (!isPasswordValid) {
                 console.log('Password validation failed');
                 return res.status(401).json({
-                    message: 'Email ose password i gabuar'
+                    message: 'Invalid email or password'
                 });
             }
             
@@ -138,7 +138,7 @@ class KlientiController {
             const klienti = await this.klientiService.getKlientiById(req.params.klientiID);
             return res.status(200).json(klienti);
         } catch (error) {
-            if (error.message === "Klienti nuk u gjet") {
+            if (error.message === "Client not found") {
                 res.status(404).json({ message: error.message });
             } else {
                 res.status(500).json({
@@ -218,7 +218,7 @@ class KlientiController {
             console.log('Updated client');
             return res.status(200).json(updatedKlienti);
         } catch (error) {
-            if (error.message === "Klienti nuk u gjet") {
+            if (error.message === "Client not found") {
                 res.status(404).json({ message: error.message });
             } else {
                 res.status(500).json({
@@ -234,7 +234,7 @@ class KlientiController {
             await this.klientiService.deleteKlienti(req.params.klientiID);
             return res.status(204).send();
         } catch (error) {
-            if (error.message === "Klienti nuk u gjet") {
+            if (error.message === "Client not found") {
                 res.status(404).json({ message: error.message });
             } else {
                 res.status(500).json({
@@ -250,7 +250,7 @@ class KlientiController {
             const shteti = await this.shtetiService.getShtetiById(req.params.shtetiID);
             return res.status(200).json(shteti.emri_shtetit);
         } catch (error) {
-            if (error.message === "Shteti nuk u gjet") {
+            if (error.message === "Country not found") {
                 res.status(404).json({ message: error.message });
             } else {
                 res.status(500).json({
@@ -327,7 +327,7 @@ class KlientiController {
             console.error('Error in changePassword:', error);
             console.error('Error stack:', error.stack);
             
-            if (error.message === "Klienti nuk u gjet") {
+            if (error.message === "Client not found") {
                 res.status(404).json({ message: error.message });
             } else {
                 res.status(500).json({
