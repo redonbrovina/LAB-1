@@ -335,7 +335,7 @@ export default function Products() {
             {/* Loading State */}
             {loading ? (
               <div className="flex justify-center items-center h-64">
-                <div className="text-gray-500">Duke ngarkuar produktet...</div>
+                <div className="text-gray-500">Loading products...</div>
               </div>
             ) : (
               /* Products Display */
@@ -413,7 +413,7 @@ export default function Products() {
         {/* No Products Message */}
         {!loading && filteredProducts.length === 0 && (
           <div className="text-center text-gray-500 mt-8">
-            {selectedCategory ? 'Nuk ka produkte në këtë kategori' : 'Nuk ka produkte të disponueshme'}
+            {selectedCategory ? 'No products in this category' : 'No products available'}
           </div>
         )}
       </div>

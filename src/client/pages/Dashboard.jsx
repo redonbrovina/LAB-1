@@ -178,7 +178,7 @@ export default function Dashboard() {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Duke ngarkuar dashboard...</p>
+            <p className="text-gray-600">Loading dashboard...</p>
           </div>
         </div>
       </div>
@@ -199,7 +199,7 @@ export default function Dashboard() {
                   Dashboard
                 </h1>
                 <p style={{ color: "#808080" }}>
-                  Mirë se vini, Klient!
+                  Welcome, Client!
                 </p>
               </div>
               <button
@@ -218,10 +218,10 @@ export default function Dashboard() {
             {/* Mobile Grid Layout */}
             <div className="lg:hidden grid grid-cols-2 gap-2 py-2">
               {[
-                { id: 'overview', label: 'Përmbledhje', icon: TrendingUp },
-                { id: 'cart', label: 'Shporta', icon: ShoppingCart },
-                { id: 'orders', label: 'Porositë', icon: Package },
-                { id: 'payments', label: 'Pagesat', icon: CreditCard }
+                { id: 'overview', label: 'Overview', icon: TrendingUp },
+                { id: 'cart', label: 'Cart', icon: ShoppingCart },
+                { id: 'orders', label: 'Orders', icon: Package },
+                { id: 'payments', label: 'Payments', icon: CreditCard }
               ].map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
@@ -248,10 +248,10 @@ export default function Dashboard() {
             {/* Desktop Horizontal Layout */}
             <nav className="hidden lg:flex space-x-8">
               {[
-                { id: 'overview', label: 'Përmbledhje', icon: TrendingUp },
-                { id: 'cart', label: 'Shporta', icon: ShoppingCart },
-                { id: 'orders', label: 'Porositë', icon: Package },
-                { id: 'payments', label: 'Pagesat', icon: CreditCard }
+                { id: 'overview', label: 'Overview', icon: TrendingUp },
+                { id: 'cart', label: 'Cart', icon: ShoppingCart },
+                { id: 'orders', label: 'Orders', icon: Package },
+                { id: 'payments', label: 'Payments', icon: CreditCard }
               ].map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
@@ -291,7 +291,7 @@ export default function Dashboard() {
                       <ShoppingCart className="h-6 w-6 text-blue-600" />
                     </div>
                     <div className="ml-4">
-                      <p className="text-sm font-medium" style={{ color: "#808080" }}>Artikuj në shportë</p>
+                      <p className="text-sm font-medium" style={{ color: "#808080" }}>Items in cart</p>
                       <p className="text-2xl font-bold" style={{ color: "#808080" }}>{cartItems.length}</p>
                       <p className="text-sm text-green-600">{formatCurrency(totalCartValue)}</p>
                     </div>
@@ -304,7 +304,7 @@ export default function Dashboard() {
                       <Package className="h-6 w-6 text-green-600" />
                     </div>
                     <div className="ml-4">
-                      <p className="text-sm font-medium" style={{ color: "#808080" }}>Porositë totale</p>
+                      <p className="text-sm font-medium" style={{ color: "#808080" }}>Total orders</p>
                       <p className="text-2xl font-bold" style={{ color: "#808080" }}>{orders.length}</p>
                       <p className="text-sm text-green-600">{formatCurrency(totalOrdersValue)}</p>
                     </div>
@@ -317,7 +317,7 @@ export default function Dashboard() {
                       <Calendar className="h-6 w-6 text-yellow-600" />
                     </div>
                     <div className="ml-4">
-                      <p className="text-sm font-medium" style={{ color: "#808080" }}>Pagesat këtë muaj</p>
+                      <p className="text-sm font-medium" style={{ color: "#808080" }}>Payments this month</p>
                       <p className="text-2xl font-bold" style={{ color: "#808080" }}>{thisMonthPayments.length}</p>
                       <p className="text-sm text-green-600">{formatCurrency(totalPaymentsThisMonth)}</p>
                     </div>
@@ -330,7 +330,7 @@ export default function Dashboard() {
                       <Euro className="h-6 w-6 text-purple-600" />
                     </div>
                     <div className="ml-4">
-                      <p className="text-sm font-medium" style={{ color: "#808080" }}>Total pagesat</p>
+                      <p className="text-sm font-medium" style={{ color: "#808080" }}>Total payments</p>
                       <p className="text-2xl font-bold" style={{ color: "#808080" }}>{payments.length}</p>
                       <p className="text-sm text-green-600">{formatCurrency(totalPaymentsAllTime)}</p>
                     </div>
@@ -342,7 +342,7 @@ export default function Dashboard() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="bg-white rounded-lg shadow-sm border" style={{ borderColor: "#808080" }}>
                   <div className="p-6 border-b" style={{ borderColor: "#808080" }}>
-                    <h3 className="text-lg font-semibold" style={{ color: "#808080" }}>Porositë e fundit</h3>
+                    <h3 className="text-lg font-semibold" style={{ color: "#808080" }}>Recent orders</h3>
                   </div>
                   <div className="p-6">
                     {orders.slice(0, 3).length > 0 ? (
@@ -350,7 +350,7 @@ export default function Dashboard() {
                         {orders.slice(0, 3).map((order) => (
                           <div key={order.porosiaID} className="flex items-center justify-between">
                             <div>
-                              <p className="font-medium" style={{ color: "#808080" }}>Porosia #{order.porosiaID}</p>
+                              <p className="font-medium" style={{ color: "#808080" }}>Order #{order.porosiaID}</p>
                               <p className="text-sm" style={{ color: "#808080" }}>{formatDate(order.koha_krijimit)}</p>
                             </div>
                             <div className="text-right">
@@ -367,20 +367,20 @@ export default function Dashboard() {
                               onClick={() => setActiveTab('orders')}
                               className="text-sm text-green-600 hover:text-green-700 font-medium"
                             >
-                              Shiko të gjitha porositë ({orders.length})
+                              View all orders ({orders.length})
                             </button>
                           </div>
                         )}
                       </div>
                     ) : (
-                      <p className="text-center py-4" style={{ color: "#808080" }}>Nuk ka porosi të fundit</p>
+                      <p className="text-center py-4" style={{ color: "#808080" }}>No recent orders</p>
                     )}
                   </div>
                 </div>
 
                 <div className="bg-white rounded-lg shadow-sm border" style={{ borderColor: "#808080" }}>
                   <div className="p-6 border-b" style={{ borderColor: "#808080" }}>
-                    <h3 className="text-lg font-semibold" style={{ color: "#808080" }}>Pagesat e fundit</h3>
+                    <h3 className="text-lg font-semibold" style={{ color: "#808080" }}>Recent payments</h3>
                   </div>
                   <div className="p-6">
                     {payments.slice(0, 3).length > 0 ? (
@@ -388,7 +388,7 @@ export default function Dashboard() {
                         {payments.slice(0, 3).map((payment) => (
                           <div key={payment.pagesaID} className="flex items-center justify-between">
                             <div>
-                              <p className="font-medium" style={{ color: "#808080" }}>Pagesa #{payment.pagesaID}</p>
+                              <p className="font-medium" style={{ color: "#808080" }}>Payment #{payment.pagesaID}</p>
                               <p className="text-sm" style={{ color: "#808080" }}>{formatDate(payment.koha_pageses)}</p>
                             </div>
                             <div className="text-right">
@@ -403,13 +403,13 @@ export default function Dashboard() {
                               onClick={() => setActiveTab('payments')}
                               className="text-sm text-green-600 hover:text-green-700 font-medium"
                             >
-                              Shiko të gjitha pagesat ({payments.length})
+                              View all payments ({payments.length})
                             </button>
                           </div>
                         )}
                       </div>
                     ) : (
-                      <p className="text-center py-4" style={{ color: "#808080" }}>Nuk ka pagesa të fundit</p>
+                      <p className="text-center py-4" style={{ color: "#808080" }}>No recent payments</p>
                     )}
                   </div>
                 </div>
@@ -422,11 +422,11 @@ export default function Dashboard() {
             <div className="bg-white rounded-lg shadow-sm border" style={{ borderColor: "#808080" }}>
               <div className="p-6 border-b" style={{ borderColor: "#808080" }}>
                 <h3 className="text-lg font-semibold" style={{ color: "#808080" }}>
-                  Shporta e blerjeve ({cartItems.length} artikuj)
+                  Shopping cart ({cartItems.length} items)
                 </h3>
                 {totalCartValue > 0 && (
                   <p className="text-green-600 font-medium">
-                    Totali: {formatCurrency(totalCartValue)}
+                    Total: {formatCurrency(totalCartValue)}
                   </p>
                 )}
               </div>
@@ -446,7 +446,7 @@ export default function Dashboard() {
                               {item.produktVariacioni?.produkti?.emri}
                             </h4>
                             <p className="text-sm" style={{ color: "#808080" }}>
-                              {formatCurrency(item.cmimi)} për njësi
+                              {formatCurrency(item.cmimi)} per unit
                             </p>
                           </div>
                         </div>
@@ -483,11 +483,11 @@ export default function Dashboard() {
                         onClick={() => navigate('/cart')}
                         className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                       >
-                        Shiko shportën e plotë
+                        View full cart
                       </button>
                       <div className="text-right">
                         <p className="text-lg font-bold" style={{ color: "#808080" }}>
-                          Totali: {formatCurrency(totalCartValue)}
+                          Total: {formatCurrency(totalCartValue)}
                         </p>
                       </div>
                     </div>
@@ -495,13 +495,13 @@ export default function Dashboard() {
                 ) : (
                   <div className="text-center py-12">
                     <ShoppingCart size={48} className="mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium mb-2" style={{ color: "#808080" }}>Shporta është bosh</h3>
-                    <p className="mb-4" style={{ color: "#808080" }}>Shtoni produkte për të filluar blerjen</p>
+                    <h3 className="text-lg font-medium mb-2" style={{ color: "#808080" }}>Cart is empty</h3>
+                    <p className="mb-4" style={{ color: "#808080" }}>Add products to start shopping</p>
                     <button
                       onClick={() => navigate('/products')}
                       className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                     >
-                      Shiko produktet
+                      View products
                     </button>
                   </div>
                 )}
@@ -514,11 +514,11 @@ export default function Dashboard() {
             <div className="bg-white rounded-lg shadow-sm border" style={{ borderColor: "#808080" }}>
               <div className="p-6 border-b" style={{ borderColor: "#808080" }}>
                 <h3 className="text-lg font-semibold" style={{ color: "#808080" }}>
-                  Historia e porosive ({orders.length} porosi)
+                  Order history ({orders.length} orders)
                 </h3>
                 {orders.length > 0 && (
                   <p className="text-sm mt-1" style={{ color: "#808080" }}>
-                    Duke shfaqur {visibleOrders.length} nga {orders.length} porositë
+                    Showing {visibleOrders.length} of {orders.length} orders
                   </p>
                 )}
               </div>
@@ -530,7 +530,7 @@ export default function Dashboard() {
                         <div className="flex justify-between items-start mb-4">
                           <div>
                             <h4 className="font-medium" style={{ color: "#808080" }}>
-                              Porosia #{order.porosiaID}
+                              Order #{order.porosiaID}
                             </h4>
                             <p className="text-sm flex items-center gap-2" style={{ color: "#808080" }}>
                               <Clock size={14} />
@@ -549,7 +549,7 @@ export default function Dashboard() {
                         
                         {order.produktet && order.produktet.length > 0 && (
                           <div className="space-y-2">
-                            <h5 className="font-medium" style={{ color: "#808080" }}>Produktet:</h5>
+                            <h5 className="font-medium" style={{ color: "#808080" }}>Products:</h5>
                             {order.produktet.map((product, index) => (
                               <div key={index} className="flex justify-between text-sm" style={{ color: "#808080" }}>
                                 <span>
@@ -571,7 +571,7 @@ export default function Dashboard() {
                           className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center gap-2"
                         >
                           <Package size={16} />
-                          Trego më shumë porosi
+                          Show more orders
                         </button>
                       </div>
                     )}
@@ -583,7 +583,7 @@ export default function Dashboard() {
                           onClick={resetOrdersPagination}
                           className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
                         >
-                          Fsheh porositë e tjera
+                          Hide other orders
                         </button>
                       </div>
                     )}
@@ -591,13 +591,13 @@ export default function Dashboard() {
                 ) : (
                   <div className="text-center py-12">
                     <Package size={48} className="mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium mb-2" style={{ color: "#808080" }}>Nuk ka porosi</h3>
-                    <p className="mb-4" style={{ color: "#808080" }}>Porositë tuaja do të shfaqen këtu</p>
+                    <h3 className="text-lg font-medium mb-2" style={{ color: "#808080" }}>No orders</h3>
+                    <p className="mb-4" style={{ color: "#808080" }}>Your orders will appear here</p>
                     <button
                       onClick={() => navigate('/products')}
                       className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                     >
-                      Bli produkte
+                      Buy products
                     </button>
                   </div>
                 )}
@@ -612,10 +612,10 @@ export default function Dashboard() {
               <div className="bg-white rounded-lg shadow-sm border" style={{ borderColor: "#808080" }}>
                 <div className="p-6 border-b" style={{ borderColor: "#808080" }}>
                   <h3 className="text-lg font-semibold" style={{ color: "#808080" }}>
-                    Pagesat këtë muaj ({thisMonthPayments.length} pagesa)
+                    Payments this month ({thisMonthPayments.length} payments)
                   </h3>
                   <p className="text-green-600 font-medium">
-                    Totali: {formatCurrency(totalPaymentsThisMonth)}
+                    Total: {formatCurrency(totalPaymentsThisMonth)}
                   </p>
                 </div>
                 <div className="p-6">
@@ -625,7 +625,7 @@ export default function Dashboard() {
                         <div key={payment.pagesaID} className="flex items-center justify-between p-4 border rounded-lg" style={{ borderColor: "#808080" }}>
                           <div>
                             <h4 className="font-medium" style={{ color: "#808080" }}>
-                              Pagesa #{payment.pagesaID}
+                              Payment #{payment.pagesaID}
                             </h4>
                             <p className="text-sm flex items-center gap-2" style={{ color: "#808080" }}>
                               <Clock size={14} />
@@ -641,7 +641,7 @@ export default function Dashboard() {
                             </p>
                             {payment.numri_llogarise && (
                               <p className="text-sm" style={{ color: "#808080" }}>
-                                Llogaria: {payment.numri_llogarise}
+                                Account: {payment.numri_llogarise}
                               </p>
                             )}
                           </div>
@@ -649,7 +649,7 @@ export default function Dashboard() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-center py-4" style={{ color: "#808080" }}>Nuk ka pagesa këtë muaj</p>
+                    <p className="text-center py-4" style={{ color: "#808080" }}>No payments this month</p>
                   )}
                 </div>
               </div>
@@ -659,17 +659,17 @@ export default function Dashboard() {
                 <div className="p-6 border-b" style={{ borderColor: "#808080" }}>
                   <div className="flex justify-between items-center">
                     <h3 className="text-lg font-semibold" style={{ color: "#808080" }}>
-                      Historia e plotë e pagesave ({payments.length} pagesa)
+                      Full payment history ({payments.length} payments)
                     </h3>
                     <button
                       onClick={() => setShowFullPaymentHistory(!showFullPaymentHistory)}
                       className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
-                      {showFullPaymentHistory ? 'Fsheh' : 'Shiko të gjitha'}
+                      {showFullPaymentHistory ? 'Hide' : 'View all'}
                     </button>
                   </div>
                   <p className="text-green-600 font-medium">
-                    Totali: {formatCurrency(totalPaymentsAllTime)}
+                    Total: {formatCurrency(totalPaymentsAllTime)}
                   </p>
                 </div>
                 {showFullPaymentHistory && (
@@ -680,7 +680,7 @@ export default function Dashboard() {
                           <div key={payment.pagesaID} className="flex items-center justify-between p-4 border rounded-lg" style={{ borderColor: "#808080" }}>
                             <div>
                               <h4 className="font-medium" style={{ color: "#808080" }}>
-                                Pagesa #{payment.pagesaID}
+                                Payment #{payment.pagesaID}
                               </h4>
                               <p className="text-sm flex items-center gap-2" style={{ color: "#808080" }}>
                                 <Clock size={14} />
@@ -691,7 +691,7 @@ export default function Dashboard() {
                               </p>
                               {payment.porosia && (
                                 <p className="text-sm" style={{ color: "#808080" }}>
-                                  Porosia: #{payment.porosia.porosiaID}
+                                  Order: #{payment.porosia.porosiaID}
                                 </p>
                               )}
                             </div>
@@ -701,7 +701,7 @@ export default function Dashboard() {
                               </p>
                               {payment.numri_llogarise && (
                                 <p className="text-sm" style={{ color: "#808080" }}>
-                                  Llogaria: {payment.numri_llogarise}
+                                  Account: {payment.numri_llogarise}
                                 </p>
                               )}
                             </div>
@@ -709,7 +709,7 @@ export default function Dashboard() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-center py-4" style={{ color: "#808080" }}>Nuk ka pagesa</p>
+                      <p className="text-center py-4" style={{ color: "#808080" }}>No payments</p>
                     )}
                   </div>
                 )}
