@@ -47,8 +47,7 @@ export default function Profile() {
       console.log('Client deleted successfully');
       
       // Clear authentication state locally
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      // Cookies will be cleared by the server
       
       // Redirect to login page
       window.location.href = '/login';

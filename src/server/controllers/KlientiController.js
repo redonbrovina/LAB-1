@@ -14,8 +14,10 @@ class KlientiController {
     async login(req, res) {
         try {
             const { email, password } = req.body;
+            console.log('KlientiController.login called with:', { email, password: '***' });
             
             if (!email || !password) {
+                console.log('Missing email or password');
                 return res.status(400).json({
                     message: 'Email dhe password janë të detyrueshëm'
                 });
@@ -23,7 +25,9 @@ class KlientiController {
 
             // Find client by email
             const klienti = await this.klientiService.getKlientiByEmail(email);
+            console.log('Found klienti:', klienti ? 'YES' : 'NO');
             if (!klienti) {
+                console.log('No client found with email:', email);
                 return res.status(401).json({
                     message: 'Email ose password i gabuar'
                 });
@@ -41,10 +45,13 @@ class KlientiController {
             }
             
             if (!isPasswordValid) {
+                console.log('Password validation failed');
                 return res.status(401).json({
                     message: 'Email ose password i gabuar'
                 });
             }
+            
+            console.log('Password validation successful');
 
             // Generate JWT token
             const token = jwt.sign(
@@ -60,13 +67,29 @@ class KlientiController {
             // Generate refresh token
             const refreshToken = await this.refreshTokenService.createRefreshToken(klienti.klientiID, 'klient');
 
+            // Set httpOnly cookies
+            res.cookie('accessToken', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 15 * 60 * 1000 // 15 minutes (matches JWT expiry)
+            });
+            
+            res.cookie('refreshToken', refreshToken.token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+            });
+
             // Return client data without password
             const { password: _, ...clientData } = klienti.toJSON();
 
+            console.log('Login successful, sending response');
             res.json({
                 message: 'Login successful',
-                accessToken: token,
-                refreshToken: refreshToken.token,
+                klientiID: klienti.klientiID,
+                email: klienti.email,
                 user: {
                     ...clientData,
                     role: 'klient'
