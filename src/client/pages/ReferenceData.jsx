@@ -7,6 +7,7 @@ export default function ReferenceData() {
     const [doza, setDoza] = useState([]);
     const [forma, setForma] = useState([]);
     const [shteti, setShteti] = useState([]);
+    const [kategoria, setKategoria] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
@@ -23,14 +24,16 @@ export default function ReferenceData() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [dozaData, formaData, shtetiData] = await Promise.all([
+            const [dozaData, formaData, shtetiData, kategoriaData] = await Promise.all([
                 apiGet('/doza/'),
                 apiGet('/forma/'),
-                apiGet(`/shteti/?page=${currentPage}&limit=${itemsPerPage}`)
+                apiGet(`/shteti/?page=${currentPage}&limit=${itemsPerPage}`),
+                apiGet('/kategorite/')
             ]);
             setDoza(dozaData);
             setForma(formaData);
             setShteti(shtetiData.data || shtetiData);
+            setKategoria(kategoriaData);
             
             // Set pagination info for countries
             if (shtetiData.total) {
@@ -61,6 +64,7 @@ export default function ReferenceData() {
             case 'doza': return doza;
             case 'forma': return forma;
             case 'shteti': return shteti;
+            case 'kategoria': return kategoria;
             default: return [];
         }
     };
@@ -73,6 +77,8 @@ export default function ReferenceData() {
                 return ['ID', 'Form Type', 'Actions'];
             case 'shteti':
                 return ['ID', 'Country Name', 'ISO Code', 'Actions'];
+            case 'kategoria':
+                return ['ID', 'Category Name', 'Actions'];
             default:
                 return [];
         }
@@ -93,8 +99,27 @@ export default function ReferenceData() {
                     { name: 'emri_shtetit', label: 'Country Name', type: 'text', required: true },
                     { name: 'iso_kodi', label: 'ISO Code', type: 'text', required: true, maxLength: 10 }
                 ];
+            case 'kategoria':
+                return [
+                    { name: 'emri', label: 'Category Name', type: 'text', required: true }
+                ];
             default:
                 return [];
+        }
+    };
+
+    const getApiEndpoint = () => {
+        switch (activeTab) {
+            case 'doza':
+                return 'doza';
+            case 'forma':
+                return 'forma';
+            case 'shteti':
+                return 'shteti';
+            case 'kategoria':
+                return 'kategorite';
+            default:
+                return activeTab;
         }
     };
 
@@ -118,7 +143,7 @@ export default function ReferenceData() {
         }
 
         try {
-            await apiDelete(`/${activeTab}/${id}`);
+            await apiDelete(`/${getApiEndpoint()}/${id}`);
             await fetchData();
         } catch (error) {
             console.error('Error deleting item:', error);
@@ -132,9 +157,9 @@ export default function ReferenceData() {
 
         try {
             if (editingItem) {
-                await apiPut(`/${activeTab}/${editingItem[`${activeTab}ID`]}`, formData);
+                await apiPut(`/${getApiEndpoint()}/${editingItem[`${activeTab}ID`]}`, formData);
             } else {
-                await apiPost(`/${activeTab}/`, formData);
+                await apiPost(`/${getApiEndpoint()}/`, formData);
             }
             setShowModal(false);
             await fetchData();
@@ -270,6 +295,11 @@ export default function ReferenceData() {
                                             </td>
                                         </>
                                     )}
+                                    {activeTab === 'kategoria' && (
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            {item.emri}
+                                        </td>
+                                    )}
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div className="flex items-center gap-2">
                                             <button
@@ -388,7 +418,8 @@ export default function ReferenceData() {
                         {[
                             { id: 'doza', label: 'Dosage' },
                             { id: 'forma', label: 'Form' },
-                            { id: 'shteti', label: 'Country' }
+                            { id: 'shteti', label: 'Country' },
+                            { id: 'kategoria', label: 'Category' }
                         ].map((tab) => (
                             <button
                                 key={tab.id}

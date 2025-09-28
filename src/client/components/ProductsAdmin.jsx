@@ -8,7 +8,6 @@ export default function ProductsAdmin() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [editingId, setEditingId] = useState(null);
-  const [newCategoryName, setNewCategoryName] = useState('');
   const [form, setForm] = useState({ 
     emri: '', 
     pershkrimi: '', 
@@ -106,18 +105,6 @@ export default function ProductsAdmin() {
     }
   };
 
-  const handleCreateCategory = async () => {
-    if (!newCategoryName.trim()) return;
-    try {
-      const created = await categoriesAPI.create({ emri: newCategoryName.trim() });
-      setNewCategoryName('');
-      await loadAll();
-      const cid = created?.KategoriaID ?? created?.kategoriaID ?? created?.id;
-      if (cid) setForm(f => ({ ...f, kategoriaID: cid }));
-    } catch (e) {
-      setError(e?.message || 'Failed to create category');
-    }
-  };
 
   const handleEdit = (p) => {
     setEditingId(p.ProduktiID ?? p.produktiID ?? p.id);
@@ -179,15 +166,6 @@ export default function ProductsAdmin() {
                 </option>
               ))}
             </select>
-            <div className="flex gap-2 mt-2">
-              <input
-                className="flex-1 border rounded-lg px-3 py-2"
-                placeholder="New category"
-                value={newCategoryName}
-                onChange={e => setNewCategoryName(e.target.value)}
-              />
-              <button type="button" className="px-3 py-2 bg-gray-200 rounded-lg" onClick={handleCreateCategory}>Add</button>
-            </div>
           </div>
           <div>
             <label className="block text-sm text-gray-600 mb-1">Price (€)</label>
