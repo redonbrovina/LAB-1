@@ -138,14 +138,54 @@ export default function Dashboard() {
     return `€${parseFloat(amount || 0).toFixed(2)}`;
   };
 
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
+  const translateStatus = (status) => {
+    if (!status) return 'Pending';
+    
+    switch (status.toLowerCase()) {
+      // Order statuses
+      case 'në proces':
+        return 'In Process';
+      case 'përfunduar':
+        return 'Completed';
+      case 'anuluar':
+        return 'Cancelled';
+      // Payment statuses
+      case 'në pritje':
+        return 'Pending';
+      case 'e paguar':
+        return 'Paid';
+      case 'e refuzuar':
+        return 'Rejected';
+      // English fallbacks
       case 'completed':
       case 'delivered':
+        return 'Completed';
+      case 'pending':
+        return 'Pending';
+      case 'cancelled':
+        return 'Cancelled';
+      case 'paid':
+        return 'Paid';
+      case 'rejected':
+        return 'Rejected';
+      default:
+        return status; // Return original if no translation found
+    }
+  };
+
+  const getStatusColor = (status) => {
+    const translatedStatus = translateStatus(status)?.toLowerCase();
+    
+    switch (translatedStatus) {
+      case 'completed':
+      case 'delivered':
+      case 'paid':
         return 'text-green-600 bg-green-100';
       case 'pending':
+      case 'in process':
         return 'text-yellow-600 bg-yellow-100';
       case 'cancelled':
+      case 'rejected':
         return 'text-red-600 bg-red-100';
       default:
         return 'text-gray-600 bg-gray-100';
@@ -356,7 +396,7 @@ export default function Dashboard() {
                             <div className="text-right">
                               <p className="font-medium" style={{ color: "#808080" }}>{formatCurrency(order.cmimi_total)}</p>
                               <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(order.porosiaStatus?.statusi)}`}>
-                                {order.porosiaStatus?.statusi || 'Pending'}
+                                {translateStatus(order.porosiaStatus?.statusi)}
                               </span>
                             </div>
                           </div>

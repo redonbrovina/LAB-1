@@ -97,7 +97,7 @@ export default function ProductCard({
 
         {/* Description */}
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-          {product.pershkrimi || 'Nuk ka përshkrim të disponueshëm'}
+          {product.pershkrimi || 'No description available'}
         </p>
 
         {/* Price and Stock */}
@@ -108,11 +108,11 @@ export default function ProductCard({
                 €{(parseFloat(price) * quantity).toFixed(2)}
               </span>
             ) : (
-              <span className="text-sm text-gray-500">Nuk ka çmim</span>
+              <span className="text-sm text-gray-500">No price</span>
             )}
           </div>
           <div className="text-xs text-gray-500">
-            {stock > 0 ? `${stock} në stok` : 'Jashtë stokut'}
+            {stock > 0 ? `${stock} in stock` : 'Out of stock'}
           </div>
         </div>
 
@@ -151,23 +151,23 @@ export default function ProductCard({
               disabled={addingToCart || !hasVariations || stock === 0}
               className="flex-1 bg-green-500 text-white py-2 px-3 rounded-lg hover:bg-green-600 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
               title={
-                !hasVariations ? 'Produkti nuk ka variacione' :
-                stock === 0 ? 'Produkti është jashtë stokut' :
-                'Shto në cart'
+                !hasVariations ? 'Product has no variations' :
+                stock === 0 ? 'Product is out of stock' :
+                'Add to cart'
               }
             >
               <ShoppingCart size={14} />
-              {addingToCart ? 'Shtim...' : 
-               !hasVariations ? 'Nuk ka variacione' :
-               stock === 0 ? 'Jashtë stokut' : 
-               `Shto ${quantity} në Cart`}
+              {addingToCart ? 'Adding...' : 
+               !hasVariations ? 'No variations' :
+               stock === 0 ? 'Out of stock' : 
+               `Add ${quantity} to Cart`}
             </button>
           )}
           
           <button
             onClick={handleViewDetails}
             className="px-3 py-2 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center"
-            title="Shiko detajet"
+            title="View details"
           >
             <Eye size={14} />
           </button>
