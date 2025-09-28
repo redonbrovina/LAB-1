@@ -1,5 +1,5 @@
-import { createContext, useContext, useState } from 'react';
-import { publicApiPost } from './api';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { publicApiPost, apiGet } from './api';
 
 const AuthContext = createContext();
 
@@ -8,90 +8,58 @@ function parseJwt(token) {
 }
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      try {
-        const decoded = parseJwt(token);
-        console.log('Decoded JWT token:', decoded);
-        console.log('Available fields in token:', Object.keys(decoded));
-        
-        if (decoded.exp && decoded.exp < Date.now() / 1000) {
-          // Token is expired, will be handled by API interceptor
-          return null;
-        }
-        return decoded;
-      } catch (error) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        return null;
-      }
-    }
-    return null;
-  });
+  const [user, setUser] = useState(null);
 
-  const [defaultPaymentMethod, setDefaultPaymentMethod] = useState(() => {
+  const [defaultPaymentMethod, setDefaultPaymentMethod] = useState(()=>{
     return localStorage.getItem('defaultPaymentMethod') || null;
   });
 
-  const refreshAccessToken = async () => {
-    const refreshToken = localStorage.getItem('refreshToken');
-    console.log('AuthContext refreshAccessToken called, refresh token available:', !!refreshToken);
-    
-    if (!refreshToken) {
-      console.log('No refresh token in AuthContext, calling logout');
-      logout();
-      return;
-    }
+  // Check for existing session on app load
+  useEffect(() => {
+    checkExistingSession();
+  }, []);
 
+  const checkExistingSession = async () => {
     try {
-      console.log('AuthContext calling refresh endpoint...');
-      const response = await publicApiPost('/form/refresh-token', { refreshToken });
-      localStorage.setItem('accessToken', response.accessToken);
-      setUser(parseJwt(response.accessToken));
-      console.log('AuthContext refresh successful');
-      return response.accessToken;
+      // Make a simple API call to check if we have a valid session
+      const response = await publicApiPost('/form/refresh-token', {});
+      
+      // If we get here, we have a valid session
+      // Get user info using a direct fetch to avoid refresh loop
+      const userInfoResponse = await fetch('http://localhost:5000/api/form/user-info', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (userInfoResponse.ok) {
+        const userInfo = await userInfoResponse.json();
+        setUser(userInfo);
+      }
+      
     } catch (error) {
-      console.error('AuthContext token refresh failed:', error);
-      logout();
-      throw error;
+      // No valid session, user stays null
     }
   };
 
-  const login = (accessToken, refreshToken) => {
-    console.log('AuthContext login called with accessToken:', accessToken?.substring(0, 20) + '...');
-    localStorage.setItem('accessToken', accessToken);
-    if (refreshToken) {
-      localStorage.setItem('refreshToken', refreshToken);
-    }
-    const decoded = parseJwt(accessToken);
-    console.log('Login - Decoded JWT token:', decoded);
-    console.log('Login - Available fields in token:', Object.keys(decoded));
-    console.log('Login - klientiID value:', decoded.klientiID);
-    setUser(decoded);
+
+  const login = (userData) => {
+    setUser(userData);
   };
 
   const logout = async () => {
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (refreshToken) {
-        await publicApiPost('/form/logout', { refreshToken });
-      }
+      await publicApiPost('/form/logout', {});
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      // Always remove tokens from localStorage
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('defaultPaymentMethod');
       setUser(null);
       setDefaultPaymentMethod(null);
     }
   };
 
-  const getToken = () => {
-    return localStorage.getItem('accessToken');
-  };
 
   const isAuthenticated = () => {
     return user !== null;
@@ -103,7 +71,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, getToken, isAuthenticated, defaultPaymentMethod, updateDefaultPaymentMethod }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated, defaultPaymentMethod, updateDefaultPaymentMethod }}>
       {children}
     </AuthContext.Provider>
   );

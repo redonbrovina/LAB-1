@@ -1,5 +1,9 @@
 const API_BASE_URL = 'http://localhost:5000/api';
 
+// Track refresh attempts to prevent infinite loops
+let refreshAttempts = 0;
+const MAX_REFRESH_ATTEMPTS = 1;
+
 // Generic API call function
 const apiCall = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
@@ -37,6 +41,7 @@ export const publicApiRequest = async (endpoint, options = {}) => {
       'Content-Type': 'application/json',
       ...options.headers,
     },
+    credentials: 'include', // Include cookies in requests
     ...options,
   };
 
@@ -101,62 +106,59 @@ export const paymentMethodsAPI = {
 
 
 export const apiRequest = async (endpoint, options = {}) => {
-  let token = localStorage.getItem('accessToken');
-  
   console.log(`Making API request to: ${API_BASE_URL}${endpoint}`);
-  console.log('Token available:', !!token);
   
   const config = {
     headers: {
       'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
       ...options.headers,
     },
+    credentials: 'include', // Include cookies in requests
     ...options,
   };
 
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     
-    console.log(`Response status: ${response.status} for ${endpoint}`);
-    console.log(`Response headers:`, Object.fromEntries(response.headers.entries()));
     
     // Handle token expiration
     if (response.status === 401) {
       console.log('Token expired, attempting refresh...');
-      const refreshToken = localStorage.getItem('refreshToken');
       
-      if (refreshToken) {
-        try {
-          console.log('Refresh token found, calling refresh endpoint...');
-          const refreshResponse = await publicApiPost('/form/refresh-token', { refreshToken });
-          const newAccessToken = refreshResponse.accessToken;
-          
-          console.log('Token refreshed successfully, new token:', newAccessToken.substring(0, 20) + '...');
-          localStorage.setItem('accessToken', newAccessToken);
-          
-          // Retry the original request with new token
-          config.headers['Authorization'] = `Bearer ${newAccessToken}`;
-          console.log('Retrying original request with new token...');
-          const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, config);
-          
-          if (!retryResponse.ok) {
-            const errorData = await retryResponse.json().catch(() => ({}));
-            throw new Error(errorData.message || `HTTP error! status: ${retryResponse.status}`);
+      // Prevent infinite refresh loops
+      if (refreshAttempts >= MAX_REFRESH_ATTEMPTS) {
+        console.log('Max refresh attempts reached, redirecting to login');
+        window.location.href = '/login';
+        throw new Error('Authentication required');
+      }
+      
+      refreshAttempts++;
+      
+      try {
+        const refreshResponse = await publicApiPost('/form/refresh-token', {});
+        
+        // Retry the original request with fresh config (no Authorization header)
+        const retryConfig = {
+          ...config,
+          headers: {
+            'Content-Type': 'application/json',
+            ...config.headers,
           }
-          
-          return await retryResponse.json();
-        } catch (refreshError) {
-          console.error('Token refresh failed:', refreshError);
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          window.location.href = '/login';
-          throw new Error('Authentication required');
+        };
+        // Remove Authorization header to use cookie instead
+        delete retryConfig.headers.Authorization;
+        const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, retryConfig);
+        
+        if (!retryResponse.ok) {
+          const errorData = await retryResponse.json().catch(() => ({}));
+          throw new Error(errorData.message || `HTTP error! status: ${retryResponse.status}`);
         }
-      } else {
-        console.log('No refresh token available, redirecting to login');
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        
+        refreshAttempts = 0; // Reset on success
+        return await retryResponse.json();
+      } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError);
+        refreshAttempts = 0; // Reset on failure
         window.location.href = '/login';
         throw new Error('Authentication required');
       }

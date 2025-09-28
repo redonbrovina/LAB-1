@@ -41,10 +41,15 @@ export default function Login() {
         }
 
         try{
+            console.log('Attempting login with:', { email, password: '***' })
             const data = await clientAPI.login({email, password})
-            login(data.accessToken, data.refreshToken)
+            console.log('Login response:', data)
+            // Extract user info from the response or decode from token
+            // Since we're using httpOnly cookies, we need to get user info differently
+            login({ email, klientiID: data.klientiID || null, role: 'klient' })
             navigate('/dashboard')
         }catch(err){
+            console.error('Login error:', err)
             setErrorMessage(err.message || 'Login failed')
         }
     }

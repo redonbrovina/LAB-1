@@ -54,9 +54,23 @@ class AdminController {
                 
                 console.log('Login successful for admin:', admin.adminID);
                 
+                // Set httpOnly cookies
+                res.cookie('accessToken', accessToken, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'strict',
+                    maxAge: 15 * 60 * 1000 // 15 minutes (matches JWT expiry)
+                });
+                
+                res.cookie('refreshToken', refreshTokenData.token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'strict',
+                    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+                });
+                
                 return res.status(200).json({ 
-                    accessToken,
-                    refreshToken: refreshTokenData.token,
+                    message: 'Admin login successful',
                     role: 'admin',
                     adminID: admin.adminID,
                     email: admin.email,
@@ -86,7 +100,7 @@ class AdminController {
 
     async getCurrentAdmin(req, res) {
         try {
-            const adminID = req.user.adminID;
+            const adminID = req.user.id;
             const admin = await this.adminService.getAdminById(parseInt(adminID));
             return res.status(200).json(admin);
         } catch (error) {

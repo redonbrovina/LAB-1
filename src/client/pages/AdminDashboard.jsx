@@ -84,21 +84,10 @@ export default function AdminDashboard() {
     }
   }
 
-  const fetchTopProducts = async () => {
-    try {
-      const response = await apiGet("/produktet");
-      const top = response.slice(0, 5); // Get top 5 products
-      setTopProducts(top);
-    } catch (error) {
-      console.error('Error fetching top products:', error);
-    }
-  }
-
   useEffect(() => {
     fetchApplications();
     fetchDashboardStats();
     fetchRecentOrders();
-    fetchTopProducts();
   }, []);
 
   const StatCard = ({ title, value, icon: Icon, change, changeType, subtitle, valueColor }) => (
@@ -165,7 +154,6 @@ export default function AdminDashboard() {
                   fetchApplications();
                   fetchDashboardStats();
                   fetchRecentOrders();
-                  fetchTopProducts();
                 }}
                 className="px-3 sm:px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
               >
@@ -200,7 +188,7 @@ export default function AdminDashboard() {
             title="Expenses"
             value={dashboardStats.totalExpenses.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
             icon={DollarSign}
-            subtitle="Available products"
+            subtitle="Current Expenses"
           />
         </div>
 
