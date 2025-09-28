@@ -17,6 +17,8 @@ const Produkti = require('./Produkti');
 const ProduktPorosise = require('./ProduktPorosise');
 const RefreshToken = require('./RefreshToken');
 const Shteti = require('./Shteti');
+const Ligjeruesi = require('./Ligjeruesi');
+const Ligjerata = require('./Ligjerata');
 
 // Define all models
 const models = {
@@ -38,10 +40,11 @@ const models = {
     Produkti,
     ProduktPorosise,
     RefreshToken,
-    Shteti
+    Shteti,
+    Ligjeruesi,
+    Ligjerata
 };
 
-// Set up all associations
 Object.keys(models).forEach(modelName => {
     if (models[modelName].associate) {
         models[modelName].associate(models);

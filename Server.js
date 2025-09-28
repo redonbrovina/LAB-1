@@ -22,6 +22,8 @@ const kategoriaRoutes = require('./src/server/routes/kategoriaRoutes');
 const dozaRoutes = require('./src/server/routes/dozaRoutes');
 const formaRoutes = require('./src/server/routes/formaRoutes');
 const shtetiRoutes = require('./src/server/routes/shtetiRoutes');
+const ligjeruesiRoutes = require('./src/server/routes/ligjeruesiRoutes');
+const ligjerataRoutes = require('./src/server/routes/ligjerataRoutes');
 
 app.use(cors({
     origin: ['http://localhost:5173', 'http://localhost:5000'],
@@ -51,6 +53,8 @@ app.use('/api/kategorite', kategoriaRoutes);
 app.use('/api/doza', dozaRoutes);
 app.use('/api/forma', formaRoutes);
 app.use('/api/shteti', shtetiRoutes);
+app.use('/api/ligjeruesi', ligjeruesiRoutes);
+app.use('/api/ligjerata', ligjerataRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
