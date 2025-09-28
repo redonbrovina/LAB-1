@@ -100,8 +100,16 @@ class AdminController {
 
     async getCurrentAdmin(req, res) {
         try {
-            const adminID = req.user.id;
-            const admin = await this.adminService.getAdminById(parseInt(adminID));
+            const adminID = req.user.adminID;
+            
+            if (!adminID) {
+                return res.status(401).json({ 
+                    message: 'Admin ID not found in token',
+                    error: 'MISSING_ADMIN_ID'
+                });
+            }
+            
+            const admin = await this.adminService.getAdminById(adminID);
             return res.status(200).json(admin);
         } catch (error) {
             if (error.message === "Admin not found") {
@@ -165,7 +173,7 @@ class AdminController {
     async updateAdmin(req, res) {
         try {
             const adminID = req.params.adminID;
-            const requestingAdminID = req.user.adminID;
+            const requestingAdminID = req.user.adminID || req.user.id;
 
             // Check if admin is trying to update themselves
             if (parseInt(adminID) !== parseInt(requestingAdminID)) {
@@ -238,7 +246,7 @@ class AdminController {
     async deleteAdmin(req, res) {
         try {
             const adminID = req.params.adminID;
-            const requestingAdminID = req.user.adminID;
+            const requestingAdminID = req.user.adminID || req.user.id;
 
             // Check if admin is trying to delete themselves
             if (parseInt(adminID) !== parseInt(requestingAdminID)) {

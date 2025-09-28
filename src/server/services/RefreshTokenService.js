@@ -76,11 +76,30 @@ class RefreshTokenService {
 
     generateAccessToken(userID, userType) {
         console.log('=== GENERATING ACCESS TOKEN ===');
-        return jwt.sign(
-            { id: userID, role: userType },
-            JWT_SECRET,
-            { expiresIn: '15m' } // 15 minutes
-        );
+        console.log('userID:', userID, 'userType:', userType);
+        
+        // Create payload based on user type
+        let payload;
+        if (userType === 'admin') {
+            payload = { 
+                adminID: userID, 
+                role: userType 
+            };
+        } else if (userType === 'klient') {
+            payload = { 
+                klientiID: userID, 
+                role: userType 
+            };
+        } else {
+            // Fallback for other types
+            payload = { 
+                id: userID, 
+                role: userType 
+            };
+        }
+        
+        console.log('Generated payload:', payload);
+        return jwt.sign(payload, JWT_SECRET, { expiresIn: '15m' }); // 15 minutes
     }
 }
 

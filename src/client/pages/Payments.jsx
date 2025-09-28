@@ -21,6 +21,7 @@ export default function Payments() {
     shuma_pageses: "",
     numri_llogarise: ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -99,6 +100,14 @@ export default function Payments() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Prevent double submission
+    if (isSubmitting) {
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
     try {
       // Try different possible field names for client ID
       const clientId = user?.klientiID || user?.id || user?.clientId || user?.userId || user?.klienti_id;
@@ -137,6 +146,8 @@ export default function Payments() {
     } catch (error) {
       console.error('Error saving payment:', error);
       alert(`Error saving payment: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -472,9 +483,14 @@ export default function Payments() {
                 <div className="flex gap-3 mt-6">
                   <button
                     type="submit"
-                    className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
+                    disabled={isSubmitting}
+                    className={`flex-1 py-2 rounded-lg transition-colors ${
+                      isSubmitting 
+                        ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                        : 'bg-green-600 text-white hover:bg-green-700'
+                    }`}
                   >
-                    Create Payment
+                    {isSubmitting ? 'Creating Payment...' : 'Create Payment'}
                   </button>
                    <button
                      type="button"
