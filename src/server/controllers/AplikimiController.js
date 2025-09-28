@@ -70,7 +70,8 @@ class AplikimiController {
             const newAplikimi = await this.aplikimiService.createAplikimi({
                 ...otherData,
                 email: email,
-                password: password
+                password: password,
+                aplikimi_statusID: 1 // Default to "pending" status
             });
             return res.status(201).json(newAplikimi);
         } catch (error) {

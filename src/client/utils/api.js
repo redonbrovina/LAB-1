@@ -106,8 +106,6 @@ export const paymentMethodsAPI = {
 
 
 export const apiRequest = async (endpoint, options = {}) => {
-  console.log(`Making API request to: ${API_BASE_URL}${endpoint}`);
-  
   const config = {
     headers: {
       'Content-Type': 'application/json',
@@ -123,11 +121,9 @@ export const apiRequest = async (endpoint, options = {}) => {
     
     // Handle token expiration
     if (response.status === 401) {
-      console.log('Token expired, attempting refresh...');
       
       // Prevent infinite refresh loops
       if (refreshAttempts >= MAX_REFRESH_ATTEMPTS) {
-        console.log('Max refresh attempts reached, redirecting to login');
         window.location.href = '/login';
         throw new Error('Authentication required');
       }
@@ -172,17 +168,12 @@ export const apiRequest = async (endpoint, options = {}) => {
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error(`API error for ${endpoint}:`, errorData);
-      console.error(`API error status: ${response.status}`);
-      console.error(`API error response:`, response);
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log(`API response for ${endpoint}:`, data);
     return data;
   } catch (error) {
-    console.error('API request failed:', error);
     throw error;
   }
 };

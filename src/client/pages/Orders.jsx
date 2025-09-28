@@ -14,6 +14,8 @@ export default function Orders() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingOrder, setEditingOrder] = useState(null);
   const [clients, setClients] = useState([]);
+  const [availableOrderStatuses, setAvailableOrderStatuses] = useState([]);
+  const [availablePaymentStatuses, setAvailablePaymentStatuses] = useState([]);
 
   // Fetch orders from API
   const fetchOrders = async () => {
@@ -40,9 +42,33 @@ export default function Orders() {
     }
   };
 
+  // Fetch order statuses for dropdown
+  const fetchOrderStatuses = async () => {
+    try {
+      const data = await apiGet('/porosia-status');
+      setAvailableOrderStatuses(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Error fetching order statuses:', err);
+      setAvailableOrderStatuses([]);
+    }
+  };
+
+  // Fetch payment statuses for dropdown
+  const fetchPaymentStatuses = async () => {
+    try {
+      const data = await apiGet('/pagesa-status');
+      setAvailablePaymentStatuses(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Error fetching payment statuses:', err);
+      setAvailablePaymentStatuses([]);
+    }
+  };
+
   useEffect(() => {
     fetchOrders();
     fetchClients();
+    fetchOrderStatuses();
+    fetchPaymentStatuses();
   }, []);
 
 
@@ -112,14 +138,32 @@ export default function Orders() {
     return matchesSearch && matchesStatus;
   });
 
-  // Get status badge styling
+  // Core order status styling (these have specific colors)
+  const coreOrderStatusStyles = {
+    1: { text: 'Në proces', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
+    2: { text: 'Përfunduar', color: 'bg-green-100 text-green-800', icon: CheckCircle },
+    3: { text: 'Anuluar', color: 'bg-red-100 text-red-800', icon: XCircle }
+  };
+
+  // Function to get order status styling (core statuses get specific colors, others get gray)
   const getStatusBadge = (statusId) => {
-    const statusMap = {
-      1: { text: 'In Process', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
-      2: { text: 'Completed', color: 'bg-green-100 text-green-800', icon: CheckCircle },
-      3: { text: 'Cancelled', color: 'bg-red-100 text-red-800', icon: XCircle }
-    };
-    return statusMap[statusId] || { text: 'Unknown', color: 'bg-gray-100 text-gray-800', icon: Clock };
+    // First check if it's a core status with specific styling
+    if (coreOrderStatusStyles[statusId]) {
+      return coreOrderStatusStyles[statusId];
+    }
+    
+    // For new/custom statuses, get the actual name from availableOrderStatuses
+    const statusItem = availableOrderStatuses.find(status => status.porosia_statusID == statusId);
+    if (statusItem) {
+      return { 
+        text: statusItem.statusi, 
+        color: 'bg-gray-100 text-gray-800', 
+        icon: Clock 
+      };
+    }
+    
+    // Fallback for unknown statuses
+    return { text: 'Unknown', color: 'bg-gray-100 text-gray-800', icon: Clock };
   };
 
   // Format date
@@ -201,9 +245,11 @@ export default function Orders() {
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
             >
               <option value="all">All statuses</option>
-              <option value="1">In Process</option>
-              <option value="2">Completed</option>
-              <option value="3">Cancelled</option>
+              {availableOrderStatuses.map((statusItem) => (
+                <option key={statusItem.porosia_statusID} value={statusItem.porosia_statusID}>
+                  {getStatusBadge(statusItem.porosia_statusID).text}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -423,9 +469,11 @@ export default function Orders() {
                       onChange={(e) => setEditingOrder({...editingOrder, porosia_statusID: parseInt(e.target.value)})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                     >
-                      <option value={1}>Në proces</option>
-                      <option value={2}>Përfunduar</option>
-                      <option value={3}>Anuluar</option>
+                      {availableOrderStatuses.map((statusItem) => (
+                        <option key={statusItem.porosia_statusID} value={statusItem.porosia_statusID}>
+                          {getStatusBadge(statusItem.porosia_statusID).text}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -436,9 +484,11 @@ export default function Orders() {
                       onChange={(e) => setEditingOrder({...editingOrder, pagesa_statusID: parseInt(e.target.value)})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                     >
-                      <option value={1}>Në pritje</option>
-                      <option value={2}>Paguar</option>
-                      <option value={3}>Dështuar</option>
+                      {availablePaymentStatuses.map((statusItem) => (
+                        <option key={statusItem.pagesa_statusID} value={statusItem.pagesa_statusID}>
+                          {statusItem.statusi}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>

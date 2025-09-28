@@ -53,22 +53,24 @@ export default function AdminPayments() {
   const fetchData = async (page = pagination.currentPage) => {
     setLoading(true);
     try {
-      console.log("Fetching data for admin payments...");
       
       // Check if user is authenticated
       if (!user) {
-        console.error("User not authenticated");
         alert("Please log in to access admin payments");
         return;
       }
       
+      
       // Fetch all data in parallel
       const [paymentsData, paymentMethodsData, suppliersData, productsData] = await Promise.all([
-        paymentAPI.getPaginated(page, pagination.itemsPerPage).catch(() => paymentAPI.getAll()),
+        paymentAPI.getPaginated(page, pagination.itemsPerPage).catch((err) => {
+          return paymentAPI.getAll();
+        }),
         paymentMethodsAPI.getAll(),
         furnitoriAPI.getAll(),
         productsAPI.getAll()
       ]);
+      
       
       // Handle paginated response
       if (paymentsData.data) {
@@ -86,8 +88,10 @@ export default function AdminPayments() {
         });
       }
       
+      console.log("🔍 ADMIN: Fetching all payments for counting...");
       // Also fetch all payments for accurate counting
       const allPaymentsData = await paymentAPI.getAll();
+      console.log("🔍 ADMIN: All payments data:", allPaymentsData);
       setAllPayments(Array.isArray(allPaymentsData) ? allPaymentsData : []);
       
       setPaymentMethods(Array.isArray(paymentMethodsData) ? paymentMethodsData : []);

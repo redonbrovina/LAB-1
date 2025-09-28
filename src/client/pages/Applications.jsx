@@ -2,8 +2,8 @@ import ApplicationEditModal from "../admin/ApplicationEditModal";
 import { apiGet, apiDelete } from "../utils/api";
 import { useEffect, useState } from "react";
 
-// Status styling dictionary
-const statusStyles = {
+// Core status styling dictionary (these have specific colors)
+const coreStatusStyles = {
     'pending': {
         bgColor: 'bg-yellow-100',
         textColor: 'text-yellow-800',
@@ -21,13 +21,37 @@ const statusStyles = {
     }
 };
 
+// Function to get status styling (core statuses get specific colors, others get gray)
+const getStatusStyle = (statusName) => {
+    if (coreStatusStyles[statusName]) {
+        return coreStatusStyles[statusName];
+    }
+    // For new/custom statuses, use gray styling
+    return {
+        bgColor: 'bg-gray-100',
+        textColor: 'text-gray-800',
+        label: statusName ? statusName.charAt(0).toUpperCase() + statusName.slice(1) : 'Pending'
+    };
+};
+
 export default function Applications() {
     const [applications, setApplications] = useState([]);
     const [allApplications, setAllApplications] = useState([]);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editingApplication, setEditingApplication] = useState(null);
-    const [status, setStatus] = useState('pending');
+    const [status, setStatus] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
+    const [availableStatuses, setAvailableStatuses] = useState([]);
+
+    const fetchStatuses = async () => {
+        try {
+            const response = await apiGet("/aplikimi-status");
+            setAvailableStatuses(Array.isArray(response) ? response : []);
+        } catch (error) {
+            console.error('Error fetching statuses:', error);
+            setAvailableStatuses([]);
+        }
+    };
 
     const fetchApplications = async () => {
         try {
@@ -70,6 +94,7 @@ export default function Applications() {
     };
 
     useEffect(() => {
+        fetchStatuses();
         fetchApplications();
     }, [status, searchTerm]);
 
@@ -122,9 +147,11 @@ export default function Applications() {
                             className="px-4 py-2 border border-gray-300 rounded-lg hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
                         >
                             <option value='all'>All Applications</option>
-                            <option value='pending'>Pending</option>
-                            <option value='pranuar'>Approved</option>
-                            <option value='refuzuar'>Rejected</option>
+                            {availableStatuses.map((statusItem) => (
+                                <option key={statusItem.aplikimi_statusID} value={statusItem.statusi}>
+                                    {getStatusStyle(statusItem.statusi).label}
+                                </option>
+                            ))}
                         </select>
                         
                         <div className="relative flex-1">
@@ -209,8 +236,8 @@ export default function Applications() {
                                             {application.koha_aplikimit ? new Date(application.koha_aplikimit).toLocaleDateString() : 'N/A'}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusStyles[application.statusi?.statusi]?.bgColor || 'bg-gray-100'} ${statusStyles[application.statusi?.statusi]?.textColor || 'text-gray-800'}`}>
-                                                {statusStyles[application.statusi?.statusi]?.label || application.statusi?.statusi || 'Unknown'}
+                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusStyle(application.statusi?.statusi).bgColor} ${getStatusStyle(application.statusi?.statusi).textColor}`}>
+                                                {getStatusStyle(application.statusi?.statusi).label}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -260,8 +287,8 @@ export default function Applications() {
                                                 <div className="text-sm text-gray-500">ID: {application.aplikimiID}</div>
                                             </div>
                                         </div>
-                                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusStyles[application.statusi?.statusi]?.bgColor || 'bg-gray-100'} ${statusStyles[application.statusi?.statusi]?.textColor || 'text-gray-800'}`}>
-                                            {statusStyles[application.statusi?.statusi]?.label || application.statusi?.statusi || 'Unknown'}
+                                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusStyle(application.statusi?.statusi).bgColor} ${getStatusStyle(application.statusi?.statusi).textColor}`}>
+                                            {getStatusStyle(application.statusi?.statusi).label}
                                         </span>
                                     </div>
                                     

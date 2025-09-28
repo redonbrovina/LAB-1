@@ -151,13 +151,23 @@ export default function Payments() {
     }
   };
 
+  // Core payment status styling (these have specific colors)
+  const corePaymentStatusColors = {
+    'completed': 'bg-green-100 text-green-800',
+    'pending': 'bg-yellow-100 text-yellow-800',
+    'failed': 'bg-red-100 text-red-800',
+    'paid': 'bg-green-100 text-green-800',
+    'rejected': 'bg-red-100 text-red-800'
+  };
+
   const getStatusColor = (status) => {
-    switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'failed': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+    // Check if it's a core status with specific color
+    if (corePaymentStatusColors[status]) {
+      return corePaymentStatusColors[status];
     }
+    
+    // For new/custom statuses, use gray styling
+    return 'bg-gray-100 text-gray-800';
   };
 
   // Pagination functions for payments

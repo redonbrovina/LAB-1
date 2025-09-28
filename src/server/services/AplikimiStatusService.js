@@ -25,6 +25,11 @@ class AplikimiStatusService {
     }
 
     async deleteStatus(statusID) {
+        // Prevent deletion of core statuses (1=pending, 2=refuzuar, 3=pranuar)
+        if (statusID == 1 || statusID == 2 || statusID == 3) {
+            throw new Error("Cannot delete core application statuses (pending, refuzuar, pranuar)");
+        }
+        
         await this.getStatusById(statusID);
         return await this.aplikimiStatusRepository.deleteStatus(statusID);
     }

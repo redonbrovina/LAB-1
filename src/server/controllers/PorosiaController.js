@@ -168,17 +168,19 @@ class PorosiaController {
 
             console.log('✅ Order found:', existingOrder);
 
-            // Validate status updates
+            // Validate status updates - check if status exists in database
             if (updateData.porosia_statusID !== undefined) {
-                const validStatuses = [1, 2, 3]; // In Process, Completed, Cancelled
-                if (!validStatuses.includes(parseInt(updateData.porosia_statusID))) {
+                const { PorosiaStatus } = require('../models');
+                const statusExists = await PorosiaStatus.findByPk(updateData.porosia_statusID);
+                if (!statusExists) {
                     return res.status(400).json({ error: 'Invalid order status' });
                 }
             }
 
             if (updateData.pagesa_statusID !== undefined) {
-                const validPaymentStatuses = [1, 2, 3]; // Pending, Paid, Failed
-                if (!validPaymentStatuses.includes(parseInt(updateData.pagesa_statusID))) {
+                const { PagesaStatus } = require('../models');
+                const statusExists = await PagesaStatus.findByPk(updateData.pagesa_statusID);
+                if (!statusExists) {
                     return res.status(400).json({ error: 'Invalid payment status' });
                 }
             }

@@ -7,7 +7,7 @@ export default function ApplicationEditModal({ isOpen, onClose, application, onA
   const [formData, setFormData] = useState({
     emri_kompanise: "",
     email: "",
-    aplikimi_statusID: "",
+    aplikimi_statusID: 1, // Default to pending
     Arsyeja: ""
   });
 
@@ -35,7 +35,7 @@ export default function ApplicationEditModal({ isOpen, onClose, application, onA
       setFormData({
         emri_kompanise: application.emri_kompanise || "",
         email: application.email || "",
-        aplikimi_statusID: application.aplikimi_statusID || "",
+        aplikimi_statusID: application.aplikimi_statusID || 1, // Default to pending
         Arsyeja: application.Arsyeja || ""
       });
       setError("");
@@ -123,7 +123,7 @@ export default function ApplicationEditModal({ isOpen, onClose, application, onA
     setFormData({
       emri_kompanise: "",
       email: "",
-      aplikimi_statusID: "",
+      aplikimi_statusID: 1, // Default to pending
       Arsyeja: ""
     });
     onClose();
@@ -131,9 +131,9 @@ export default function ApplicationEditModal({ isOpen, onClose, application, onA
 
   const getStatusIcon = (statusId) => {
     const status = statuses.find(s => s.aplikimi_statusID == statusId);
-    if (status?.statusi === 'approved') {
+    if (status?.statusi === 'pranuar') {
       return <CheckCircle className="text-green-500" size={16} />;
-    } else if (status?.statusi === 'rejected') {
+    } else if (status?.statusi === 'refuzuar') {
       return <XCircle className="text-red-500" size={16} />;
     }
     return null;

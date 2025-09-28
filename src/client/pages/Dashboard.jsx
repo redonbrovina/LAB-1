@@ -173,23 +173,27 @@ export default function Dashboard() {
     }
   };
 
+  // Core status styling (these have specific colors)
+  const coreStatusColors = {
+    'completed': 'text-green-600 bg-green-100',
+    'delivered': 'text-green-600 bg-green-100',
+    'paid': 'text-green-600 bg-green-100',
+    'pending': 'text-yellow-600 bg-yellow-100',
+    'in process': 'text-yellow-600 bg-yellow-100',
+    'cancelled': 'text-red-600 bg-red-100',
+    'rejected': 'text-red-600 bg-red-100'
+  };
+
   const getStatusColor = (status) => {
     const translatedStatus = translateStatus(status)?.toLowerCase();
     
-    switch (translatedStatus) {
-      case 'completed':
-      case 'delivered':
-      case 'paid':
-        return 'text-green-600 bg-green-100';
-      case 'pending':
-      case 'in process':
-        return 'text-yellow-600 bg-yellow-100';
-      case 'cancelled':
-      case 'rejected':
-        return 'text-red-600 bg-red-100';
-      default:
-        return 'text-gray-600 bg-gray-100';
+    // Check if it's a core status with specific color
+    if (coreStatusColors[translatedStatus]) {
+      return coreStatusColors[translatedStatus];
     }
+    
+    // For new/custom statuses, use gray styling
+    return 'text-gray-600 bg-gray-100';
   };
 
   // Pagination functions for orders
