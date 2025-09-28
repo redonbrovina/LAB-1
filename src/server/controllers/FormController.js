@@ -68,24 +68,23 @@ class FormController {
                 return res.status(401).json({ message: 'No user found in request' });
             }
             
-            const { id, role } = req.user;
+            const { adminID, klientiID, role } = req.user;
             
             if (role === 'klient') {
                 // Get client info
-                const klientet = await this.klientiService.getKlientiById(id);
-                if (!klientet || klientet.length === 0) {
+                const klienti = await this.klientiService.getKlientiById(klientiID);
+                if (!klienti || klienti.length === 0) {
                     return res.status(404).json({ message: 'Client not found' });
                 }
                 
-                const client = klientet;
+                const client = klienti;
                 return res.json({
                     klientiID: client.klientiID,
                     email: client.email,
                     role: 'klient'
                 });
             } else if (role === 'admin') {
-                // Get admin info
-                const admin = await this.adminService.getAdminById(id);
+                const admin = await this.adminService.getAdminById(adminID);
                 if (!admin || admin.length === 0) {
                     return res.status(404).json({ message: 'Admin not found' });
                 }
