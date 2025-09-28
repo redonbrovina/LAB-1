@@ -11,7 +11,7 @@ class KategoriaService {
 
     async getById(id) {
         const kategoria = await this.kategoriaRepo.getKategoriaById(id);
-        if (!kategoria) throw new Error("Kategoria nuk u gjet");
+        if (!kategoria) throw new Error("Category not found");
         return kategoria;
     }
 

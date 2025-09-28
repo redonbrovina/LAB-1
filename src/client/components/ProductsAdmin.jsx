@@ -35,7 +35,7 @@ export default function ProductsAdmin() {
       setProducts(Array.isArray(p) ? p : []);
       setCategories(Array.isArray(c) ? c : []);
     } catch (e) {
-      setError(e?.message || 'Deshtoi ngarkimi');
+      setError(e?.message || 'Failed to load');
     } finally {
       setLoading(false);
     }
@@ -68,15 +68,15 @@ export default function ProductsAdmin() {
       console.log('Payload:', payload);
       
       if (!payload.emri || !payload.kategoriaID) {
-        setError('Emri dhe Kategoria janë të detyrueshme');
+        setError('Name and Category are required');
         return;
       }
       if (payload.cmimi < 0) {
-        setError('Çmimi nuk mund të jetë negative');
+        setError('Price cannot be negative');
         return;
       }
       if (payload.sasia_ne_stok < 0) {
-        setError('Sasia në stok nuk mund të jetë negative');
+        setError('Stock quantity cannot be negative');
         return;
       }
 
@@ -93,7 +93,7 @@ export default function ProductsAdmin() {
       console.log('API call successful, reloading data...');
       await loadAll();
       resetForm();
-      setSuccess(editingId ? 'Produkti u përditësua me sukses!' : 'Produkti u shtua me sukses!');
+      setSuccess(editingId ? 'Product updated successfully!' : 'Product added successfully!');
       console.log('Product added/updated successfully!');
       
       // Clear success message after 3 seconds
@@ -115,7 +115,7 @@ export default function ProductsAdmin() {
       const cid = created?.KategoriaID ?? created?.kategoriaID ?? created?.id;
       if (cid) setForm(f => ({ ...f, kategoriaID: cid }));
     } catch (e) {
-      setError(e?.message || 'Deshtoi krijimi i kategorisë');
+      setError(e?.message || 'Failed to create category');
     }
   };
 
@@ -132,12 +132,12 @@ export default function ProductsAdmin() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('A jeni i sigurt që doni ta fshini produktin?')) return;
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
     try {
       await productsAPI.delete(id);
       await loadAll();
     } catch (e) {
-      setError(e?.message || 'Deshtoi fshirja');
+      setError(e?.message || 'Failed to delete');
     }
   };
 
@@ -152,12 +152,12 @@ export default function ProductsAdmin() {
       </div>
 
       <div className="bg-white shadow rounded-2xl p-6">
-        <h3 className="font-semibold mb-4 text-red-600">{editingId ? 'Përditëso Produktin' : 'Shto Produkt të Ri'}</h3>
+        <h3 className="font-semibold mb-4 text-red-600">{editingId ? 'Update Product' : 'Add New Product'}</h3>
         {error && <div className="mb-3 text-sm text-red-600">{error}</div>}
         {success && <div className="mb-3 text-sm text-green-600">{success}</div>}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Emri</label>
+            <label className="block text-sm text-gray-600 mb-1">Name</label>
             <input
               className="w-full border rounded-lg px-3 py-2"
               value={form.emri}
@@ -166,13 +166,13 @@ export default function ProductsAdmin() {
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Kategoria</label>
+            <label className="block text-sm text-gray-600 mb-1">Category</label>
             <select
               className="w-full border rounded-lg px-3 py-2"
               value={form.kategoriaID}
               onChange={e => setForm({ ...form, kategoriaID: e.target.value })}
             >
-              <option value="">Zgjidh kategorinë</option>
+              <option value="">Select category</option>
               {categories.map(c => (
                 <option key={c.KategoriaID ?? c.kategoriaID ?? c.id} value={c.KategoriaID ?? c.kategoriaID ?? c.id}>
                   {c.emri}
@@ -182,15 +182,15 @@ export default function ProductsAdmin() {
             <div className="flex gap-2 mt-2">
               <input
                 className="flex-1 border rounded-lg px-3 py-2"
-                placeholder="Kategori e re"
+                placeholder="New category"
                 value={newCategoryName}
                 onChange={e => setNewCategoryName(e.target.value)}
               />
-              <button type="button" className="px-3 py-2 bg-gray-200 rounded-lg" onClick={handleCreateCategory}>Shto</button>
+              <button type="button" className="px-3 py-2 bg-gray-200 rounded-lg" onClick={handleCreateCategory}>Add</button>
             </div>
           </div>
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Çmimi (€)</label>
+            <label className="block text-sm text-gray-600 mb-1">Price (€)</label>
             <input
               type="number"
               step="0.01"
@@ -202,7 +202,7 @@ export default function ProductsAdmin() {
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Sasia në Stok</label>
+            <label className="block text-sm text-gray-600 mb-1">Stock Quantity</label>
             <input
               type="number"
               min="0"
@@ -213,7 +213,7 @@ export default function ProductsAdmin() {
             />
           </div>
           <div className="md:col-span-3">
-            <label className="block text-sm text-gray-600 mb-1">Përshkrimi</label>
+            <label className="block text-sm text-gray-600 mb-1">Description</label>
             <textarea
               className="w-full border rounded-lg px-3 py-2"
               rows={3}
@@ -223,14 +223,14 @@ export default function ProductsAdmin() {
             />
           </div>
           <div className="md:col-span-3">
-            <label className="block text-sm text-gray-600 mb-1">Imazhi (URL ose path)</label>
+            <label className="block text-sm text-gray-600 mb-1">Image (URL or path)</label>
             <input
               className="w-full border rounded-lg px-3 py-2"
               value={form.imazhi}
               onChange={e => setForm({ ...form, imazhi: e.target.value })}
               placeholder="/src/client/assets/images/default-pill-bottle.svg"
             />
-            <p className="text-xs text-gray-500 mt-1">Lëreni bosh për të përdorur imazhin e paracaktuar</p>
+            <p className="text-xs text-gray-500 mt-1">Leave empty to use default image</p>
           </div>
           <div className="md:col-span-3 flex gap-3">
             <button 
@@ -265,13 +265,13 @@ export default function ProductsAdmin() {
                 <thead>
                   <tr className="text-left text-gray-600 border-b">
                     <th className="py-2 pr-4">ID</th>
-                    <th className="py-2 pr-4">Imazhi</th>
-                    <th className="py-2 pr-4">Emri</th>
-                    <th className="py-2 pr-4">Kategoria</th>
-                    <th className="py-2 pr-4">Çmimi</th>
-                    <th className="py-2 pr-4">Stok</th>
-                    <th className="py-2 pr-4">Përshkrimi</th>
-                    <th className="py-2 pr-4">Veprimet</th>
+                    <th className="py-2 pr-4">Image</th>
+                    <th className="py-2 pr-4">Name</th>
+                    <th className="py-2 pr-4">Category</th>
+                    <th className="py-2 pr-4">Price</th>
+                    <th className="py-2 pr-4">Stock</th>
+                    <th className="py-2 pr-4">Description</th>
+                    <th className="py-2 pr-4">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -350,12 +350,12 @@ export default function ProductsAdmin() {
                         {/* Second Row - Price, Stock, and Description */}
                         <div className="space-y-2">
                           <div className="flex justify-between items-center">
-                            <span className="text-sm font-medium text-gray-700">Çmimi:</span>
+                            <span className="text-sm font-medium text-gray-700">Price:</span>
                             <span className="font-semibold text-gray-900">€{p.variacionet?.[0]?.cmimi || '0.00'}</span>
                           </div>
                           
                           <div className="flex justify-between items-center">
-                            <span className="text-sm font-medium text-gray-700">Stok:</span>
+                            <span className="text-sm font-medium text-gray-700">Stock:</span>
                             <span className="font-medium text-gray-900">{p.sasia_ne_stok || '0'}</span>
                           </div>
                           

@@ -63,7 +63,7 @@ export default function Products() {
         setCategories(Array.isArray(categoriesData) ? categoriesData : []);
       }
     } catch (err) {
-      setError('Gabim në ngarkimin e produkteve');
+      setError('Error loading products');
       console.error('Error loading products:', err);
     } finally {
       setLoading(false);
@@ -76,7 +76,7 @@ export default function Products() {
     console.log('Product:', product);
     
     if (!user) {
-      alert('Duhet të jeni të kyçur për të shtuar produkte në cart');
+      alert('You must be logged in to add products to cart');
       return;
     }
     
@@ -85,13 +85,13 @@ export default function Products() {
     console.log('Client ID:', clientId);
     
     if (!clientId) {
-      alert('Gabim: ID e klientit nuk është e disponueshme. Ju lutemi kyçuni përsëri.');
+      alert('Error: Client ID is not available. Please log in again.');
       console.log('No client ID found in user object');
       return;
     }
 
     if (!product.variacionet || product.variacionet.length === 0) {
-      alert('Produkti nuk ka variacion të disponueshëm. Ju lutemi shtoni variacion në panelin e adminit.');
+      alert('Product has no available variation. Please add variation in admin panel.');
       console.log('Product has no variations:', product);
       return;
     }
@@ -120,7 +120,7 @@ export default function Products() {
         }
       } catch (error) {
         console.error('Error getting/creating cart:', error);
-        throw new Error('Gabim në krijimin e cart-it');
+        throw new Error('Error creating cart');
       }
 
       // Add product to cart
@@ -128,7 +128,7 @@ export default function Products() {
       console.log('Product variation:', productVariation);
       
       if (!productVariation.produkt_variacioniID) {
-        throw new Error('Produkti nuk ka ID të variacionit');
+        throw new Error('Product has no variation ID');
       }
       
       const cartItemData = {
@@ -142,10 +142,10 @@ export default function Products() {
       const createdItem = await cartItemsAPI.create(cartItemData);
       console.log('Cart item created successfully:', createdItem);
 
-      alert(`Produkti "${product.emri}" (${quantity} copë) u shtua në cart!`);
+      alert(`Product "${product.emri}" (${quantity} pieces) added to cart!`);
     } catch (err) {
       console.error('Error adding to cart:', err);
-      alert(`Gabim në shtimin e produktit në cart: ${err.message}`);
+      alert(`Error adding product to cart: ${err.message}`);
     } finally {
       setAddingToCart(null);
     }
@@ -256,7 +256,7 @@ export default function Products() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <h1 className="text-xl sm:text-2xl font-bold" style={{ color: "#808080" }}>
-            {searchResults ? `Rezultatet e kërkimit (${searchResults.length})` : `Shop (${pagination.totalItems} produkte)`}
+            {searchResults ? `Search Results (${searchResults.length})` : `Shop (${pagination.totalItems} products)`}
           </h1>
           <div className="flex items-center gap-2 sm:gap-4">
             {/* View Mode Toggle */}
@@ -289,7 +289,7 @@ export default function Products() {
           <ProductSearch
             onSearchResults={handleSearchResults}
             onSearchClear={handleSearchClear}
-            placeholder="Kërko produkte sipas emrit ose përshkrimit..."
+            placeholder="Search products by name or description..."
           />
         </div>
 
@@ -366,7 +366,7 @@ export default function Products() {
           <div className="flex items-center justify-between mt-8">
             <div className="flex items-center gap-4">
               <div className="text-sm text-gray-700">
-                Duke shfaqur <span className="font-medium">{((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}</span> deri në <span className="font-medium">{Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)}</span> nga <span className="font-medium">{pagination.totalItems}</span> rezultate
+                Showing <span className="font-medium">{((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}</span> to <span className="font-medium">{Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)}</span> of <span className="font-medium">{pagination.totalItems}</span> results
               </div>
             </div>
             
@@ -376,7 +376,7 @@ export default function Products() {
                 disabled={!pagination.hasPrevPage}
                 className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Mëparshëm
+                Previous
               </button>
               
               {/* Page numbers */}
@@ -404,7 +404,7 @@ export default function Products() {
                 disabled={!pagination.hasNextPage}
                 className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Tjetër
+                Next
               </button>
             </div>
           </div>

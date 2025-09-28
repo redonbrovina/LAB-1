@@ -19,7 +19,7 @@ class DozaController {
             const doza = await this.dozaService.getById(req.params.id);
             res.status(200).json(doza);
         } catch (error) {
-            if (error.message === "Doza nuk u gjet") {
+            if (error.message === "Dose not found") {
                 res.status(404).json({ error: error.message });
             } else {
                 res.status(500).json({ error: error.message });
@@ -41,7 +41,7 @@ class DozaController {
             const updatedDoza = await this.dozaService.update(req.params.id, req.body);
             res.status(200).json(updatedDoza);
         } catch (error) {
-            if (error.message === "Doza nuk u gjet") {
+            if (error.message === "Dose not found") {
                 res.status(404).json({ error: error.message });
             } else {
                 res.status(500).json({ error: error.message });
@@ -54,7 +54,7 @@ class DozaController {
             await this.dozaService.delete(req.params.id);
             res.status(204).send();
         } catch (error) {
-            if (error.message === "Doza nuk u gjet") {
+            if (error.message === "Dose not found") {
                 res.status(404).json({ error: error.message });
             } else {
                 res.status(500).json({ error: error.message });

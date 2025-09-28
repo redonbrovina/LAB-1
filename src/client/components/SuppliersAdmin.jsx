@@ -16,7 +16,7 @@ export default function SuppliersAdmin() {
       const data = await furnitoriAPI.getAll();
       setSuppliers(Array.isArray(data) ? data : []);
     } catch (e) {
-      setError(e?.message || 'Deshtoi ngarkimi i furnitorëve');
+      setError(e?.message || 'Failed to load suppliers');
     } finally {
       setLoading(false);
     }
@@ -38,7 +38,7 @@ export default function SuppliersAdmin() {
         shtetiID: form.shtetiID ? Number(form.shtetiID) : null,
       };
       if (!payload.emri) {
-        setError('Emri i furnitorit është i detyrueshëm');
+        setError('Supplier name is required');
         return;
       }
 
@@ -50,7 +50,7 @@ export default function SuppliersAdmin() {
       await loadAll();
       resetForm();
     } catch (e) {
-      setError(e?.message || 'Deshtoi ruajtja');
+      setError(e?.message || 'Failed to save');
     }
   };
 
@@ -63,12 +63,12 @@ export default function SuppliersAdmin() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('A jeni i sigurt që doni ta fshini furnitorin?')) return;
+    if (!window.confirm('Are you sure you want to delete this supplier?')) return;
     try {
       await furnitoriAPI.delete(id);
       await loadAll();
     } catch (e) {
-      setError(e?.message || 'Deshtoi fshirja');
+      setError(e?.message || 'Failed to delete');
     }
   };
 

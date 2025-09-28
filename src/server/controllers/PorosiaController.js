@@ -23,7 +23,7 @@ class PorosiaController {
     async getById(req, res) {
         try {
             const porosia = await this.service.getPorosiaById(req.params.id);
-            if (!porosia) return res.status(404).json({ message: 'Porosia nuk u gjet' });
+            if (!porosia) return res.status(404).json({ message: 'Order not found' });
             res.json(porosia);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -66,7 +66,7 @@ class PorosiaController {
         try {
             const deleted = await this.service.deletePorosia(req.params.id);
             if (!deleted) return res.status(404).json({ message: 'Porosia nuk u gjet' });
-            res.json({ message: 'Porosia u fshi me sukses' });
+            res.json({ message: 'Order deleted successfully' });
         } catch (err) {
             res.status(500).json({ error: err.message });
         }

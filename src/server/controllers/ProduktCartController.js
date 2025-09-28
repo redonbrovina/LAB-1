@@ -57,8 +57,8 @@ class ProduktCartController {
     async delete(req, res) {
         try {
             const deleted = await this.repo.deleteById(req.params.id);
-            if (!deleted) return res.status(404).json({ message: 'Produkti nuk u gjet' });
-            res.json({ message: 'Produkti u fshi me sukses' });
+            if (!deleted) return res.status(404).json({ message: 'Product not found' });
+            res.json({ message: 'Product deleted successfully' });
         } catch (err) {
             res.status(500).json({ error: err.message });
         }

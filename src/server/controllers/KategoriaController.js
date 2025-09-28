@@ -19,7 +19,7 @@ class KategoriaController {
             const data = await this.kategoriaService.getById(req.params.id);
             res.json(data);
         } catch (err) {
-            if (err.message === "Kategoria nuk u gjet") {
+            if (err.message === "Category not found") {
                 res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });
@@ -41,7 +41,7 @@ class KategoriaController {
             const data = await this.kategoriaService.update(req.params.id, req.body);
             res.json(data);
         } catch (err) {
-            if (err.message === "Kategoria nuk u gjet") {
+            if (err.message === "Category not found") {
                 res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });
@@ -52,9 +52,9 @@ class KategoriaController {
     async delete(req, res) {
         try {
             await this.kategoriaService.delete(req.params.id);
-            res.json({ message: "Kategoria u fshi me sukses" });
+            res.json({ message: "Category deleted successfully" });
         } catch (err) {
-            if (err.message === "Kategoria nuk u gjet") {
+            if (err.message === "Category not found") {
                 res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ error: err.message });

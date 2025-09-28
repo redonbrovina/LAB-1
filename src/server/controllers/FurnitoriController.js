@@ -17,7 +17,7 @@ class FurnitoriController {
     async getById(req, res) {
         try {
             const data = await this.furnitoriService.getById(req.params.id);
-            if (!data) return res.status(404).json({ message: "Furnitori nuk u gjet" });
+            if (!data) return res.status(404).json({ message: "Supplier not found" });
             res.json(data);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -45,7 +45,7 @@ class FurnitoriController {
     async update(req, res) {
         try {
             const data = await this.furnitoriService.update(req.params.id, req.body);
-            if (!data) return res.status(404).json({ message: "Furnitori nuk u gjet" });
+            if (!data) return res.status(404).json({ message: "Supplier not found" });
             res.json(data);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -55,8 +55,8 @@ class FurnitoriController {
     async delete(req, res) {
         try {
             const data = await this.furnitoriService.delete(req.params.id);
-            if (!data) return res.status(404).json({ message: "Furnitori nuk u gjet" });
-            res.json({ message: "Furnitori u fshi me sukses" });
+            if (!data) return res.status(404).json({ message: "Supplier not found" });
+            res.json({ message: "Supplier deleted successfully" });
         } catch (err) {
             res.status(500).json({ error: err.message });
         }

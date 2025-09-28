@@ -19,7 +19,7 @@ class ProduktCartService {
 
     async getById(cartItemID) {
         const cartItem = await this.produktCartRepository.getCartItemById(cartItemID);
-        if (!cartItem) throw new Error("Produkti nuk u gjet");
+        if (!cartItem) throw new Error("Product not found");
         return cartItem;
     }
 

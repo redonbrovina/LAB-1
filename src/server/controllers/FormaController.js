@@ -19,7 +19,7 @@ class FormaController {
             const forma = await this.formaService.getById(req.params.id);
             res.status(200).json(forma);
         } catch (error) {
-            if (error.message === "Forma nuk u gjet") {
+            if (error.message === "Form not found") {
                 res.status(404).json({ error: error.message });
             } else {
                 res.status(500).json({ error: error.message });
@@ -41,7 +41,7 @@ class FormaController {
             const updatedForma = await this.formaService.update(req.params.id, req.body);
             res.status(200).json(updatedForma);
         } catch (error) {
-            if (error.message === "Forma nuk u gjet") {
+            if (error.message === "Form not found") {
                 res.status(404).json({ error: error.message });
             } else {
                 res.status(500).json({ error: error.message });
@@ -54,7 +54,7 @@ class FormaController {
             await this.formaService.delete(req.params.id);
             res.status(204).send();
         } catch (error) {
-            if (error.message === "Forma nuk u gjet") {
+            if (error.message === "Form not found") {
                 res.status(404).json({ error: error.message });
             } else {
                 res.status(500).json({ error: error.message });

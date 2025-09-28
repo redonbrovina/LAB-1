@@ -11,7 +11,7 @@ class MenyraPagesesService {
 
     async getById(id) {
         const menyraPageses = await this.menyraPagesesRepo.getMenyraPagesesById(id);
-        if (!menyraPageses) throw new Error("Menyra e pageses nuk u gjet");
+        if (!menyraPageses) throw new Error("Payment method not found");
         return menyraPageses;
     }
 
@@ -30,7 +30,7 @@ class MenyraPagesesService {
         // Check if payment method is in use
         const isInUse = await this.menyraPagesesRepo.isPaymentMethodInUse(id);
         if (isInUse) {
-            throw new Error("Nuk mund të fshihet mënyra e pagesës sepse është në përdorim nga pagesa ekzistuese. Së pari fshini pagesat e lidhura.");
+            throw new Error("Cannot delete payment method because it is in use by existing payments. Please delete associated payments first.");
         }
         
         // Delete the payment method
@@ -55,7 +55,7 @@ class MenyraPagesesService {
             const deletedCount = await this.menyraPagesesRepo.deleteAllMenyraPageses();
             return deletedCount;
         } catch (error) {
-            throw new Error(`Gabim gjatë fshirjes së të gjitha mënyrave të pagesës: ${error.message}`);
+            throw new Error(`Error during deletion of all payment methods: ${error.message}`);
         }
     }
 }

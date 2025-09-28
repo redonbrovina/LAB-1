@@ -11,13 +11,13 @@ class AdminService {
 
     async getAdminById(adminID) {
         const admin = await this.adminRepository.getAdminById(adminID);
-        if (!admin) throw new Error("Admin nuk u gjet");
+        if (!admin) throw new Error("Admin not found");
         return admin;
     }
 
     async getAdminByEmail(email) {
         const admin = await this.adminRepository.getAdminByEmail(email);
-        if (!admin) throw new Error("Admin nuk u gjet");
+        if (!admin) throw new Error("Admin not found");
         return admin;
     }
 
