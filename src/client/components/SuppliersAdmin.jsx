@@ -88,7 +88,7 @@ export default function SuppliersAdmin() {
       </div>
 
       <div className="bg-white shadow rounded-2xl p-6">
-        <h3 className="font-semibold mb-4 text-red-600">{editingId ? 'Përditëso Furnitorin' : 'Shto Furnitor të Ri'}</h3>
+        <h3 className="font-semibold mb-4 text-red-600">{editingId ? 'Update Supplier' : 'Add New Supplier'}</h3>
         {error && <div className="mb-3 text-sm text-red-600">{error}</div>}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -123,11 +123,11 @@ export default function SuppliersAdmin() {
 
       <div className="bg-white shadow rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-red-600">Lista e Furnitorëve</h3>
+          <h3 className="font-semibold text-red-600">Suppliers List</h3>
           <div className="flex gap-3">
             <input
               type="text"
-              placeholder="Kërko furnitor..."
+              placeholder="Search suppliers..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               className="border rounded-lg px-3 py-2"
@@ -143,9 +143,9 @@ export default function SuppliersAdmin() {
               <thead>
                 <tr className="text-left text-gray-600 border-b">
                   <th className="py-2 pr-4">ID</th>
-                  <th className="py-2 pr-4">Emri</th>
-                  <th className="py-2 pr-4">Shteti</th>
-                  <th className="py-2 lg:pr-2 lg:sticky lg:right-0 lg:bg-white lg:shadow-lg lg:pl-4">Veprimet</th>
+                  <th className="py-2 pr-4">Name</th>
+                  <th className="py-2 pr-4">Country</th>
+                  <th className="py-2 lg:pr-2 lg:sticky lg:right-0 lg:bg-white lg:shadow-lg lg:pl-4">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -166,7 +166,7 @@ export default function SuppliersAdmin() {
                 {filteredSuppliers.length === 0 && (
                   <tr>
                     <td className="py-4 text-center text-gray-500" colSpan={4}>
-                      {searchTerm ? 'Nuk u gjetën furnitorë' : 'Nuk ka furnitorë'}
+                      {searchTerm ? 'No suppliers found' : 'No suppliers'}
                     </td>
                   </tr>
                 )}
