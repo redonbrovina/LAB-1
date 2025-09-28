@@ -62,7 +62,7 @@ export default function Login() {
                 <img className="hidden md:block" src={svg} alt="Login Image" />
             </div>
             <div className="flex flex-col md:w-1/2 pt-35">
-                <p className="text-[#808080] text-2xl text-center pb-10">Nice to see you <span className="text-[#7ED957]">You</span> again</p>
+                <p className="text-[#808080] text-2xl text-center pb-10">Nice to see <span className="text-[#7ED957]">You</span> again</p>
                 <form className="flex flex-col gap-2" method="POST">
                     <label className="text-[#808080]">Email</label>
                     <input
