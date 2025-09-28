@@ -70,8 +70,35 @@ export default function EditClientModal({ isOpen, onClose, client, onClientUpdat
         return false;
       }
 
-      if (formData.newPassword.length < 8) {
-        setError("New password must be at least 8 characters long");
+      // Password validation
+      const minLength = 8;
+      const hasUpperCase = /[A-Z]/.test(formData.newPassword);
+      const hasLowerCase = /[a-z]/.test(formData.newPassword);
+      const hasNumbers = /\d/.test(formData.newPassword);
+      const hasSpecialChar = /[!@#$%^&*(),.?+-=_":{}|<>]/.test(formData.newPassword);
+
+      if (formData.newPassword.length < minLength) {
+        setError(`New password must be at least ${minLength} characters long`);
+        return false;
+      }
+
+      if (!hasUpperCase) {
+        setError('New password must contain at least one uppercase letter');
+        return false;
+      }
+
+      if (!hasLowerCase) {
+        setError('New password must contain at least one lowercase letter');
+        return false;
+      }
+
+      if (!hasNumbers) {
+        setError('New password must contain at least one number');
+        return false;
+      }
+
+      if (!hasSpecialChar) {
+        setError('New password must contain at least one special character');
         return false;
       }
 

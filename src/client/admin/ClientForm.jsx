@@ -70,8 +70,35 @@ export default function ClientForm() {
       return false;
     }
 
-    if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters long");
+    // Password validation
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(formData.password);
+    const hasLowerCase = /[a-z]/.test(formData.password);
+    const hasNumbers = /\d/.test(formData.password);
+    const hasSpecialChar = /[!@#$%^&*(),.?+-=_":{}|<>]/.test(formData.password);
+
+    if (formData.password.length < minLength) {
+      setError(`Password must be at least ${minLength} characters long`);
+      return false;
+    }
+
+    if (!hasUpperCase) {
+      setError('Password must contain at least one uppercase letter');
+      return false;
+    }
+
+    if (!hasLowerCase) {
+      setError('Password must contain at least one lowercase letter');
+      return false;
+    }
+
+    if (!hasNumbers) {
+      setError('Password must contain at least one number');
+      return false;
+    }
+
+    if (!hasSpecialChar) {
+      setError('Password must contain at least one special character');
       return false;
     }
 
