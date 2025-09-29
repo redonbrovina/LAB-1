@@ -38,6 +38,10 @@ const Flight = require('./Flight');
 const Passenger = require('./Passenger');
 const Library = require('./Library');
 const Book = require('./Book');
+const Hotel = require('./Hotel');
+const Room = require('./Room');
+const Owner = require('./Owner');
+const Car = require('./Car');
 
 // Define all models
 const models = {
@@ -80,7 +84,11 @@ const models = {
     Flight,
     Passenger,
     Library,
-    Book
+    Book,
+    Hotel,
+    Room,
+    Owner,
+    Car
 };
 
 // Set up all associations
@@ -110,5 +118,11 @@ require('./associations/FlightPassengerAssociations');
 
 // Set up Library-Book associations
 require('./associations/LibraryBookAssociations');
+
+// Set up Hotel-Room associations
+require('./associations/HotelRoomAssociations');
+
+// Set up Owner-Car associations
+require('./associations/OwnerCarAssociations');
 
 module.exports = models;

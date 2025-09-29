@@ -34,6 +34,10 @@ import FlightsManagement from '../FlightsManagement';
 import PassengersManagement from '../PassengersManagement';
 import LibrariesManagement from '../LibrariesManagement';
 import BooksManagement from '../BooksManagement';
+import HotelsManagement from '../HotelsManagement';
+import RoomsManagement from '../RoomsManagement';
+import OwnersManagement from '../OwnersManagement';
+import CarsManagement from '../CarsManagement';
 
 const AdminPages = () => {
   const location = useLocation();
@@ -101,12 +105,20 @@ const AdminPages = () => {
       return <FlightsManagement />;
     case '/admin/passengers':
       return <PassengersManagement />;
-    case '/admin/libraries':
-      return <LibrariesManagement />;
-    case '/admin/books':
-      return <BooksManagement />;
-    default:
-      return <AdminDashboard />;
+      case '/admin/libraries':
+        return <LibrariesManagement />;
+      case '/admin/books':
+        return <BooksManagement />;
+      case '/admin/hotels':
+        return <HotelsManagement />;
+      case '/admin/rooms':
+        return <RoomsManagement />;
+      case '/admin/owners':
+        return <OwnersManagement />;
+      case '/admin/cars':
+        return <CarsManagement />;
+      default:
+        return <AdminDashboard />;
   }
 };
 

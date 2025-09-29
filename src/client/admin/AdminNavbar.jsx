@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard, Menu, X, Database, Users2, Trophy, UserCheck, FileText as ContractIcon, GraduationCap, BookOpen, Globe, Satellite as SatelliteIcon, User, Book, Stethoscope, Calendar, Film, Users as UsersIcon, GraduationCap as TeacherIcon, BookOpen as SubjectIcon, Store, Package as PackageIcon, Plane, UserCheck as PassengerIcon, Library, BookOpen as BookIcon } from "lucide-react";
+import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard, Menu, X, Database, Users2, Trophy, UserCheck, FileText as ContractIcon, GraduationCap, BookOpen, Globe, Satellite as SatelliteIcon, User, Book, Stethoscope, Calendar, Film, Users as UsersIcon, GraduationCap as TeacherIcon, BookOpen as SubjectIcon, Store, Package as PackageIcon, Plane, UserCheck as PassengerIcon, Library, BookOpen as BookIcon, Building as HotelIcon, Bed as RoomIcon, User as OwnerIcon, Car as CarIcon } from "lucide-react";
 import { useAuth } from "../utils/AuthContext";
 import { useState } from "react";
 
@@ -209,16 +209,38 @@ export default function AdminNavbar() {
             Passengers
           </Link>
 
-          {/* Libraries & Books Management */}
-          <Link to="/admin/libraries" className={getLinkClass("/admin/libraries")} onClick={closeMobileMenu}>
-            <Library size={18} />
-            Libraries
-          </Link>
+        {/* Libraries & Books Management */}
+        <Link to="/admin/libraries" className={getLinkClass("/admin/libraries")} onClick={closeMobileMenu}>
+          <Library size={18} />
+          Libraries
+        </Link>
 
-          <Link to="/admin/books" className={getLinkClass("/admin/books")} onClick={closeMobileMenu}>
-            <BookIcon size={18} />
-            Books
-          </Link>
+        <Link to="/admin/books" className={getLinkClass("/admin/books")} onClick={closeMobileMenu}>
+          <BookIcon size={18} />
+          Books
+        </Link>
+
+        {/* Hotels & Rooms Management */}
+        <Link to="/admin/hotels" className={getLinkClass("/admin/hotels")} onClick={closeMobileMenu}>
+          <HotelIcon size={18} />
+          Hotels
+        </Link>
+
+        <Link to="/admin/rooms" className={getLinkClass("/admin/rooms")} onClick={closeMobileMenu}>
+          <RoomIcon size={18} />
+          Rooms
+        </Link>
+
+        {/* Cars & Owners Management */}
+        <Link to="/admin/owners" className={getLinkClass("/admin/owners")} onClick={closeMobileMenu}>
+          <OwnerIcon size={18} />
+          Owners
+        </Link>
+
+        <Link to="/admin/cars" className={getLinkClass("/admin/cars")} onClick={closeMobileMenu}>
+          <CarIcon size={18} />
+          Cars
+        </Link>
 
           <Link to="/admin/reference-data" className={getLinkClass("/admin/reference-data")} onClick={closeMobileMenu}>
             <Database size={18} />

@@ -47,6 +47,10 @@ const flightsRoutes = require('./src/server/routes/flightsRoutes');
 const passengersRoutes = require('./src/server/routes/passengersRoutes');
 const librariesRoutes = require('./src/server/routes/librariesRoutes');
 const booksRoutes = require('./src/server/routes/booksRoutes');
+const hotelsRoutes = require('./src/server/routes/hotelsRoutes');
+const roomsRoutes = require('./src/server/routes/roomsRoutes');
+const ownersRoutes = require('./src/server/routes/ownersRoutes');
+const carsRoutes = require('./src/server/routes/carsRoutes');
 
 app.use(cors({
     origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5000'],
@@ -98,6 +102,10 @@ app.use('/api/flights', flightsRoutes);
 app.use('/api/passengers', passengersRoutes);
 app.use('/api/libraries', librariesRoutes);
 app.use('/api/books', booksRoutes);
+app.use('/api/hotels', hotelsRoutes);
+app.use('/api/rooms', roomsRoutes);
+app.use('/api/owners', ownersRoutes);
+app.use('/api/cars', carsRoutes);
 
 // Initialize database connection
 const sequelize = require('./src/server/database/Database');
@@ -130,6 +138,55 @@ sequelize.authenticate().then(() => {
                     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
                     UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                     FOREIGN KEY (LibraryId) REFERENCES libraries(LibraryId) ON DELETE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            `);
+            
+            // Create hotels table if it doesn't exist
+            await sequelize.query(`
+                CREATE TABLE IF NOT EXISTS hotels (
+                    HotelId INT AUTO_INCREMENT PRIMARY KEY,
+                    Name VARCHAR(200) NOT NULL,
+                    Location VARCHAR(200) NOT NULL,
+                    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            `);
+            
+            // Create rooms table if it doesn't exist
+            await sequelize.query(`
+                CREATE TABLE IF NOT EXISTS rooms (
+                    RoomId INT AUTO_INCREMENT PRIMARY KEY,
+                    RoomNumber VARCHAR(20) NOT NULL,
+                    Capacity INT NOT NULL,
+                    HotelId INT NOT NULL,
+                    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    FOREIGN KEY (HotelId) REFERENCES hotels(HotelId) ON DELETE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            `);
+
+            // Create owners table if it doesn't exist
+            await sequelize.query(`
+                CREATE TABLE IF NOT EXISTS owners (
+                    OwnerId INT AUTO_INCREMENT PRIMARY KEY,
+                    Name VARCHAR(100) NOT NULL,
+                    Phone VARCHAR(20) NOT NULL,
+                    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            `);
+
+            // Create cars table if it doesn't exist
+            await sequelize.query(`
+                CREATE TABLE IF NOT EXISTS cars (
+                    CarId INT AUTO_INCREMENT PRIMARY KEY,
+                    PlateNumber VARCHAR(20) NOT NULL UNIQUE,
+                    Model VARCHAR(100) NOT NULL,
+                    OwnerId INT NOT NULL,
+                    IsDeleted BOOLEAN NOT NULL DEFAULT FALSE,
+                    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    FOREIGN KEY (OwnerId) REFERENCES owners(OwnerId) ON DELETE CASCADE
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
             `);
             
