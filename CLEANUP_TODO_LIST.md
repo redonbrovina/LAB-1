@@ -253,6 +253,7 @@ SELECT * FROM Satellite212299999;
 - [ ] `current_database/teacher_subject_tables.sql` (if it exists separately)
 - [ ] `current_database/store_product_tables.sql` (if it exists separately)
 - [ ] `current_database/flight_passenger_tables.sql` (if it exists separately)
+- [ ] `current_database/library_book_tables.sql` (if it exists separately)
 
 ### ✅ **Keep These Files:**
 - [ ] `current_database/database_restructure.sql` ✅ (main database structure)

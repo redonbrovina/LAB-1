@@ -45,6 +45,8 @@ const storesRoutes = require('./src/server/routes/storesRoutes');
 const productsRoutes = require('./src/server/routes/productsRoutes');
 const flightsRoutes = require('./src/server/routes/flightsRoutes');
 const passengersRoutes = require('./src/server/routes/passengersRoutes');
+const librariesRoutes = require('./src/server/routes/librariesRoutes');
+const booksRoutes = require('./src/server/routes/booksRoutes');
 
 app.use(cors({
     origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5000'],
@@ -94,9 +96,88 @@ app.use('/api/stores', storesRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/flights', flightsRoutes);
 app.use('/api/passengers', passengersRoutes);
+app.use('/api/libraries', librariesRoutes);
+app.use('/api/books', booksRoutes);
 
-const port = process.env.PORT || 5000;
-app.listen(port, () => {
-    console.log(`🎀 Server running on port ${port} 🎀`);
-    console.log('📧 Email configuration ready for order confirmations!');
+// Initialize database connection
+const sequelize = require('./src/server/database/Database');
+
+// Test database connection and start server
+sequelize.authenticate().then(() => {
+    console.log('💌 Database connection established successfully! 💌');
+    
+    // Create only the new tables we need
+    const createNewTables = async () => {
+        try {
+            // Create libraries table if it doesn't exist
+            await sequelize.query(`
+                CREATE TABLE IF NOT EXISTS libraries (
+                    LibraryId INT AUTO_INCREMENT PRIMARY KEY,
+                    Name VARCHAR(200) NOT NULL,
+                    City VARCHAR(100) NOT NULL,
+                    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            `);
+            
+            // Create books table if it doesn't exist
+            await sequelize.query(`
+                CREATE TABLE IF NOT EXISTS books (
+                    BookId INT AUTO_INCREMENT PRIMARY KEY,
+                    Title VARCHAR(200) NOT NULL,
+                    Author VARCHAR(100) NOT NULL,
+                    LibraryId INT NOT NULL,
+                    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    FOREIGN KEY (LibraryId) REFERENCES libraries(LibraryId) ON DELETE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            `);
+            
+            // Check if books table exists and add missing columns
+            const [booksTable] = await sequelize.query("SHOW TABLES LIKE 'books'");
+            if (booksTable.length > 0) {
+                // Check if Author column exists
+                const [columns] = await sequelize.query("SHOW COLUMNS FROM books LIKE 'Author'");
+                if (columns.length === 0) {
+                    console.log('Adding missing Author column to books table...');
+                    await sequelize.query("ALTER TABLE books ADD COLUMN Author VARCHAR(100) NOT NULL DEFAULT ''");
+                }
+                
+                // Check if LibraryId column exists
+                const [libraryIdColumns] = await sequelize.query("SHOW COLUMNS FROM books LIKE 'LibraryId'");
+                if (libraryIdColumns.length === 0) {
+                    console.log('Adding missing LibraryId column to books table...');
+                    await sequelize.query("ALTER TABLE books ADD COLUMN LibraryId INT NOT NULL DEFAULT 1");
+                }
+                
+                // Check if CreatedAt column exists
+                const [createdAtColumns] = await sequelize.query("SHOW COLUMNS FROM books LIKE 'CreatedAt'");
+                if (createdAtColumns.length === 0) {
+                    console.log('Adding missing CreatedAt column to books table...');
+                    await sequelize.query("ALTER TABLE books ADD COLUMN CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP");
+                }
+                
+                // Check if UpdatedAt column exists
+                const [updatedAtColumns] = await sequelize.query("SHOW COLUMNS FROM books LIKE 'UpdatedAt'");
+                if (updatedAtColumns.length === 0) {
+                    console.log('Adding missing UpdatedAt column to books table...');
+                    await sequelize.query("ALTER TABLE books ADD COLUMN UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+                }
+            }
+            
+            console.log('✅ New tables created/updated successfully');
+        } catch (error) {
+            console.log('ℹ️ Tables may already exist:', error.message);
+        }
+    };
+    
+    createNewTables().then(() => {
+        const port = process.env.PORT || 5000;
+        app.listen(port, () => {
+            console.log(`🎀 Server running on port ${port} 🎀`);
+            console.log('📧 Email configuration ready for order confirmations!');
+        });
+    });
+}).catch(err => {
+    console.error('❌ Database connection failed:', err);
 });

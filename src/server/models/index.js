@@ -36,6 +36,8 @@ const Store = require('./Store');
 const Product = require('./Product');
 const Flight = require('./Flight');
 const Passenger = require('./Passenger');
+const Library = require('./Library');
+const Book = require('./Book');
 
 // Define all models
 const models = {
@@ -76,7 +78,9 @@ const models = {
     Store,
     Product,
     Flight,
-    Passenger
+    Passenger,
+    Library,
+    Book
 };
 
 // Set up all associations
@@ -103,5 +107,8 @@ require('./associations/StoreProductAssociations');
 
 // Set up Flight-Passenger associations
 require('./associations/FlightPassengerAssociations');
+
+// Set up Library-Book associations
+require('./associations/LibraryBookAssociations');
 
 module.exports = models;

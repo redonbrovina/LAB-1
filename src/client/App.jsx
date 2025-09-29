@@ -126,6 +126,8 @@ export default function App() {
               <Route path="store-products" element={<AdminPages />} />
               <Route path="flights" element={<AdminPages />} />
               <Route path="passengers" element={<AdminPages />} />
+              <Route path="libraries" element={<AdminPages />} />
+              <Route path="books" element={<AdminPages />} />
             </Route>
             <Route path='*' element={<NotFound />} />
           </Routes>

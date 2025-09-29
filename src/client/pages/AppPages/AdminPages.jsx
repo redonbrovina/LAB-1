@@ -32,6 +32,8 @@ import StoresManagement from '../StoresManagement';
 import ProductsManagement from '../ProductsManagement';
 import FlightsManagement from '../FlightsManagement';
 import PassengersManagement from '../PassengersManagement';
+import LibrariesManagement from '../LibrariesManagement';
+import BooksManagement from '../BooksManagement';
 
 const AdminPages = () => {
   const location = useLocation();
@@ -99,6 +101,10 @@ const AdminPages = () => {
       return <FlightsManagement />;
     case '/admin/passengers':
       return <PassengersManagement />;
+    case '/admin/libraries':
+      return <LibrariesManagement />;
+    case '/admin/books':
+      return <BooksManagement />;
     default:
       return <AdminDashboard />;
   }
