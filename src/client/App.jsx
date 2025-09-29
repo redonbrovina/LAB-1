@@ -7,6 +7,9 @@ import PublicRoute from './utils/PublicRoute';
 import ClientOnlyRoute from './utils/ClientOnlyRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 
+import Ligjeruesi from './pages/Ligjeruesi';
+import Ligjerata from './pages/Ligjerata';
+
 const Layout = lazy(() => import('./components/layout/Layout'));
 const ProtectedLayout = lazy(() => import('./components/layout/ProtectedLayout'));
 const AdminProtectedLayout = lazy(() => import('./components/layout/AdminProtectedLayout'));
@@ -107,6 +110,9 @@ export default function App() {
               <Route path="settings" element={<AdminPages />} />
               <Route path="reference-data" element={<AdminPages />} />
             </Route>
+
+            <Route path="/ligjeruesi" element={<Ligjeruesi />} />
+            <Route path="/ligjerata" element={<Ligjerata />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Suspense>
