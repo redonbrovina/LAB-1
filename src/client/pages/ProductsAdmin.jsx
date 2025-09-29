@@ -247,10 +247,10 @@ export default function ProductsAdmin() {
                 console.log('Form state:', form);
               }}
             >
-              {editingId ? 'Ruaj Ndryshimet' : 'Shto Produktin'}
+              {editingId ? 'Save Changes' : 'Add Product'}
             </button>
             {editingId && (
-              <button type="button" className="px-4 py-2 bg-gray-200 rounded-lg" onClick={resetForm}>Anulo</button>
+              <button type="button" className="px-4 py-2 bg-gray-200 rounded-lg" onClick={resetForm}>Cancel</button>
             )}
           </div>
         </form>
@@ -258,10 +258,10 @@ export default function ProductsAdmin() {
 
       <div className="bg-white shadow rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-red-600">Lista e Produkteve</h3>
+          <h3 className="font-semibold text-red-600">Products List</h3>
         </div>
         {loading ? (
-          <div className="text-gray-500">Duke u ngarkuar...</div>
+          <div className="text-gray-500">Loading...</div>
         ) : (
           <>
             {/* Desktop Table */}
@@ -329,7 +329,7 @@ export default function ProductsAdmin() {
                   })}
                   {products.length === 0 && (
                     <tr>
-                      <td className="py-4 text-center text-gray-500" colSpan={9}>Nuk ka produkte</td>
+                      <td className="py-4 text-center text-gray-500" colSpan={9}>No products</td>
                     </tr>
                   )}
                 </tbody>
@@ -412,7 +412,7 @@ export default function ProductsAdmin() {
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-500">
-                  Nuk ka produkte
+                  No products
                 </div>
               )}
             </div>
