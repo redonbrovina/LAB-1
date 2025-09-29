@@ -278,3 +278,22 @@ export const clientAPI = {
   // Login function for clients (no auth required)
   login: (data) => publicApiPost('/klienti/login', data),
 };
+
+// Team API functions
+export const teamsAPI = {
+  getAll: () => apiGet('/teams'),
+  getById: (id) => apiGet(`/teams/${id}`),
+  create: (data) => apiPost('/teams', data),
+  update: (id, data) => apiPut(`/teams/${id}`, data),
+  delete: (id) => apiDelete(`/teams/${id}`),
+};
+
+// Player API functions
+export const playersAPI = {
+  getAll: () => apiGet('/players'),
+  getById: (id) => apiGet(`/players/${id}`),
+  getByTeam: (teamId) => apiGet(`/players/team/${teamId}`),
+  create: (data) => apiPost('/players', data),
+  update: (id, data) => apiPut(`/players/${id}`, data),
+  delete: (id) => apiDelete(`/players/${id}`),
+};

@@ -9,6 +9,7 @@ const Klienti = require('./Klienti');
 const MenyraPageses = require('./MenyraPageses');
 const Pagesa = require('./Pagesa');
 const PagesaStatus = require('./PagesaStatus');
+const Player = require('./Player');
 const Porosia = require('./Porosia');
 const PorosiaStatus = require('./PorosiaStatus');
 const ProduktCart = require('./PrdouktCart');
@@ -16,6 +17,7 @@ const Produkti = require('./Produkti');
 const ProduktPorosise = require('./ProduktPorosise');
 const RefreshToken = require('./RefreshToken');
 const Shteti = require('./Shteti');
+const Team = require('./Team');
 
 // Define all models
 const models = {
@@ -30,13 +32,15 @@ const models = {
     MenyraPageses,
     Pagesa,
     PagesaStatus,
+    Player,
     Porosia,
     PorosiaStatus,
     ProduktCart,
     Produkti,
     ProduktPorosise,
     RefreshToken,
-    Shteti
+    Shteti,
+    Team
 };
 
 // Set up all associations

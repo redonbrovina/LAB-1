@@ -12,6 +12,8 @@ import AdminUsers from '../AdminUsers';
 import AdminCreateClient from '../AdminCreateClient';
 import AdminSettings from '../AdminSettings';
 import ReferenceData from '../ReferenceData';
+import Teams from '../Teams';
+import Players from '../Players';
 
 const AdminPages = () => {
   const location = useLocation();
@@ -39,6 +41,10 @@ const AdminPages = () => {
       return <AdminSettings />;
     case '/admin/reference-data':
       return <ReferenceData />;
+    case '/admin/teams':
+      return <Teams />;
+    case '/admin/players':
+      return <Players />;
     default:
       return <AdminDashboard />;
   }

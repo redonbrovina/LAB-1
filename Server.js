@@ -4,6 +4,9 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const app = express();
 
+// Initialize models to ensure associations are set up
+require('./src/server/models');
+
 const pagesaRoutes = require('./src/server/routes/pagesaRoutes');
 const menyraPagesesRoutes = require('./src/server/routes/menyraPagesesRoutes');
 const porosiaRoutes = require('./src/server/routes/porosiaRoutes');
@@ -22,6 +25,8 @@ const produktiRoutes = require('./src/server/routes/produktiRoutes');
 const kategoriaRoutes = require('./src/server/routes/kategoriaRoutes');
 const dozaRoutes = require('./src/server/routes/dozaRoutes');
 const shtetiRoutes = require('./src/server/routes/shtetiRoutes');
+const teamRoutes = require('./src/server/routes/teamRoutes');
+const playerRoutes = require('./src/server/routes/playerRoutes');
 
 app.use(cors({
     origin: ['http://localhost:5173', 'http://localhost:5000'],
@@ -51,6 +56,8 @@ app.use('/api/produkte', produktiRoutes);
 app.use('/api/kategorite', kategoriaRoutes);
 app.use('/api/doza', dozaRoutes);
 app.use('/api/shteti', shtetiRoutes);
+app.use('/api/teams', teamRoutes);
+app.use('/api/players', playerRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

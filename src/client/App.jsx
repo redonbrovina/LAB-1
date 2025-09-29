@@ -106,6 +106,8 @@ export default function App() {
               <Route path="users/create" element={<AdminPages />} />
               <Route path="settings" element={<AdminPages />} />
               <Route path="reference-data" element={<AdminPages />} />
+              <Route path="teams" element={<AdminPages />} />
+              <Route path="players" element={<AdminPages />} />
             </Route>
             <Route path='*' element={<NotFound />} />
           </Routes>
