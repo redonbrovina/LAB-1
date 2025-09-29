@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard, Menu, X, Database, Users2, Trophy, UserCheck, FileText as ContractIcon, GraduationCap, BookOpen, Globe, Satellite as SatelliteIcon } from "lucide-react";
+import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard, Menu, X, Database, Users2, Trophy, UserCheck, FileText as ContractIcon, GraduationCap, BookOpen, Globe, Satellite as SatelliteIcon, User, Book, Stethoscope, Calendar } from "lucide-react";
 import { useAuth } from "../utils/AuthContext";
 import { useState } from "react";
 
@@ -141,6 +141,28 @@ export default function AdminNavbar() {
           <Link to="/admin/lectures" className={getLinkClass("/admin/lectures")} onClick={closeMobileMenu}>
             <BookOpen size={18} />
             Lectures
+          </Link>
+
+          {/* Students & Courses Management - Updated */}
+          <Link to="/admin/students" className={getLinkClass("/admin/students")} onClick={closeMobileMenu}>
+            <User size={18} />
+            Students
+          </Link>
+
+          <Link to="/admin/courses" className={getLinkClass("/admin/courses")} onClick={closeMobileMenu}>
+            <Book size={18} />
+            Courses
+          </Link>
+
+          {/* Doctors & Appointments Management */}
+          <Link to="/admin/doctors" className={getLinkClass("/admin/doctors")} onClick={closeMobileMenu}>
+            <Stethoscope size={18} />
+            Doctors
+          </Link>
+
+          <Link to="/admin/appointments" className={getLinkClass("/admin/appointments")} onClick={closeMobileMenu}>
+            <Calendar size={18} />
+            Appointments
           </Link>
 
           <Link to="/admin/reference-data" className={getLinkClass("/admin/reference-data")} onClick={closeMobileMenu}>

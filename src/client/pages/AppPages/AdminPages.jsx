@@ -20,6 +20,10 @@ import Lecturers from '../Lecturers';
 import Lectures from '../Lectures';
 import PlanetManagement from '../PlanetManagement';
 import SatelliteManagement from '../SatelliteManagement';
+import StudentsManagement from '../StudentsManagement';
+import CoursesManagement from '../CoursesManagement';
+import DoctorsManagement from '../DoctorsManagement';
+import AppointmentsManagement from '../AppointmentsManagement';
 
 const AdminPages = () => {
   const location = useLocation();
@@ -63,6 +67,14 @@ const AdminPages = () => {
       return <PlanetManagement />;
     case '/admin/satellites':
       return <SatelliteManagement />;
+    case '/admin/students':
+      return <StudentsManagement />;
+    case '/admin/courses':
+      return <CoursesManagement />;
+    case '/admin/doctors':
+      return <DoctorsManagement />;
+    case '/admin/appointments':
+      return <AppointmentsManagement />;
     default:
       return <AdminDashboard />;
   }

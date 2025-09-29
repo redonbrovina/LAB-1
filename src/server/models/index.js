@@ -24,6 +24,10 @@ const RefreshToken = require('./RefreshToken');
 const Satellite = require('./Satellite');
 const Shteti = require('./Shteti');
 const Team = require('./Team');
+const Student = require('./Student');
+const Course = require('./Course');
+const Doctor = require('./Doctor');
+const Appointment = require('./Appointment');
 
 // Define all models
 const models = {
@@ -52,7 +56,11 @@ const models = {
     RefreshToken,
     Satellite,
     Shteti,
-    Team
+    Team,
+    Student,
+    Course,
+    Doctor,
+    Appointment
 };
 
 // Set up all associations
@@ -61,5 +69,11 @@ Object.keys(models).forEach(modelName => {
         models[modelName].associate(models);
     }
 });
+
+// Set up Student-Course associations
+require('./associations/StudentCourseAssociations');
+
+// Set up Doctor-Appointment associations
+require('./associations/DoctorAppointmentAssociations');
 
 module.exports = models;

@@ -33,6 +33,10 @@ const lecturerRoutes = require('./src/server/routes/lecturerRoutes');
 const lectureRoutes = require('./src/server/routes/lectureRoutes');
 const planetRoutes = require('./src/server/routes/planetRoutes');
 const satelliteRoutes = require('./src/server/routes/satelliteRoutes');
+const studentsRoutes = require('./src/server/routes/studentsRoutes');
+const coursesRoutes = require('./src/server/routes/coursesRoutes');
+const doctorsRoutes = require('./src/server/routes/doctorsRoutes');
+const appointmentsRoutes = require('./src/server/routes/appointmentsRoutes');
 
 app.use(cors({
     origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5000'],
@@ -70,6 +74,10 @@ app.use('/api/lecturers', lecturerRoutes);
 app.use('/api/lectures', lectureRoutes);
 app.use('/api/planets', planetRoutes);
 app.use('/api/satellites', satelliteRoutes);
+app.use('/api/students', studentsRoutes);
+app.use('/api/courses', coursesRoutes);
+app.use('/api/doctors', doctorsRoutes);
+app.use('/api/appointments', appointmentsRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
