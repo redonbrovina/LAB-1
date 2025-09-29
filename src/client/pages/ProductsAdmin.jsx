@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { categoriesAPI, productsAPI } from '../utils/api';
+import { categoriesAPI, productsAPI, apiGet } from '../utils/api';
 
 export default function ProductsAdmin() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [dosages, setDosages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -12,6 +13,7 @@ export default function ProductsAdmin() {
     emri: '', 
     pershkrimi: '', 
     kategoriaID: '',
+    dozaID: '',
     cmimi: '',
     sasia_ne_stok: '',
     imazhi: '/src/client/assets/images/default-pill-bottle.svg'
@@ -23,16 +25,24 @@ export default function ProductsAdmin() {
     return map;
   }, [categories]);
 
+  const dosageMap = useMemo(() => {
+    const map = new Map();
+    dosages.forEach(d => map.set(d.dozaID, d.doza));
+    return map;
+  }, [dosages]);
+
   const loadAll = async () => {
     setLoading(true);
     setError('');
     try {
-      const [p, c] = await Promise.all([
+      const [p, c, d] = await Promise.all([
         productsAPI.getAll(),
         categoriesAPI.getAll(),
+        apiGet('/doza/'),
       ]);
       setProducts(Array.isArray(p) ? p : []);
       setCategories(Array.isArray(c) ? c : []);
+      setDosages(Array.isArray(d) ? d : []);
     } catch (e) {
       setError(e?.message || 'Failed to load');
     } finally {
@@ -44,7 +54,7 @@ export default function ProductsAdmin() {
 
   const resetForm = () => {
     setEditingId(null);
-    setForm({ emri: '', pershkrimi: '', kategoriaID: '', cmimi: '', sasia_ne_stok: '', imazhi: '/src/client/assets/images/default-pill-bottle.svg' });
+    setForm({ emri: '', pershkrimi: '', kategoriaID: '', dozaID: '', cmimi: '', sasia_ne_stok: '', imazhi: '/src/client/assets/images/default-pill-bottle.svg' });
   };
 
   const handleSubmit = async (e) => {
@@ -59,6 +69,7 @@ export default function ProductsAdmin() {
         emri: form.emri,
         pershkrimi: form.pershkrimi || null,
         kategoriaID: Number(form.kategoriaID),
+        dozaID: form.dozaID ? Number(form.dozaID) : null,
         cmimi: Number(form.cmimi) || 0,
         sasia_ne_stok: Number(form.sasia_ne_stok) || 0,
         imazhi: form.imazhi || '/src/client/assets/images/default-pill-bottle.svg',
@@ -112,6 +123,7 @@ export default function ProductsAdmin() {
       emri: p.emri || '',
       pershkrimi: p.pershkrimi || '',
       kategoriaID: p.KategoriaID ?? p.kategoriaID ?? '',
+      dozaID: p.dozaID ?? '',
       cmimi: p.cmimi || '',
       sasia_ne_stok: p.sasia_ne_stok || '', // Fixed: use p.sasia_ne_stok instead of p.variacionet[0].sasia_ne_stok
       imazhi: (p && p.imazhi) ? p.imazhi : '/src/client/assets/images/default-pill-bottle.svg',
@@ -163,6 +175,21 @@ export default function ProductsAdmin() {
               {categories.map(c => (
                 <option key={c.KategoriaID ?? c.kategoriaID ?? c.id} value={c.KategoriaID ?? c.kategoriaID ?? c.id}>
                   {c.emri}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">Dosage (ml)</label>
+            <select
+              className="w-full border rounded-lg px-3 py-2"
+              value={form.dozaID}
+              onChange={e => setForm({ ...form, dozaID: e.target.value })}
+            >
+              <option value="">Select dosage</option>
+              {dosages.map(d => (
+                <option key={d.dozaID} value={d.dozaID}>
+                  {d.doza} ml
                 </option>
               ))}
             </select>
@@ -245,6 +272,7 @@ export default function ProductsAdmin() {
                     <th className="py-2 pr-4">Image</th>
                     <th className="py-2 pr-4">Name</th>
                     <th className="py-2 pr-4">Category</th>
+                    <th className="py-2 pr-4">Dosage</th>
                     <th className="py-2 pr-4">Price</th>
                     <th className="py-2 pr-4">Stock</th>
                     <th className="py-2 pr-4">Description</th>
@@ -255,6 +283,7 @@ export default function ProductsAdmin() {
                   {products.map(p => {
                     const id = p.ProduktiID ?? p.produktiID ?? p.id;
                     const catId = p.KategoriaID ?? p.kategoriaID;
+                    const dosageId = p.dozaID;
                     return (
                       <tr key={id} className="border-b hover:bg-gray-50">
                         <td className="py-2 pr-4">{id}</td>
@@ -272,6 +301,7 @@ export default function ProductsAdmin() {
                         </td>
                         <td className="py-2 pr-4">{p.emri}</td>
                         <td className="py-2 pr-4">{categoryMap.get(catId) || catId || '-'}</td>
+                        <td className="py-2 pr-4">{dosageMap.get(dosageId) ? `${dosageMap.get(dosageId)} ml` : '-'}</td>
                         <td className="py-2 pr-4">€{p.cmimi || '0.00'}</td>
                         <td className="py-2 pr-4">{p.sasia_ne_stok || '0'}</td>
                         <td className="py-2 pr-4 max-w-xl truncate" title={p.pershkrimi || ''}>{p.pershkrimi || '-'}</td>
@@ -284,7 +314,7 @@ export default function ProductsAdmin() {
                   })}
                   {products.length === 0 && (
                     <tr>
-                      <td className="py-4 text-center text-gray-500" colSpan={8}>Nuk ka produkte</td>
+                      <td className="py-4 text-center text-gray-500" colSpan={9}>Nuk ka produkte</td>
                     </tr>
                   )}
                 </tbody>
@@ -298,6 +328,7 @@ export default function ProductsAdmin() {
                   {products.map(p => {
                     const id = p.ProduktiID ?? p.produktiID ?? p.id;
                     const catId = p.KategoriaID ?? p.kategoriaID;
+                    const dosageId = p.dozaID;
                     
                     return (
                       <div key={id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -324,7 +355,7 @@ export default function ProductsAdmin() {
                           </div>
                         </div>
                         
-                        {/* Second Row - Price, Stock, and Description */}
+                        {/* Second Row - Price, Stock, Dosage, and Description */}
                         <div className="space-y-2">
                           <div className="flex justify-between items-center">
                             <span className="text-sm font-medium text-gray-700">Price:</span>
@@ -334,6 +365,11 @@ export default function ProductsAdmin() {
                           <div className="flex justify-between items-center">
                             <span className="text-sm font-medium text-gray-700">Stock:</span>
                             <span className="font-medium text-gray-900">{p.sasia_ne_stok || '0'}</span>
+                          </div>
+
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium text-gray-700">Dosage:</span>
+                            <span className="font-medium text-gray-900">{dosageMap.get(dosageId) ? `${dosageMap.get(dosageId)} ml` : '-'}</span>
                           </div>
                           
                           {p.pershkrimi && (
