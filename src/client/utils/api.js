@@ -316,3 +316,22 @@ export const contractsAPI = {
   update: (id, data) => apiPut(`/contracts/${id}`, data),
   delete: (id) => apiDelete(`/contracts/${id}`),
 };
+
+// Lecturer API functions
+export const lecturersAPI = {
+  getAll: () => apiGet('/lecturers'),
+  getById: (id) => apiGet(`/lecturers/${id}`),
+  create: (data) => apiPost('/lecturers', data),
+  update: (id, data) => apiPut(`/lecturers/${id}`, data),
+  delete: (id) => apiDelete(`/lecturers/${id}`),
+};
+
+// Lecture API functions
+export const lecturesAPI = {
+  getAll: () => apiGet('/lectures'),
+  getById: (id) => apiGet(`/lectures/${id}`),
+  getByLecturer: (lecturerId) => apiGet(`/lectures/lecturer/${lecturerId}`),
+  create: (data) => apiPost('/lectures', data),
+  update: (id, data) => apiPut(`/lectures/${id}`, data),
+  delete: (id) => apiDelete(`/lectures/${id}`),
+};

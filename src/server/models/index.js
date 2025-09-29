@@ -8,6 +8,8 @@ const Employee = require('./Employee');
 const Furnitori = require('./Furnitori');
 const Kategoria = require('./Kategoria');
 const Klienti = require('./Klienti');
+const Lecture = require('./Lecture');
+const Lecturer = require('./Lecturer');
 const MenyraPageses = require('./MenyraPageses');
 const Pagesa = require('./Pagesa');
 const PagesaStatus = require('./PagesaStatus');
@@ -33,6 +35,8 @@ const models = {
     Furnitori,
     Kategoria,
     Klienti,
+    Lecture,
+    Lecturer,
     MenyraPageses,
     Pagesa,
     PagesaStatus,

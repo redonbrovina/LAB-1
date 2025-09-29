@@ -29,6 +29,8 @@ const teamRoutes = require('./src/server/routes/teamRoutes');
 const playerRoutes = require('./src/server/routes/playerRoutes');
 const employeeRoutes = require('./src/server/routes/employeeRoutes');
 const contractRoutes = require('./src/server/routes/contractRoutes');
+const lecturerRoutes = require('./src/server/routes/lecturerRoutes');
+const lectureRoutes = require('./src/server/routes/lectureRoutes');
 
 app.use(cors({
     origin: ['http://localhost:5173', 'http://localhost:5000'],
@@ -62,6 +64,8 @@ app.use('/api/teams', teamRoutes);
 app.use('/api/players', playerRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/contracts', contractRoutes);
+app.use('/api/lecturers', lecturerRoutes);
+app.use('/api/lectures', lectureRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

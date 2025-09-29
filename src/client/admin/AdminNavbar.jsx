@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard, Menu, X, Database, Users2, Trophy, UserCheck, FileText as ContractIcon } from "lucide-react";
+import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard, Menu, X, Database, Users2, Trophy, UserCheck, FileText as ContractIcon, GraduationCap, BookOpen } from "lucide-react";
 import { useAuth } from "../utils/AuthContext";
 import { useState } from "react";
 
@@ -118,6 +118,16 @@ export default function AdminNavbar() {
           <Link to="/admin/contracts" className={getLinkClass("/admin/contracts")} onClick={closeMobileMenu}>
             <ContractIcon size={18} />
             Contracts
+          </Link>
+
+          <Link to="/admin/lecturers" className={getLinkClass("/admin/lecturers")} onClick={closeMobileMenu}>
+            <GraduationCap size={18} />
+            Lecturers
+          </Link>
+
+          <Link to="/admin/lectures" className={getLinkClass("/admin/lectures")} onClick={closeMobileMenu}>
+            <BookOpen size={18} />
+            Lectures
           </Link>
 
           <Link to="/admin/reference-data" className={getLinkClass("/admin/reference-data")} onClick={closeMobileMenu}>
