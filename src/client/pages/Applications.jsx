@@ -43,6 +43,16 @@ export default function Applications() {
     const [searchTerm, setSearchTerm] = useState('');
     const [availableStatuses, setAvailableStatuses] = useState([]);
 
+    // Pagination state
+    const [pagination, setPagination] = useState({
+        currentPage: 1,
+        totalPages: 1,
+        totalItems: 0,
+        itemsPerPage: 10,
+        hasNextPage: false,
+        hasPrevPage: false
+    });
+
     const fetchStatuses = async () => {
         try {
             const response = await apiGet("/aplikimi-status");
@@ -85,7 +95,22 @@ export default function Applications() {
             });
             
             console.log('Filtered applications:', filteredApplications);
-            setApplications(filteredApplications);
+            
+            // Calculate pagination
+            const totalItems = filteredApplications.length;
+            const totalPages = Math.ceil(totalItems / pagination.itemsPerPage);
+            const startIndex = (pagination.currentPage - 1) * pagination.itemsPerPage;
+            const endIndex = startIndex + pagination.itemsPerPage;
+            const paginatedApplications = filteredApplications.slice(startIndex, endIndex);
+            
+            setApplications(paginatedApplications);
+            setPagination(prev => ({
+                ...prev,
+                totalPages,
+                totalItems,
+                hasNextPage: pagination.currentPage < totalPages,
+                hasPrevPage: pagination.currentPage > 1
+            }));
         } catch (error) {
             console.error('Error fetching applications:', error);
             setApplications([]);
@@ -93,10 +118,20 @@ export default function Applications() {
         }
     };
 
+    // Pagination handlers
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= pagination.totalPages) {
+            setPagination(prev => ({ ...prev, currentPage: newPage }));
+        }
+    };
+
     useEffect(() => {
         fetchStatuses();
+    }, []);
+
+    useEffect(() => {
         fetchApplications();
-    }, [status, searchTerm]);
+    }, [status, searchTerm, pagination.currentPage]);
 
     const handleEditApplication = (application) => {
         setEditingApplication(application);
@@ -178,7 +213,7 @@ export default function Applications() {
             {/* Results Counter */}
             <div className="mb-4">
                 <p className="text-gray-600">
-                    Showing {applications.length} application{applications.length !== 1 ? 's' : ''}
+                    Showing {applications.length} application{applications.length !== 1 ? 's' : ''} of {pagination.totalItems} total
                     {searchTerm && ` matching "${searchTerm}"`}
                     {status !== 'all' && ` with status "${status}"`}
                 </p>
@@ -338,6 +373,55 @@ export default function Applications() {
                 </div>
             </div>
 
+
+            {/* Pagination */}
+            {pagination.totalPages > 1 && (
+                <div className="flex items-center justify-between mt-6">
+                    <div className="flex items-center gap-4">
+                        <div className="text-sm text-gray-700">
+                            Showing <span className="font-medium">{((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}</span> to <span className="font-medium">{Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)}</span> of <span className="font-medium">{pagination.totalItems}</span> results
+                        </div>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={() => handlePageChange(pagination.currentPage - 1)}
+                            disabled={!pagination.hasPrevPage}
+                            className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Previous
+                        </button>
+                        
+                        {/* Page numbers */}
+                        {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                            const pageNum = Math.max(1, pagination.currentPage - 2) + i;
+                            if (pageNum > pagination.totalPages) return null;
+                            
+                            return (
+                                <button
+                                    key={pageNum}
+                                    onClick={() => handlePageChange(pageNum)}
+                                    className={`px-3 py-1 text-sm rounded ${
+                                        pageNum === pagination.currentPage
+                                            ? 'bg-blue-500 text-white'
+                                            : 'border border-gray-300 hover:bg-gray-50'
+                                    }`}
+                                >
+                                    {pageNum}
+                                </button>
+                            );
+                        })}
+                        
+                        <button 
+                            onClick={() => handlePageChange(pagination.currentPage + 1)}
+                            disabled={!pagination.hasNextPage}
+                            className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Application Edit Modal */}
             <ApplicationEditModal

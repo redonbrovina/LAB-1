@@ -4,18 +4,52 @@ import { Edit3, Trash2 } from 'lucide-react';
 
 export default function SuppliersAdmin() {
   const [suppliers, setSuppliers] = useState([]);
+  const [allSuppliers, setAllSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ emri: '', shtetiID: '' });
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Pagination state
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10,
+    hasNextPage: false,
+    hasPrevPage: false
+  });
+
   const loadAll = async () => {
     setLoading(true);
     setError('');
     try {
       const data = await furnitoriAPI.getAll();
-      setSuppliers(Array.isArray(data) ? data : []);
+      const allSuppliersData = Array.isArray(data) ? data : [];
+      setAllSuppliers(allSuppliersData);
+      
+      // Apply search filter
+      const filteredSuppliers = allSuppliersData.filter(supplier =>
+        supplier.emri?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        supplier.furnitoriID?.toString().includes(searchTerm)
+      );
+      
+      // Calculate pagination
+      const totalItems = filteredSuppliers.length;
+      const totalPages = Math.ceil(totalItems / pagination.itemsPerPage);
+      const startIndex = (pagination.currentPage - 1) * pagination.itemsPerPage;
+      const endIndex = startIndex + pagination.itemsPerPage;
+      const paginatedSuppliers = filteredSuppliers.slice(startIndex, endIndex);
+      
+      setSuppliers(paginatedSuppliers);
+      setPagination(prev => ({
+        ...prev,
+        totalPages,
+        totalItems,
+        hasNextPage: pagination.currentPage < totalPages,
+        hasPrevPage: pagination.currentPage > 1
+      }));
     } catch (e) {
       setError(e?.message || 'Failed to load suppliers');
     } finally {
@@ -23,7 +57,14 @@ export default function SuppliersAdmin() {
     }
   };
 
-  useEffect(() => { loadAll(); }, []);
+  // Pagination handlers
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPagination(prev => ({ ...prev, currentPage: newPage }));
+    }
+  };
+
+  useEffect(() => { loadAll(); }, [searchTerm, pagination.currentPage]);
 
   const resetForm = () => {
     setEditingId(null);
@@ -73,10 +114,7 @@ export default function SuppliersAdmin() {
     }
   };
 
-  const filteredSuppliers = suppliers.filter(supplier =>
-    supplier.emri?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    supplier.furnitoriID?.toString().includes(searchTerm)
-  );
+  // Suppliers are already filtered and paginated in loadAll
 
   return (
     <div className="p-4 lg:p-6 space-y-6">
@@ -149,7 +187,7 @@ export default function SuppliersAdmin() {
                 </tr>
               </thead>
               <tbody>
-                {filteredSuppliers.map(s => {
+                {suppliers.map(s => {
                   const id = s.furnitoriID ?? s.id;
                   return (
                     <tr key={id} className="border-b hover:bg-gray-50">
@@ -177,7 +215,7 @@ export default function SuppliersAdmin() {
                     </tr>
                   );
                 })}
-                {filteredSuppliers.length === 0 && (
+                {suppliers.length === 0 && (
                   <tr>
                     <td className="py-4 text-center text-gray-500" colSpan={4}>
                       {searchTerm ? 'No suppliers found' : 'No suppliers'}
@@ -189,6 +227,55 @@ export default function SuppliersAdmin() {
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between mt-6">
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-gray-700">
+              Showing <span className="font-medium">{((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}</span> to <span className="font-medium">{Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)}</span> of <span className="font-medium">{pagination.totalItems}</span> results
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <button 
+              onClick={() => handlePageChange(pagination.currentPage - 1)}
+              disabled={!pagination.hasPrevPage}
+              className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            
+            {/* Page numbers */}
+            {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+              const pageNum = Math.max(1, pagination.currentPage - 2) + i;
+              if (pageNum > pagination.totalPages) return null;
+              
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  className={`px-3 py-1 text-sm rounded ${
+                    pageNum === pagination.currentPage
+                      ? 'bg-blue-500 text-white'
+                      : 'border border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+            
+            <button 
+              onClick={() => handlePageChange(pagination.currentPage + 1)}
+              disabled={!pagination.hasNextPage}
+              className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

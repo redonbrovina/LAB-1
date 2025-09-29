@@ -4,6 +4,7 @@ import { Edit3, Trash2 } from 'lucide-react';
 
 export default function ProductsAdmin() {
   const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [dosages, setDosages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,6 +19,16 @@ export default function ProductsAdmin() {
     cmimi: '',
     sasia_ne_stok: '',
     imazhi: '/src/client/assets/images/default-pill-bottle.svg'
+  });
+
+  // Pagination state
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10,
+    hasNextPage: false,
+    hasPrevPage: false
   });
 
   const categoryMap = useMemo(() => {
@@ -41,7 +52,26 @@ export default function ProductsAdmin() {
         categoriesAPI.getAll(),
         apiGet('/doza/'),
       ]);
-      setProducts(Array.isArray(p) ? p : []);
+      
+      const allProductsData = Array.isArray(p) ? p : [];
+      setAllProducts(allProductsData);
+      
+      // Calculate pagination
+      const totalItems = allProductsData.length;
+      const totalPages = Math.ceil(totalItems / pagination.itemsPerPage);
+      const startIndex = (pagination.currentPage - 1) * pagination.itemsPerPage;
+      const endIndex = startIndex + pagination.itemsPerPage;
+      const paginatedProducts = allProductsData.slice(startIndex, endIndex);
+      
+      setProducts(paginatedProducts);
+      setPagination(prev => ({
+        ...prev,
+        totalPages,
+        totalItems,
+        hasNextPage: pagination.currentPage < totalPages,
+        hasPrevPage: pagination.currentPage > 1
+      }));
+      
       setCategories(Array.isArray(c) ? c : []);
       setDosages(Array.isArray(d) ? d : []);
     } catch (e) {
@@ -51,7 +81,14 @@ export default function ProductsAdmin() {
     }
   };
 
-  useEffect(() => { loadAll(); }, []);
+  // Pagination handlers
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPagination(prev => ({ ...prev, currentPage: newPage }));
+    }
+  };
+
+  useEffect(() => { loadAll(); }, [pagination.currentPage]);
 
   const resetForm = () => {
     setEditingId(null);
@@ -419,6 +456,55 @@ export default function ProductsAdmin() {
           </>
         )}
       </div>
+
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between mt-6">
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-gray-700">
+              Showing <span className="font-medium">{((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}</span> to <span className="font-medium">{Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)}</span> of <span className="font-medium">{pagination.totalItems}</span> results
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <button 
+              onClick={() => handlePageChange(pagination.currentPage - 1)}
+              disabled={!pagination.hasPrevPage}
+              className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            
+            {/* Page numbers */}
+            {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+              const pageNum = Math.max(1, pagination.currentPage - 2) + i;
+              if (pageNum > pagination.totalPages) return null;
+              
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  className={`px-3 py-1 text-sm rounded ${
+                    pageNum === pagination.currentPage
+                      ? 'bg-blue-500 text-white'
+                      : 'border border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+            
+            <button 
+              onClick={() => handlePageChange(pagination.currentPage + 1)}
+              disabled={!pagination.hasNextPage}
+              className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

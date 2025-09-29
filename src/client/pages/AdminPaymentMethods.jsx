@@ -4,6 +4,7 @@ import { paymentMethodsAPI } from "../utils/api";
 
 export default function AdminPaymentMethods() {
   const [paymentMethods, setPaymentMethods] = useState([]);
+  const [allPaymentMethods, setAllPaymentMethods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingMethod, setEditingMethod] = useState(null);
@@ -13,9 +14,26 @@ export default function AdminPaymentMethods() {
     pershkrimi: ""
   });
 
+  // Pagination state
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10,
+    hasNextPage: false,
+    hasPrevPage: false
+  });
+
+  // Pagination handlers
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPagination(prev => ({ ...prev, currentPage: newPage }));
+    }
+  };
+
   useEffect(() => {
     fetchPaymentMethods();
-  }, []);
+  }, [pagination.currentPage]);
 
   const fetchPaymentMethods = async () => {
     try {
@@ -26,18 +44,37 @@ export default function AdminPaymentMethods() {
       // Ensure data is an array
       if (Array.isArray(data)) {
         console.log('Data is array, setting payment methods:', data);
-        setPaymentMethods(data);
+        const allMethodsData = data;
+        setAllPaymentMethods(allMethodsData);
+        
+        // Calculate pagination
+        const totalItems = allMethodsData.length;
+        const totalPages = Math.ceil(totalItems / pagination.itemsPerPage);
+        const startIndex = (pagination.currentPage - 1) * pagination.itemsPerPage;
+        const endIndex = startIndex + pagination.itemsPerPage;
+        const paginatedMethods = allMethodsData.slice(startIndex, endIndex);
+        
+        setPaymentMethods(paginatedMethods);
+        setPagination(prev => ({
+          ...prev,
+          totalPages,
+          totalItems,
+          hasNextPage: pagination.currentPage < totalPages,
+          hasPrevPage: pagination.currentPage > 1
+        }));
       } else {
         console.error('API returned non-array data:', data);
         console.error('Data type:', typeof data);
         console.error('Data constructor:', data?.constructor?.name);
         setPaymentMethods([]);
+        setAllPaymentMethods([]);
       }
     } catch (error) {
       console.error('Error fetching payment methods:', error);
       console.error('Error details:', error.message);
       console.error('Error stack:', error.stack);
       setPaymentMethods([]); // Set empty array on error
+      setAllPaymentMethods([]);
     } finally {
       setLoading(false);
     }
@@ -134,7 +171,7 @@ export default function AdminPaymentMethods() {
           <p className="text-gray-600 mt-1">Manage payment methods in the system</p>
         </div>
         <div className="flex gap-3">
-          {Array.isArray(paymentMethods) && paymentMethods.length > 0 && (
+          {pagination.totalItems > 0 && (
             <button
               onClick={handleDeleteAll}
               className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700"
@@ -160,8 +197,8 @@ export default function AdminPaymentMethods() {
             <CreditCard size={24} />
             Payment Methods Overview
           </div>
-          <p className="text-2xl font-bold">{Array.isArray(paymentMethods) ? paymentMethods.length : 0} methods configured</p>
-          {(!Array.isArray(paymentMethods) || paymentMethods.length === 0) && (
+          <p className="text-2xl font-bold">{pagination.totalItems} methods configured</p>
+          {pagination.totalItems === 0 && (
             <div className="flex items-center gap-2 mt-2 text-orange-600">
               <span className="text-sm">No payment methods configured - clients cannot make payments</span>
             </div>
@@ -173,7 +210,7 @@ export default function AdminPaymentMethods() {
       <div className="bg-white shadow rounded-2xl p-6">
         <h2 className="text-xl font-semibold mb-6">Manage Payment Methods</h2>
         
-        {!Array.isArray(paymentMethods) || paymentMethods.length === 0 ? (
+        {paymentMethods.length === 0 ? (
           <div className="text-center py-12 text-gray-500">
             <CreditCard size={48} className="mx-auto mb-4 text-gray-400" />
             <p className="text-lg mb-2">No payment methods configured</p>
@@ -279,6 +316,55 @@ export default function AdminPaymentMethods() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between mt-6">
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-gray-700">
+              Showing <span className="font-medium">{((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}</span> to <span className="font-medium">{Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)}</span> of <span className="font-medium">{pagination.totalItems}</span> results
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <button 
+              onClick={() => handlePageChange(pagination.currentPage - 1)}
+              disabled={!pagination.hasPrevPage}
+              className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            
+            {/* Page numbers */}
+            {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+              const pageNum = Math.max(1, pagination.currentPage - 2) + i;
+              if (pageNum > pagination.totalPages) return null;
+              
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  className={`px-3 py-1 text-sm rounded ${
+                    pageNum === pagination.currentPage
+                      ? 'bg-blue-500 text-white'
+                      : 'border border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+            
+            <button 
+              onClick={() => handlePageChange(pagination.currentPage + 1)}
+              disabled={!pagination.hasNextPage}
+              className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
           </div>
         </div>
       )}
