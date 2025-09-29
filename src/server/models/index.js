@@ -18,6 +18,8 @@ const RefreshToken = require('./RefreshToken');
 const Shteti = require('./Shteti');
 const Ligjeruesi = require('./Ligjeruesi');
 const Ligjerata = require('./Ligjerata');
+const Planet = require('./Planet')
+const Satellite = require('./Satellite')
 
 // Define all models
 const models = {
@@ -40,7 +42,9 @@ const models = {
     RefreshToken,
     Shteti,
     Ligjeruesi,
-    Ligjerata
+    Ligjerata,
+    Planet,
+    Satellite
 };
 
 Object.keys(models).forEach(modelName => {

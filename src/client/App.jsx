@@ -9,6 +9,8 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 import Ligjeruesi from './pages/Ligjeruesi';
 import Ligjerata from './pages/Ligjerata';
+import Planet from "./pages/Planet"
+import Satellite from "./pages/Satellite"
 
 const Layout = lazy(() => import('./components/layout/Layout'));
 const ProtectedLayout = lazy(() => import('./components/layout/ProtectedLayout'));
@@ -113,6 +115,8 @@ export default function App() {
 
             <Route path="/ligjeruesi" element={<Ligjeruesi />} />
             <Route path="/ligjerata" element={<Ligjerata />} />
+            <Route path="/planet" element={<Planet />} />
+            <Route path="/satellite" element={<Satellite />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Suspense>

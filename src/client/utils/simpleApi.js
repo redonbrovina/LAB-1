@@ -18,6 +18,9 @@ export const createApiClient = (entityName) => {
         }).then(res => res.json()),
         delete: (id) => fetch(`${baseUrl}/${id}`, {
             method: 'DELETE'
-        }).then(res => res.json())
+        }).then(res => res.json()),
+        deleteS: (id) => fetch(`${baseUrl}/delete/${id}`, {
+            method: 'PUT'
+        })
     };
 };
