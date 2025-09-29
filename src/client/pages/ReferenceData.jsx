@@ -65,6 +65,32 @@ export default function ReferenceData() {
         }
     }, [activeTab]);
 
+    // Function to translate status names to English
+    const translateStatusName = (statusName, type) => {
+        if (!statusName) return statusName;
+        
+        const translations = {
+            'aplikimi-status': {
+                'pending': 'Pending',
+                'pranuar': 'Approved',
+                'refuzuar': 'Refused'
+            },
+            'pagesa-status': {
+                'Në pritje': 'Pending',
+                'E paguar': 'Payed',
+                'E refuzuar': 'Refused',
+                'penddd': 'Pending'
+            },
+            'porosia-status': {
+                'Anuluar': 'Refused',
+                'Në proces': 'Pending',
+                'Përfunduar': 'Finished'
+            }
+        };
+        
+        return translations[type]?.[statusName] || statusName;
+    };
+
     const getCurrentData = () => {
         switch (activeTab) {
             case 'doza': return doza;
@@ -322,17 +348,17 @@ export default function ReferenceData() {
                                     )}
                                     {activeTab === 'aplikimi-status' && (
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {item.statusi}
+                                            {translateStatusName(item.statusi, 'aplikimi-status')}
                                         </td>
                                     )}
                                     {activeTab === 'pagesa-status' && (
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {item.statusi}
+                                            {translateStatusName(item.statusi, 'pagesa-status')}
                                         </td>
                                     )}
                                     {activeTab === 'porosia-status' && (
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {item.statusi}
+                                            {translateStatusName(item.statusi, 'porosia-status')}
                                         </td>
                                     )}
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { furnitoriAPI } from '../utils/api';
+import { Edit3, Trash2 } from 'lucide-react';
 
 export default function SuppliersAdmin() {
   const [suppliers, setSuppliers] = useState([]);
@@ -135,7 +136,7 @@ export default function SuppliersAdmin() {
           </div>
         </div>
         {loading ? (
-          <div className="text-gray-500">Duke u ngarkuar...</div>
+          <div className="text-gray-500">Loading...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
@@ -155,9 +156,23 @@ export default function SuppliersAdmin() {
                       <td className="py-2 pr-4">{id}</td>
                       <td className="py-2 pr-4">{s.emri}</td>
                       <td className="py-2 pr-4">{s.shteti.emri_shtetit || '-'}</td>
-                      <td className="py-2 lg:pr-2 lg:sticky lg:right-0 lg:bg-white lg:shadow-lg lg:pl-4 space-x-2">
-                        <button className="px-3 py-1 text-xs bg-blue-500 text-white rounded" onClick={() => handleEdit(s)}>Edit</button>
-                        <button className="px-3 py-1 text-xs bg-red-500 text-white rounded" onClick={() => handleDelete(id)}>Delete</button>
+                      <td className="py-2 lg:pr-2 lg:sticky lg:right-0 lg:bg-white lg:shadow-lg lg:pl-4">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleEdit(s)}
+                            className="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                            title="Edit Supplier"
+                          >
+                            <Edit3 size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(id)}
+                            className="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                            title="Delete Supplier"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

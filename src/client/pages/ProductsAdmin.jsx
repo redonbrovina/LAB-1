@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { categoriesAPI, productsAPI, apiGet } from '../utils/api';
+import { Edit3, Trash2 } from 'lucide-react';
 
 export default function ProductsAdmin() {
   const [products, setProducts] = useState([]);
@@ -306,8 +307,22 @@ export default function ProductsAdmin() {
                         <td className="py-2 pr-4">{p.sasia_ne_stok || '0'}</td>
                         <td className="py-2 pr-4 max-w-xl truncate" title={p.pershkrimi || ''}>{p.pershkrimi || '-'}</td>
                         <td className="py-2 pr-4 space-x-2">
-                          <button className="px-3 py-1 text-xs bg-blue-500 text-white rounded" onClick={() => handleEdit(p)}>Edito</button>
-                          <button className="px-3 py-1 text-xs bg-red-500 text-white rounded" onClick={() => handleDelete(id)}>Fshij</button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleEdit(p)}
+                              className="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                              title="Edit Product"
+                            >
+                              <Edit3 size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(id)}
+                              className="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                              title="Delete Product"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -350,8 +365,20 @@ export default function ProductsAdmin() {
                             <div className="text-sm text-gray-600">{categoryMap.get(catId) || catId || '-'}</div>
                           </div>
                           <div className="flex gap-2">
-                            <button className="px-3 py-1 text-xs bg-blue-500 text-white rounded" onClick={() => handleEdit(p)}>Edito</button>
-                            <button className="px-3 py-1 text-xs bg-red-500 text-white rounded" onClick={() => handleDelete(id)}>Fshij</button>
+                            <button
+                              onClick={() => handleEdit(p)}
+                              className="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                              title="Edit Product"
+                            >
+                              <Edit3 size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(id)}
+                              className="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                              title="Delete Product"
+                            >
+                              <Trash2 size={16} />
+                            </button>
                           </div>
                         </div>
                         

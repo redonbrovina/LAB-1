@@ -25,7 +25,7 @@ export default function Orders() {
       const data = await apiGet('/porosite');
       setOrders(data);
     } catch (err) {
-      setError('Gabim në ngarkimin e porosive');
+      setError('Error loading orders');
       console.error('Error fetching orders:', err);
     } finally {
       setLoading(false);
@@ -96,7 +96,7 @@ export default function Orders() {
       setShowEditModal(false);
       setEditingOrder(null);
     } catch (err) {
-      setError(`Gabim në përditësimin e porosisë: ${err.message}`);
+      setError(`Error updating order: ${err.message}`);
       console.error('❌ Frontend: Error updating order:', err);
       console.error('❌ Frontend: Error details:', err.response?.data);
     } finally {
@@ -106,7 +106,7 @@ export default function Orders() {
 
   // DELETE - Delete order
   const deleteOrder = async (orderId) => {
-    if (!window.confirm('A jeni të sigurt që doni të fshini këtë porosi?')) {
+    if (!window.confirm('Are you sure you want to delete this order?')) {
       return;
     }
 
@@ -120,7 +120,7 @@ export default function Orders() {
       // Refresh orders list
       await fetchOrders();
     } catch (err) {
-      setError(`Gabim në fshirjen e porosisë: ${err.message}`);
+      setError(`Error deleting order: ${err.message}`);
       console.error('❌ Frontend: Error deleting order:', err);
       console.error('❌ Frontend: Error details:', err.response?.data);
       console.error('❌ Frontend: Full error object:', err);
@@ -140,9 +140,9 @@ export default function Orders() {
 
   // Core order status styling (these have specific colors)
   const coreOrderStatusStyles = {
-    1: { text: 'Në proces', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
-    2: { text: 'Përfunduar', color: 'bg-green-100 text-green-800', icon: CheckCircle },
-    3: { text: 'Anuluar', color: 'bg-red-100 text-red-800', icon: XCircle }
+    1: { text: 'In Progress', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
+    2: { text: 'Completed', color: 'bg-green-100 text-green-800', icon: CheckCircle },
+    3: { text: 'Cancelled', color: 'bg-red-100 text-red-800', icon: XCircle }
   };
 
   // Function to get order status styling (core statuses get specific colors, others get gray)
@@ -214,7 +214,7 @@ export default function Orders() {
           </div>
           <div className="flex items-center gap-4">
             <div className="text-sm text-gray-500">
-              Total: {orders.length} porosi
+              Total: {orders.length} orders
             </div>
           </div>
         </div>
@@ -351,8 +351,8 @@ export default function Orders() {
                       {/* First Row - Order ID and Status */}
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <div className="font-medium text-gray-900">Porosia #{order.porosiaID}</div>
-                          <div className="text-sm text-gray-500">Klienti #{order.klientiID}</div>
+                          <div className="font-medium text-gray-900">Order #{order.porosiaID}</div>
+                          <div className="text-sm text-gray-500">Client #{order.klientiID}</div>
                         </div>
                         <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${status.color}`}>
                           <StatusIcon size={12} />
@@ -363,7 +363,7 @@ export default function Orders() {
                       {/* Second Row - Date and Amount */}
                       <div className="flex justify-between items-center mb-3">
                         <div>
-                          <div className="text-sm font-medium text-gray-700">Data:</div>
+                          <div className="text-sm font-medium text-gray-700">Date:</div>
                           <div className="text-sm text-gray-600">{formatDate(order.koha_krijimit)}</div>
                         </div>
                         <div className="text-right">
@@ -398,7 +398,7 @@ export default function Orders() {
               </div>
             ) : (
               <div className="text-center py-8 text-gray-500">
-                Nuk u gjetën porosi që përputhen me kriteret e kërkimit.
+                No orders found matching the search criteria.
               </div>
             )}
           </div>
@@ -413,7 +413,7 @@ export default function Orders() {
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h2 className="text-xl font-bold text-gray-800">
-                    Detajet e Porosisë #{editingOrder.porosiaID}
+                    Order Details #{editingOrder.porosiaID}
                   </h2>
                   <p className="text-sm text-gray-600">
                     {formatDate(editingOrder.koha_krijimit)}
@@ -438,7 +438,7 @@ export default function Orders() {
                     <p className="text-sm text-gray-900">#{editingOrder.porosiaID}</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Data e Krijimit</label>
+                    <label className="block text-sm font-medium text-gray-700">Creation Date</label>
                     <p className="text-sm text-gray-900">{formatDate(editingOrder.koha_krijimit)}</p>
                   </div>
                 </div>
@@ -446,14 +446,14 @@ export default function Orders() {
                 {/* Read-only Fields */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Klienti</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Client</label>
                     <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700">
-                      {clients.find(client => client.klientiID == editingOrder.klientiID)?.emri_kompanise || `Klienti #${editingOrder.klientiID}`}
+                      {clients.find(client => client.klientiID == editingOrder.klientiID)?.emri_kompanise || `Client #${editingOrder.klientiID}`}
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Shuma Total</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Total Amount</label>
                     <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700">
                       {formatPrice(editingOrder.cmimi_total)}
                     </div>
@@ -463,7 +463,7 @@ export default function Orders() {
                 {/* Status Updates */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Statusi i Porosisë</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Order Status</label>
                     <select
                       value={editingOrder.porosia_statusID}
                       onChange={(e) => setEditingOrder({...editingOrder, porosia_statusID: parseInt(e.target.value)})}
@@ -478,7 +478,7 @@ export default function Orders() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Statusi i Pagesës</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Payment Status</label>
                     <select
                       value={editingOrder.pagesa_statusID}
                       onChange={(e) => setEditingOrder({...editingOrder, pagesa_statusID: parseInt(e.target.value)})}
@@ -495,7 +495,7 @@ export default function Orders() {
 
                 {/* Current Status Display */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Statusi Aktual</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Current Status</label>
                   {(() => {
                     const status = getStatusBadge(editingOrder.porosia_statusID);
                     const StatusIcon = status.icon;
@@ -514,13 +514,13 @@ export default function Orders() {
                     onClick={() => setShowEditModal(false)}
                     className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
                   >
-                    Mbyll
+                    Close
                   </button>
                   <button
                     type="submit"
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                   >
-                    Përditëso Porosinë
+                    Update Order
                   </button>
                 </div>
               </form>
