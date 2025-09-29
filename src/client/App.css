@@ -15,4 +15,70 @@ body {
     .mid-text {
         @apply max-w-55 text-center text-sm text-[#808080]
     }
+
+    /* Styling per tabela */
+    .table-container {
+        @apply overflow-x-auto;
+    }
+    .table {
+        @apply min-w-full bg-white rounded-lg shadow;
+    }
+    .table-head {
+        @apply bg-blue-50;
+    }
+    .table-head-cell {
+        @apply px-6 py-3 text-left text-xs tracking-wider;
+    }
+    .table-row {
+        @apply bg-gray;
+    }
+    .table-cell {
+        @apply px-6 py-4 text-left;
+    }
+    .table-actions {
+        @apply  py-4 flex gap-2;
+    }
+
+    /* Styling per modal */
+
+    .modal-set {
+        @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+    }
+
+    .modal-container {
+        @apply bg-white rounded-2xl p-6 w-full max-w-md;
+    }
+
+
+
+    /* Styling per forms/inputa */
+    .form {
+        @apply flex flex-col gap-4;
+    }
+    .form-label {
+        @apply font-semibold text-gray-700;
+    }
+    .form-input {
+        @apply border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400;
+    }
+    .form-select {
+        @apply border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400;
+    }
+    .form-actions {
+        @apply flex gap-2 justify-end mt-4;
+    }
+
+    /* Styling per buttona */
+    .btn {
+        @apply px-4 py-2 rounded-md font-semibold transition-colors;
+    }
+    .btn-primary {
+        @apply bg-blue-600 text-white hover:bg-blue-700;
+    }
+    .btn-secondary {
+        @apply bg-gray-300 text-gray-700 hover:bg-gray-400;
+    }
+    .btn-danger {
+        @apply bg-red-500 text-white hover:bg-red-600;
+    }
 }

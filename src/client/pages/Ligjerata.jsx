@@ -11,7 +11,6 @@ export default function Ligjerata() {
         LectureName: "",
         LecturerID: ""
     });
-    
 
     const fetchLigjerata = async () => {
         try {
@@ -21,7 +20,6 @@ export default function Ligjerata() {
             console.error("Error fetching ligjerata:", error);
         }
     }
-    
 
     const fetchLigjeruesi = async () => {
         try {
@@ -37,16 +35,15 @@ export default function Ligjerata() {
         fetchLigjeruesi();
     }, []);
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setShowAddForm(false);
-        
-        try{
+
+        try {
             const response = await createApiClient("ligjerata").create(formData);
-            if(response){
+            if (response) {
                 alert("Lecture added successfully");
-            }else{
+            } else {
                 alert("Failed to add lecture");
             }
         } catch (error) {
@@ -62,36 +59,36 @@ export default function Ligjerata() {
     }
 
     const handleDeleteClick = async (ligjerata) => {
-        if(window.confirm("Are you sure you want to delete this lecture?")) { 
+        if (window.confirm("Are you sure you want to delete this lecture?")) {
             const deleteLecture = async () => {
-                try{
+                try {
                     const response = await createApiClient("ligjerata").delete(ligjerata.LectureID);
                     alert("Lecture deleted successfully");
                     fetchLigjerata();
-                }catch(error){
+                } catch (error) {
                     console.error("Error deleting lecture:", error);
                     fetchLigjerata();
                 }
             }
             deleteLecture();
         }
-        
+
         fetchLigjerata();
     }
 
-    const handleEditSubmit = async(e) => {
+    const handleEditSubmit = async (e) => {
         e.preventDefault();
 
-        const {LectureID, LectureName, LecturerID} = formData;
+        const { LectureID, LectureName, LecturerID } = formData;
 
-        try{
+        try {
             const response = await createApiClient("ligjerata").update(LectureID, {
                 LectureName: LectureName,
                 LecturerID: LecturerID
             });
-            if(response){
+            if (response) {
                 alert("Lecture updated successfully");
-            }else{
+            } else {
                 alert("Failed to update lecture");
             }
         } catch (error) {
@@ -103,89 +100,141 @@ export default function Ligjerata() {
         setShowEditForm(false);
     }
 
-
     return (
-        <div>
-            <h1>Ligjerata Management</h1>
+        <div className="min-h-screen bg-gray-100 py-10 px-4">
+            <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-8">
+                <h1 className="text-3xl font-bold mb-8 text-blue-700 text-center">Ligjerata Management</h1>
 
-            <button onClick={() => setShowAddForm(true)} className="px-4 py-2 bg-blue-500 text-white rounded-md my-10 hover:bg-blue-600 transition-colors">Add Lecture</button>
+                <div className="flex justify-end mb-6">
+                    <button
+                        onClick={() => setShowAddForm(true)}
+                        className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors font-semibold"
+                    >
+                        Add Lecture
+                    </button>
+                </div>
 
-            <table>
-                <thead className="bg-gray-50 border-b">
-                    <th className="px-6">ID</th>
-                    <th className="px-6">Lecture</th>
-                    <th className="px-6">Lecturer Name</th>
-                    <th className="px-6">Actions</th>
-                </thead>
-
-                <tbody className="bg-white divide-y divide-gray-200">
-                    {ligjerata.map((ligjerata) => (
-                        <tr key={ligjerata.LectureID}>
-                            <td className="px-6 text-center">{ligjerata.LectureID}</td>
-                            <td className="px-6 text-center">{ligjerata.LectureName}</td>
-                            <td className="px-6 text-center">{ligjerata.Ligjeruesi.LecturerName}</td>
-                            <td>
-                                <button onClick={() => handleEditClick(ligjerata)} className="px-2 bg-blue-500 text-white rounded-md">Edit</button>
-                                <button onClick={() => handleDeleteClick(ligjerata)} className="px-2 bg-red-500 text-white rounded-md">Delete</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                <div className="overflow-x-auto">
+                    <table className="min-w-full bg-white rounded-lg shadow">
+                        <thead className="bg-blue-50">
+                            <tr>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">ID</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Lecture</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Lecturer Name</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                            {ligjerata.map((ligjerata) => (
+                                <tr key={ligjerata.LectureID} className="hover:bg-blue-50 transition-colors">
+                                    <td className="px-6 py-4 text-center">{ligjerata.LectureID}</td>
+                                    <td className="px-6 py-4 text-center">{ligjerata.LectureName}</td>
+                                    <td className="px-6 py-4 text-center">{ligjerata.Ligjeruesi.LecturerName}</td>
+                                    <td className="px-6 py-4 flex gap-2 justify-center">
+                                        <button
+                                            onClick={() => handleEditClick(ligjerata)}
+                                            className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteClick(ligjerata)}
+                                            className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
             {showAddForm && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-                        <h1>Add Lecture</h1>
+                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-lg">
+                        <h2 className="text-xl font-bold mb-6 text-blue-700 text-center">Add Lecture</h2>
                         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                             <input
-                            type="text"
-                            placeholder="Lecture Name"
-                            value={formData.LectureName}
-                            onChange={(e) => setFormData({ ...formData, LectureName: e.target.value })}
+                                type="text"
+                                placeholder="Lecture Name"
+                                value={formData.LectureName}
+                                onChange={(e) => setFormData({ ...formData, LectureName: e.target.value })}
+                                className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                             />
 
                             <select
                                 value={formData.LecturerID}
                                 onChange={(e) => setFormData({ ...formData, LecturerID: e.target.value })}
+                                className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                             >
                                 <option value="">Select Lecturer</option>
                                 {ligjeruesi.map((ligjeruesi) => (
                                     <option key={ligjeruesi.LecturerID} value={ligjeruesi.LecturerID}>{ligjeruesi.LecturerName}</option>
                                 ))}
                             </select>
-                            
-                            <button type="submit">Add Lecture</button>
+
+                            <div className="flex gap-2 justify-end mt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAddForm(false)}
+                                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                                >
+                                    Add Lecture
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
             )}
 
             {showEditForm && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-                        <h1 className="text-2xl font-bold mb-4">Edit Lecture</h1>
+                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-lg">
+                        <h2 className="text-xl font-bold mb-6 text-blue-700 text-center">Edit Lecture</h2>
                         <form className="flex flex-col gap-4" onSubmit={handleEditSubmit}>
-                            <label>Lecture Name</label>
+                            <label className="font-semibold text-gray-700">Lecture Name</label>
                             <input
-                            type="text"
-                            placeholder="Lecture Name"
-                            value={formData.LectureName}
-                            className="bg-gray-100 p-2 rounded-md"
-                            onChange={(e) => setFormData({ ...formData, LectureName: e.target.value })}
+                                type="text"
+                                placeholder="Lecture Name"
+                                value={formData.LectureName}
+                                className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                onChange={(e) => setFormData({ ...formData, LectureName: e.target.value })}
                             />
 
-                            <label>Lecturer Name</label>
+                            <label className="font-semibold text-gray-700">Lecturer Name</label>
                             <select
                                 value={formData.LecturerID}
                                 onChange={(e) => setFormData({ ...formData, LecturerID: e.target.value })}
+                                className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                             >
                                 <option value="">Select Lecturer</option>
                                 {ligjeruesi.map((ligjeruesi) => (
                                     <option key={ligjeruesi.LecturerID} value={ligjeruesi.LecturerID}>{ligjeruesi.LecturerName}</option>
                                 ))}
                             </select>
-                            <button type="submit">Submit Edit</button>
+                            <div className="flex gap-2 justify-end mt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowEditForm(false)}
+                                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                                >
+                                    Submit Edit
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>

@@ -80,6 +80,11 @@ export default function Ligjeruesi() {
 
         fetchLigjeruesi();
 
+        setFormData({
+            LecturerName: "",
+            Email: "",
+            Department: ""
+        })
         setShowEditForm(false);
     }
 
@@ -88,27 +93,26 @@ export default function Ligjeruesi() {
         <div>
             <h1>Ligjeruesi Management</h1>
 
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-md my-10 hover:bg-blue-600 transition-colors" onClick={() => setShowAddForm(true)}>Add Lecturer</button>
+            <button className="btn btn-primary" onClick={() => setShowAddForm(true)}>Add Lecturer</button>
 
-            <table>
-                <thead>
-                    <th className="px-6">ID</th>
-                    <th className="px-6">Lecturer Name</th>
-                    <th className="px-6">Email</th>
-                    <th className="px-6">Department</th>
-                    <th className="px-6">Actions</th>
+            <table className="table table-container">
+                <thead className="table-head">
+                    <th className="table-head-cell">ID</th>
+                    <th className="table-head-cell">Lecturer Name</th>
+                    <th className="table-head-cell">Email</th>
+                    <th className="table-head-cell">Department</th>
+                    <th className="table-head-cell">Actions</th>
                 </thead>
                 <tbody>
                     {ligjeruesi.map((ligjeruesi) => (
-                        <tr key={ligjeruesi.LecturerID}>
-                            <td className="px-6">{ligjeruesi.LecturerID}</td>
-                            <td className="px-6">{ligjeruesi.LecturerName}</td>
-                            <td className="px-6">{ligjeruesi.Email}</td>
-                            <td className="px-6">{ligjeruesi.Department}</td>
-                            <td className="px-6">{ligjeruesi.Actions}</td>
-                            <td>
-                                <button onClick={() => handleEditClick(ligjeruesi)} className="px-6 bg-blue-500 text-white rounded-md">Edit</button>
-                                <button onClick={() => handleDeleteClick(ligjeruesi)} className="px-6 bg-red-500 text-white rounded-md">Delete</button>
+                        <tr className="table-row" key={ligjeruesi.LecturerID}>
+                            <td className="table-cell">{ligjeruesi.LecturerID}</td>
+                            <td className="table-cell">{ligjeruesi.LecturerName}</td>
+                            <td className="table-cell">{ligjeruesi.Email}</td>
+                            <td className="table-cell">{ligjeruesi.Department}</td>
+                            <td className="table-actions">
+                                <button onClick={() => handleEditClick(ligjeruesi)} className="btn btn-secondary">Edit</button>
+                                <button onClick={() => handleDeleteClick(ligjeruesi)} className="btn btn-danger">Delete</button>
                             </td>
                         </tr>
                     ))}
@@ -118,8 +122,9 @@ export default function Ligjeruesi() {
             {showAddForm && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+                        <button className="btn btn-danger" onClick={()=>setShowAddForm(false)}>Close</button>
                         <h1 className="text-2xl font-bold mb-4">Add Lecturer</h1>
-                        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+                        <form className="form" onSubmit={handleSubmit}>
                             <input
                                 type="text"
                                 placeholder="Lecturer Name"
@@ -138,7 +143,7 @@ export default function Ligjeruesi() {
                                 value={formData.Department}
                                 onChange={(e) => setFormData({ ...formData, Department: e.target.value })}
                             />
-                            <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">Add Lecturer</button>
+                            <button type="submit" className="btn btn-primary">Add Lecturer</button>
                         </form>
                     </div>
                 </div>
@@ -147,6 +152,7 @@ export default function Ligjeruesi() {
             {showEditForm && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+                        <button onClick={()=>setShowEditForm(false)} className="btn btn-danger">Close</button>
                         <h1 className="text-2xl font-bold mb-4">Edit Lecturer</h1>
                         <form onSubmit={handleEditSubmit}>
                             <input className="px-4 py-2 border border-gray-300 rounded-md" type="text" placeholder="Lecturer Name" value={formData.LecturerName} onChange={(e) => setFormData({ ...formData, LecturerName: e.target.value })} />
