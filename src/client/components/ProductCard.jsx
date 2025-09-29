@@ -94,6 +94,13 @@ export default function ProductCard({
           {product.emri}
         </h3>
 
+        {/* Dosage */}
+        {product.doza && (
+          <div className="text-xs text-blue-600 mb-2 font-medium">
+            {product.doza.doza} ml
+          </div>
+        )}
+
         {/* Description */}
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
           {product.pershkrimi || 'No description available'}

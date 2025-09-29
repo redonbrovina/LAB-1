@@ -1,5 +1,5 @@
 const BaseRepository = require("./BaseRepository");
-const { Produkti, Kategoria } = require("../models");
+const { Produkti, Kategoria, Doza } = require("../models");
 
 class ProduktiRepository extends BaseRepository {
     constructor() {
@@ -14,6 +14,11 @@ class ProduktiRepository extends BaseRepository {
                     as: 'kategoria',
                     attributes: ['emri']
                 },
+                {
+                    model: Doza,
+                    as: 'doza',
+                    attributes: ['doza']
+                },
             ],
             order: [['emri', 'ASC']]
         });
@@ -27,6 +32,11 @@ class ProduktiRepository extends BaseRepository {
                     as: 'kategoria',
                     attributes: ['emri']
                 },
+                {
+                    model: Doza,
+                    as: 'doza',
+                    attributes: ['doza']
+                },
             ]
         });
     }
@@ -38,6 +48,11 @@ class ProduktiRepository extends BaseRepository {
                     model: Kategoria,
                     as: 'kategoria',
                     attributes: ['emri']
+                },
+                {
+                    model: Doza,
+                    as: 'doza',
+                    attributes: ['doza']
                 },
             ]
         });
@@ -84,6 +99,11 @@ class ProduktiRepository extends BaseRepository {
                     as: 'kategoria',
                     attributes: ['emri']
                 },
+                {
+                    model: Doza,
+                    as: 'doza',
+                    attributes: ['doza']
+                },
             ],
             order: [['emri', 'ASC']]
         });
@@ -99,6 +119,11 @@ class ProduktiRepository extends BaseRepository {
                     model: Kategoria,
                     as: 'kategoria',
                     attributes: ['emri']
+                },
+                {
+                    model: Doza,
+                    as: 'doza',
+                    attributes: ['doza']
                 },
             ],
             order: [['emri', 'ASC']],
