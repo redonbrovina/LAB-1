@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard, Menu, X, Database, Users2, Trophy, UserCheck, FileText as ContractIcon, GraduationCap, BookOpen } from "lucide-react";
+import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard, Menu, X, Database, Users2, Trophy, UserCheck, FileText as ContractIcon, GraduationCap, BookOpen, Globe, Satellite as SatelliteIcon } from "lucide-react";
 import { useAuth } from "../utils/AuthContext";
 import { useState } from "react";
 
@@ -52,17 +52,30 @@ export default function AdminNavbar() {
         fixed lg:static top-0 left-0 h-screen w-64 bg-red-600 text-white flex flex-col z-50
         transform transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 lg:block'}
+        flex-shrink-0 overflow-hidden
       `}>
         {/* Header */}
-        <div className="p-6">
+        <div className="p-6 flex-shrink-0">
           <h2 className="text-xl font-bold">Admin Panel</h2>
         </div>
 
         {/* Menu Items */}
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto min-h-0 max-h-full">
           <Link to="/admin" className={getLinkClass("/admin")} onClick={closeMobileMenu}>
             <LayoutDashboard size={18} />
             Dashboard
+          </Link>
+
+          {/* Planet Management - Space Objects - NEW */}
+          <Link to="/admin/planets" className={getLinkClass("/admin/planets")} onClick={closeMobileMenu}>
+            <Globe size={18} />
+            Planets
+          </Link>
+
+          {/* Satellite Management - Space Objects */}
+          <Link to="/admin/satellites" className={getLinkClass("/admin/satellites")} onClick={closeMobileMenu}>
+            <SatelliteIcon size={18} />
+            Satellites
           </Link>
 
           <Link to="/admin/applications" className={getLinkClass("/admin/applications")} onClick={closeMobileMenu}>

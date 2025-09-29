@@ -13,6 +13,7 @@ const Lecturer = require('./Lecturer');
 const MenyraPageses = require('./MenyraPageses');
 const Pagesa = require('./Pagesa');
 const PagesaStatus = require('./PagesaStatus');
+const Planet = require('./Planet');
 const Player = require('./Player');
 const Porosia = require('./Porosia');
 const PorosiaStatus = require('./PorosiaStatus');
@@ -20,6 +21,7 @@ const ProduktCart = require('./PrdouktCart');
 const Produkti = require('./Produkti');
 const ProduktPorosise = require('./ProduktPorosise');
 const RefreshToken = require('./RefreshToken');
+const Satellite = require('./Satellite');
 const Shteti = require('./Shteti');
 const Team = require('./Team');
 
@@ -40,6 +42,7 @@ const models = {
     MenyraPageses,
     Pagesa,
     PagesaStatus,
+    Planet,
     Player,
     Porosia,
     PorosiaStatus,
@@ -47,6 +50,7 @@ const models = {
     Produkti,
     ProduktPorosise,
     RefreshToken,
+    Satellite,
     Shteti,
     Team
 };

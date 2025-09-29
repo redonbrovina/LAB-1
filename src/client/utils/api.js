@@ -335,3 +335,21 @@ export const lecturesAPI = {
   update: (id, data) => apiPut(`/lectures/${id}`, data),
   delete: (id) => apiDelete(`/lectures/${id}`),
 };
+
+// Planet API functions
+export const planetsAPI = {
+  getAll: () => apiGet('/planets'),
+  getById: (id) => apiGet(`/planets/${id}`),
+  create: (data) => apiPost('/planets', data),
+  update: (id, data) => apiPut(`/planets/${id}`, data),
+  delete: (id) => apiDelete(`/planets/${id}`),
+};
+
+// Satellite API functions
+export const satellitesAPI = {
+  getAll: () => apiGet('/satellites'),
+  getById: (id) => apiGet(`/satellites/${id}`),
+  create: (data) => apiPost('/satellites', data),
+  update: (id, data) => apiPut(`/satellites/${id}`, data),
+  delete: (id) => apiDelete(`/satellites/${id}`),
+};

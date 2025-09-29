@@ -18,6 +18,8 @@ import Employees from '../Employees';
 import Contracts from '../Contracts';
 import Lecturers from '../Lecturers';
 import Lectures from '../Lectures';
+import PlanetManagement from '../PlanetManagement';
+import SatelliteManagement from '../SatelliteManagement';
 
 const AdminPages = () => {
   const location = useLocation();
@@ -57,6 +59,10 @@ const AdminPages = () => {
       return <Lecturers />;
     case '/admin/lectures':
       return <Lectures />;
+    case '/admin/planets':
+      return <PlanetManagement />;
+    case '/admin/satellites':
+      return <SatelliteManagement />;
     default:
       return <AdminDashboard />;
   }

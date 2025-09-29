@@ -5,9 +5,9 @@ import AdminNavbar from '../../admin/AdminNavbar';
 const AdminProtectedLayout = () => {
   return (
     <ProtectedRoute roles={['admin']}>
-      <div className="flex h-screen bg-gray-50">
+      <div className="flex h-screen bg-gray-50 overflow-hidden">
         <AdminNavbar />
-        <div className="flex-1 lg:ml-0 p-4 lg:p-6 pt-16 lg:pt-0 overflow-y-auto">
+        <div className="flex-1 p-4 lg:p-6 pt-16 lg:pt-6 overflow-y-auto">
           <Outlet />
         </div>
       </div>

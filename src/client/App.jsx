@@ -112,6 +112,8 @@ export default function App() {
               <Route path="contracts" element={<AdminPages />} />
               <Route path="lecturers" element={<AdminPages />} />
               <Route path="lectures" element={<AdminPages />} />
+              <Route path="planets" element={<AdminPages />} />
+              <Route path="satellites" element={<AdminPages />} />
             </Route>
             <Route path='*' element={<NotFound />} />
           </Routes>

@@ -31,9 +31,11 @@ const employeeRoutes = require('./src/server/routes/employeeRoutes');
 const contractRoutes = require('./src/server/routes/contractRoutes');
 const lecturerRoutes = require('./src/server/routes/lecturerRoutes');
 const lectureRoutes = require('./src/server/routes/lectureRoutes');
+const planetRoutes = require('./src/server/routes/planetRoutes');
+const satelliteRoutes = require('./src/server/routes/satelliteRoutes');
 
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:5000'],
+    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5000'],
     methods: ['GET','POST','PUT','DELETE'],
     credentials: true
 }));
@@ -66,6 +68,8 @@ app.use('/api/employees', employeeRoutes);
 app.use('/api/contracts', contractRoutes);
 app.use('/api/lecturers', lecturerRoutes);
 app.use('/api/lectures', lectureRoutes);
+app.use('/api/planets', planetRoutes);
+app.use('/api/satellites', satelliteRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
