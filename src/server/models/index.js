@@ -28,6 +28,10 @@ const Student = require('./Student');
 const Course = require('./Course');
 const Doctor = require('./Doctor');
 const Appointment = require('./Appointment');
+const Movie = require('./Movie');
+const Actor = require('./Actor');
+const Teacher = require('./Teacher');
+const Subject = require('./Subject');
 
 // Define all models
 const models = {
@@ -60,7 +64,11 @@ const models = {
     Student,
     Course,
     Doctor,
-    Appointment
+    Appointment,
+    Movie,
+    Actor,
+    Teacher,
+    Subject
 };
 
 // Set up all associations
@@ -75,5 +83,11 @@ require('./associations/StudentCourseAssociations');
 
 // Set up Doctor-Appointment associations
 require('./associations/DoctorAppointmentAssociations');
+
+// Set up Movie-Actor associations
+require('./associations/MovieActorAssociations');
+
+// Set up Teacher-Subject associations
+require('./associations/TeacherSubjectAssociations');
 
 module.exports = models;

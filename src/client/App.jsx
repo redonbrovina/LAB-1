@@ -118,6 +118,10 @@ export default function App() {
               <Route path="courses" element={<AdminPages />} />
               <Route path="doctors" element={<AdminPages />} />
               <Route path="appointments" element={<AdminPages />} />
+              <Route path="movies" element={<AdminPages />} />
+              <Route path="actors" element={<AdminPages />} />
+              <Route path="teachers" element={<AdminPages />} />
+              <Route path="subjects" element={<AdminPages />} />
             </Route>
             <Route path='*' element={<NotFound />} />
           </Routes>

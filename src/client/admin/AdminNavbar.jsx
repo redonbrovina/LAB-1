@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard, Menu, X, Database, Users2, Trophy, UserCheck, FileText as ContractIcon, GraduationCap, BookOpen, Globe, Satellite as SatelliteIcon, User, Book, Stethoscope, Calendar } from "lucide-react";
+import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard, Menu, X, Database, Users2, Trophy, UserCheck, FileText as ContractIcon, GraduationCap, BookOpen, Globe, Satellite as SatelliteIcon, User, Book, Stethoscope, Calendar, Film, Users as UsersIcon, GraduationCap as TeacherIcon, BookOpen as SubjectIcon } from "lucide-react";
 import { useAuth } from "../utils/AuthContext";
 import { useState } from "react";
 
@@ -163,6 +163,28 @@ export default function AdminNavbar() {
           <Link to="/admin/appointments" className={getLinkClass("/admin/appointments")} onClick={closeMobileMenu}>
             <Calendar size={18} />
             Appointments
+          </Link>
+
+          {/* Movies & Actors Management */}
+          <Link to="/admin/movies" className={getLinkClass("/admin/movies")} onClick={closeMobileMenu}>
+            <Film size={18} />
+            Movies
+          </Link>
+
+          <Link to="/admin/actors" className={getLinkClass("/admin/actors")} onClick={closeMobileMenu}>
+            <UsersIcon size={18} />
+            Actors
+          </Link>
+
+          {/* Teachers & Subjects Management */}
+          <Link to="/admin/teachers" className={getLinkClass("/admin/teachers")} onClick={closeMobileMenu}>
+            <TeacherIcon size={18} />
+            Teachers
+          </Link>
+
+          <Link to="/admin/subjects" className={getLinkClass("/admin/subjects")} onClick={closeMobileMenu}>
+            <SubjectIcon size={18} />
+            Subjects
           </Link>
 
           <Link to="/admin/reference-data" className={getLinkClass("/admin/reference-data")} onClick={closeMobileMenu}>
