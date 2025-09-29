@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard, Menu, X, Database, Users2, Trophy, UserCheck, FileText as ContractIcon, GraduationCap, BookOpen, Globe, Satellite as SatelliteIcon, User, Book, Stethoscope, Calendar, Film, Users as UsersIcon, GraduationCap as TeacherIcon, BookOpen as SubjectIcon } from "lucide-react";
+import { LayoutDashboard, FileText, ShoppingBag, Package, Users, Settings, DollarSign, Truck, CreditCard, Menu, X, Database, Users2, Trophy, UserCheck, FileText as ContractIcon, GraduationCap, BookOpen, Globe, Satellite as SatelliteIcon, User, Book, Stethoscope, Calendar, Film, Users as UsersIcon, GraduationCap as TeacherIcon, BookOpen as SubjectIcon, Store, Package as PackageIcon, Plane, UserCheck as PassengerIcon } from "lucide-react";
 import { useAuth } from "../utils/AuthContext";
 import { useState } from "react";
 
@@ -185,6 +185,28 @@ export default function AdminNavbar() {
           <Link to="/admin/subjects" className={getLinkClass("/admin/subjects")} onClick={closeMobileMenu}>
             <SubjectIcon size={18} />
             Subjects
+          </Link>
+
+          {/* Stores & Products Management */}
+          <Link to="/admin/stores" className={getLinkClass("/admin/stores")} onClick={closeMobileMenu}>
+            <Store size={18} />
+            Stores
+          </Link>
+
+          <Link to="/admin/store-products" className={getLinkClass("/admin/store-products")} onClick={closeMobileMenu}>
+            <PackageIcon size={18} />
+            Store Products
+          </Link>
+
+          {/* Flights & Passengers Management */}
+          <Link to="/admin/flights" className={getLinkClass("/admin/flights")} onClick={closeMobileMenu}>
+            <Plane size={18} />
+            Flights
+          </Link>
+
+          <Link to="/admin/passengers" className={getLinkClass("/admin/passengers")} onClick={closeMobileMenu}>
+            <PassengerIcon size={18} />
+            Passengers
           </Link>
 
           <Link to="/admin/reference-data" className={getLinkClass("/admin/reference-data")} onClick={closeMobileMenu}>

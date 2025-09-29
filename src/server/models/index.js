@@ -32,6 +32,10 @@ const Movie = require('./Movie');
 const Actor = require('./Actor');
 const Teacher = require('./Teacher');
 const Subject = require('./Subject');
+const Store = require('./Store');
+const Product = require('./Product');
+const Flight = require('./Flight');
+const Passenger = require('./Passenger');
 
 // Define all models
 const models = {
@@ -68,7 +72,11 @@ const models = {
     Movie,
     Actor,
     Teacher,
-    Subject
+    Subject,
+    Store,
+    Product,
+    Flight,
+    Passenger
 };
 
 // Set up all associations
@@ -89,5 +97,11 @@ require('./associations/MovieActorAssociations');
 
 // Set up Teacher-Subject associations
 require('./associations/TeacherSubjectAssociations');
+
+// Set up Store-Product associations
+require('./associations/StoreProductAssociations');
+
+// Set up Flight-Passenger associations
+require('./associations/FlightPassengerAssociations');
 
 module.exports = models;

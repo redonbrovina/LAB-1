@@ -28,6 +28,10 @@ import MoviesManagement from '../MoviesManagement';
 import ActorsManagement from '../ActorsManagement';
 import TeachersManagement from '../TeachersManagement';
 import SubjectsManagement from '../SubjectsManagement';
+import StoresManagement from '../StoresManagement';
+import ProductsManagement from '../ProductsManagement';
+import FlightsManagement from '../FlightsManagement';
+import PassengersManagement from '../PassengersManagement';
 
 const AdminPages = () => {
   const location = useLocation();
@@ -87,6 +91,14 @@ const AdminPages = () => {
       return <TeachersManagement />;
     case '/admin/subjects':
       return <SubjectsManagement />;
+    case '/admin/stores':
+      return <StoresManagement />;
+    case '/admin/store-products':
+      return <ProductsManagement />;
+    case '/admin/flights':
+      return <FlightsManagement />;
+    case '/admin/passengers':
+      return <PassengersManagement />;
     default:
       return <AdminDashboard />;
   }
