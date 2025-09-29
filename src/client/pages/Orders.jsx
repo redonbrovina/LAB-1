@@ -5,6 +5,7 @@ import { CheckCircle, XCircle, Clock, Package, Search, Filter, Edit3, Trash2 } f
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
+  const [allOrders, setAllOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,13 +18,49 @@ export default function Orders() {
   const [availableOrderStatuses, setAvailableOrderStatuses] = useState([]);
   const [availablePaymentStatuses, setAvailablePaymentStatuses] = useState([]);
 
+  // Pagination state
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10,
+    hasNextPage: false,
+    hasPrevPage: false
+  });
+
   // Fetch orders from API
   const fetchOrders = async () => {
     try {
       setLoading(true);
       setError(null);
       const data = await apiGet('/porosite');
-      setOrders(data);
+      
+      const allOrdersData = Array.isArray(data) ? data : [];
+      setAllOrders(allOrdersData);
+      
+      // Apply filters
+      const filteredOrders = allOrdersData.filter(order => {
+        const matchesSearch = order.porosiaID.toString().includes(searchTerm) ||
+                             order.klientiID?.toString().includes(searchTerm);
+        const matchesStatus = statusFilter === 'all' || order.porosia_statusID.toString() === statusFilter;
+        return matchesSearch && matchesStatus;
+      });
+      
+      // Calculate pagination
+      const totalItems = filteredOrders.length;
+      const totalPages = Math.ceil(totalItems / pagination.itemsPerPage);
+      const startIndex = (pagination.currentPage - 1) * pagination.itemsPerPage;
+      const endIndex = startIndex + pagination.itemsPerPage;
+      const paginatedOrders = filteredOrders.slice(startIndex, endIndex);
+      
+      setOrders(paginatedOrders);
+      setPagination(prev => ({
+        ...prev,
+        totalPages,
+        totalItems,
+        hasNextPage: pagination.currentPage < totalPages,
+        hasPrevPage: pagination.currentPage > 1
+      }));
     } catch (err) {
       setError('Error loading orders');
       console.error('Error fetching orders:', err);
@@ -64,12 +101,22 @@ export default function Orders() {
     }
   };
 
+  // Pagination handlers
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPagination(prev => ({ ...prev, currentPage: newPage }));
+    }
+  };
+
   useEffect(() => {
-    fetchOrders();
     fetchClients();
     fetchOrderStatuses();
     fetchPaymentStatuses();
   }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [searchTerm, statusFilter, pagination.currentPage]);
 
 
 
@@ -130,13 +177,7 @@ export default function Orders() {
   };
 
 
-  // Filter orders based on search and status
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.porosiaID.toString().includes(searchTerm) ||
-                         order.klientiID?.toString().includes(searchTerm);
-    const matchesStatus = statusFilter === 'all' || order.porosia_statusID.toString() === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  // Orders are already filtered and paginated in fetchOrders
 
   // Core order status styling (these have specific colors)
   const coreOrderStatusStyles = {
@@ -214,7 +255,7 @@ export default function Orders() {
           </div>
           <div className="flex items-center gap-4">
             <div className="text-sm text-gray-500">
-              Total: {orders.length} orders
+              Total: {pagination.totalItems} orders
             </div>
           </div>
         </div>
@@ -283,7 +324,7 @@ export default function Orders() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredOrders.map((order) => {
+                {orders.map((order) => {
                   const status = getStatusBadge(order.porosia_statusID);
                   const StatusIcon = status.icon;
                   
@@ -340,9 +381,9 @@ export default function Orders() {
 
           {/* Mobile Cards */}
           <div className="lg:hidden">
-            {filteredOrders.length > 0 ? (
+            {orders.length > 0 ? (
               <div className="space-y-4 p-4">
-                {filteredOrders.map((order) => {
+                {orders.map((order) => {
                   const status = getStatusBadge(order.porosia_statusID);
                   const StatusIcon = status.icon;
                   
@@ -525,6 +566,55 @@ export default function Orders() {
                 </div>
               </form>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between mt-6">
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-gray-700">
+              Showing <span className="font-medium">{((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}</span> to <span className="font-medium">{Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)}</span> of <span className="font-medium">{pagination.totalItems}</span> results
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <button 
+              onClick={() => handlePageChange(pagination.currentPage - 1)}
+              disabled={!pagination.hasPrevPage}
+              className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            
+            {/* Page numbers */}
+            {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+              const pageNum = Math.max(1, pagination.currentPage - 2) + i;
+              if (pageNum > pagination.totalPages) return null;
+              
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  className={`px-3 py-1 text-sm rounded ${
+                    pageNum === pagination.currentPage
+                      ? 'bg-blue-500 text-white'
+                      : 'border border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+            
+            <button 
+              onClick={() => handlePageChange(pagination.currentPage + 1)}
+              disabled={!pagination.hasNextPage}
+              className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
           </div>
         </div>
       )}
