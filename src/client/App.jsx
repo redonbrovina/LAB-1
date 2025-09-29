@@ -108,6 +108,8 @@ export default function App() {
               <Route path="reference-data" element={<AdminPages />} />
               <Route path="teams" element={<AdminPages />} />
               <Route path="players" element={<AdminPages />} />
+              <Route path="employees" element={<AdminPages />} />
+              <Route path="contracts" element={<AdminPages />} />
             </Route>
             <Route path='*' element={<NotFound />} />
           </Routes>

@@ -2,7 +2,9 @@ const Admin = require('./Admin');
 const Aplikimi = require('./Aplikimi');
 const AplikimiStatus = require('./AplikimiStatus');
 const Cart = require('./Cart');
+const Contract = require('./Contract');
 const Doza = require('./Doza');
+const Employee = require('./Employee');
 const Furnitori = require('./Furnitori');
 const Kategoria = require('./Kategoria');
 const Klienti = require('./Klienti');
@@ -25,7 +27,9 @@ const models = {
     Aplikimi,
     AplikimiStatus,
     Cart,
+    Contract,
     Doza,
+    Employee,
     Furnitori,
     Kategoria,
     Klienti,

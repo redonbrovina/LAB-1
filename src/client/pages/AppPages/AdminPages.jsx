@@ -14,6 +14,8 @@ import AdminSettings from '../AdminSettings';
 import ReferenceData from '../ReferenceData';
 import Teams from '../Teams';
 import Players from '../Players';
+import Employees from '../Employees';
+import Contracts from '../Contracts';
 
 const AdminPages = () => {
   const location = useLocation();
@@ -45,6 +47,10 @@ const AdminPages = () => {
       return <Teams />;
     case '/admin/players':
       return <Players />;
+    case '/admin/employees':
+      return <Employees />;
+    case '/admin/contracts':
+      return <Contracts />;
     default:
       return <AdminDashboard />;
   }

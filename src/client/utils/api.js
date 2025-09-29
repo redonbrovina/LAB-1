@@ -297,3 +297,22 @@ export const playersAPI = {
   update: (id, data) => apiPut(`/players/${id}`, data),
   delete: (id) => apiDelete(`/players/${id}`),
 };
+
+// Employee API functions
+export const employeesAPI = {
+  getAll: () => apiGet('/employees'),
+  getById: (id) => apiGet(`/employees/${id}`),
+  create: (data) => apiPost('/employees', data),
+  update: (id, data) => apiPut(`/employees/${id}`, data),
+  delete: (id) => apiDelete(`/employees/${id}`),
+};
+
+// Contract API functions
+export const contractsAPI = {
+  getAll: () => apiGet('/contracts'),
+  getById: (id) => apiGet(`/contracts/${id}`),
+  getByEmployee: (employeeId) => apiGet(`/contracts/employee/${employeeId}`),
+  create: (data) => apiPost('/contracts', data),
+  update: (id, data) => apiPut(`/contracts/${id}`, data),
+  delete: (id) => apiDelete(`/contracts/${id}`),
+};
