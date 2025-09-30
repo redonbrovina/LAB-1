@@ -20,6 +20,8 @@ const Ligjeruesi = require('./Ligjeruesi');
 const Ligjerata = require('./Ligjerata');
 const Planet = require('./Planet')
 const Satellite = require('./Satellite')
+const Fabrika = require('./Fabrika');
+const Punetori = require('./Punetori');
 
 // Define all models
 const models = {
@@ -44,7 +46,9 @@ const models = {
     Ligjeruesi,
     Ligjerata,
     Planet,
-    Satellite
+    Satellite,
+    Fabrika,
+    Punetori
 };
 
 Object.keys(models).forEach(modelName => {

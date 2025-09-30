@@ -26,6 +26,8 @@ const ligjeruesiRoutes = require('./src/server/routes/ligjeruesiRoutes');
 const ligjerataRoutes = require('./src/server/routes/ligjerataRoutes');
 const planetRoutes = require('./src/server/routes/planetRoutes')
 const satelliteRoutes = require('./src/server/routes/satelliteRoutes')
+const fabrikaRoutes = require('./src/server/routes/fabrikaRoutes');
+const punetoriRoutes = require('./src/server/routes/punetoriRoutes');
 
 app.use(cors({
     origin: ['http://localhost:5173', 'http://localhost:5000'],
@@ -59,6 +61,8 @@ app.use('/api/ligjeruesi', ligjeruesiRoutes);
 app.use('/api/ligjerata', ligjerataRoutes);
 app.use('/api/planet', planetRoutes)
 app.use('/api/satellite', satelliteRoutes)
+app.use('/api/fabrika', fabrikaRoutes);
+app.use('/api/punetori', punetoriRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

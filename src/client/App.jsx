@@ -7,10 +7,8 @@ import PublicRoute from './utils/PublicRoute';
 import ClientOnlyRoute from './utils/ClientOnlyRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 
-import Ligjeruesi from './pages/Ligjeruesi';
-import Ligjerata from './pages/Ligjerata';
-import Planet from "./pages/Planet"
-import Satellite from "./pages/Satellite"
+import Fabrika from "./pages/Fabrika"
+import Punetori from "./pages/Punetori"
 
 const Layout = lazy(() => import('./components/layout/Layout'));
 const ProtectedLayout = lazy(() => import('./components/layout/ProtectedLayout'));
@@ -113,10 +111,9 @@ export default function App() {
               <Route path="reference-data" element={<AdminPages />} />
             </Route>
 
-            <Route path="/ligjeruesi" element={<Ligjeruesi />} />
-            <Route path="/ligjerata" element={<Ligjerata />} />
-            <Route path="/planet" element={<Planet />} />
-            <Route path="/satellite" element={<Satellite />} />
+            <Route path="/fabrika" element={<Fabrika />} />
+            <Route path="/punetori" element={<Punetori />} />
+            
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Suspense>
