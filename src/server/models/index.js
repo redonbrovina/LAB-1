@@ -16,6 +16,8 @@ const Produkti = require('./Produkti');
 const ProduktPorosise = require('./ProduktPorosise');
 const RefreshToken = require('./RefreshToken');
 const Shteti = require('./Shteti');
+const Planeti = require('./Planeti');
+const Sateliti = require('./Sateliti');
 
 // Define all models
 const models = {
@@ -36,7 +38,9 @@ const models = {
     Produkti,
     ProduktPorosise,
     RefreshToken,
-    Shteti
+    Shteti,
+    Planeti,
+    Sateliti
 };
 
 // Set up all associations

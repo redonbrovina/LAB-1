@@ -20,6 +20,8 @@ const ClientPages = lazy(() => import('./pages/AppPages/ClientPages'));
 
 const AdminPages = lazy(() => import('./pages/AppPages/AdminPages'));
 
+const PlanetSatellite = lazy(() => import('./pages/PlanetSatellite'));
+
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Enhanced loading component with better UX
@@ -107,6 +109,10 @@ export default function App() {
               <Route path="settings" element={<AdminPages />} />
               <Route path="reference-data" element={<AdminPages />} />
             </Route>
+
+            {/* Planet & Satellite Page */}
+            <Route path="/planet-satellite" element={<PlanetSatellite />} />
+
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Suspense>

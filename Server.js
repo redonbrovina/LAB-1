@@ -22,6 +22,8 @@ const produktiRoutes = require('./src/server/routes/produktiRoutes');
 const kategoriaRoutes = require('./src/server/routes/kategoriaRoutes');
 const dozaRoutes = require('./src/server/routes/dozaRoutes');
 const shtetiRoutes = require('./src/server/routes/shtetiRoutes');
+const planetiRoutes = require('./src/server/routes/planetiRoutes');
+const satelitRoutes = require('./src/server/routes/satelitRoutes');
 
 app.use(cors({
     origin: ['http://localhost:5173', 'http://localhost:5000'],
@@ -51,6 +53,8 @@ app.use('/api/produkte', produktiRoutes);
 app.use('/api/kategorite', kategoriaRoutes);
 app.use('/api/doza', dozaRoutes);
 app.use('/api/shteti', shtetiRoutes);
+app.use('/api/planetet', planetiRoutes);
+app.use('/api/satelitet', satelitRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
