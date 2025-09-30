@@ -21,6 +21,7 @@ const ClientPages = lazy(() => import('./pages/AppPages/ClientPages'));
 const AdminPages = lazy(() => import('./pages/AppPages/AdminPages'));
 
 const PlanetSatellite = lazy(() => import('./pages/PlanetSatellite'));
+const TeamPlayer = lazy(() => import('./pages/TeamPlayer'));
 
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -112,6 +113,9 @@ export default function App() {
 
             {/* Planet & Satellite Page */}
             <Route path="/planet-satellite" element={<PlanetSatellite />} />
+
+            {/* Team & Player Page */}
+            <Route path="/team-player" element={<TeamPlayer />} />
 
             <Route path='*' element={<NotFound />} />
           </Routes>

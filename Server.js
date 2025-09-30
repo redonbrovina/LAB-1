@@ -24,6 +24,8 @@ const dozaRoutes = require('./src/server/routes/dozaRoutes');
 const shtetiRoutes = require('./src/server/routes/shtetiRoutes');
 const planetiRoutes = require('./src/server/routes/planetiRoutes');
 const satelitRoutes = require('./src/server/routes/satelitRoutes');
+const teamRoutes = require('./src/server/routes/teamRoutes');
+const playerRoutes = require('./src/server/routes/playerRoutes');
 
 app.use(cors({
     origin: ['http://localhost:5173', 'http://localhost:5000'],
@@ -55,6 +57,8 @@ app.use('/api/doza', dozaRoutes);
 app.use('/api/shteti', shtetiRoutes);
 app.use('/api/planetet', planetiRoutes);
 app.use('/api/satelitet', satelitRoutes);
+app.use('/api/teams', teamRoutes);
+app.use('/api/players', playerRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

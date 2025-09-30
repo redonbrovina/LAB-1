@@ -18,6 +18,8 @@ const RefreshToken = require('./RefreshToken');
 const Shteti = require('./Shteti');
 const Planeti = require('./Planeti');
 const Sateliti = require('./Sateliti');
+const Team = require('./Team');
+const Player = require('./Player');
 
 // Define all models
 const models = {
@@ -40,7 +42,9 @@ const models = {
     RefreshToken,
     Shteti,
     Planeti,
-    Sateliti
+    Sateliti,
+    Team,
+    Player
 };
 
 // Set up all associations
