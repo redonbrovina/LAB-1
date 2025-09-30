@@ -20,10 +20,10 @@ class RefreshTokenService {
                 iat: Math.floor(Date.now() / 1000)
             },
             JWT_REFRESH_SECRET,
-            { expiresIn: '7d' } // 7 days
+            { expiresIn: '1d' } // 1 day
         );
 
-        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); 
+        const expiresAt = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000); 
 
         const tokenData = {
             token: refreshToken,
@@ -50,14 +50,14 @@ class RefreshTokenService {
             console.log('Database token check result:', storedToken ? 'FOUND' : 'NOT FOUND');
             
             if (!storedToken) {
-                console.log('❌ Token not found in database or revoked');
+                console.log('Token not found in database or revoked');
                 throw new Error('Invalid refresh token');
             }
 
-            console.log('✅ Refresh token validation successful');
+            console.log('Refresh token validation successful');
             return decoded;
         } catch (error) {
-            console.error('❌ Refresh token validation error:', error.message);
+            console.error('Refresh token validation error:', error.message);
             throw new Error('Invalid refresh token');
         }
     }

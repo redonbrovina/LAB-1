@@ -23,9 +23,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // Make a simple API call to check if we have a valid session
       const response = await publicApiPost('/form/refresh-token', {});
-      
-      // If we get here, we have a valid session
-      // Get user info using a direct fetch to avoid refresh loop
+
       const userInfoResponse = await fetch('http://localhost:5000/api/form/user-info', {
         method: 'GET',
         credentials: 'include',
@@ -38,6 +36,12 @@ export const AuthProvider = ({ children }) => {
         const userInfo = await userInfoResponse.json();
         setUser(userInfo);
       }
+
+      const isTrue = sessionStorage.getItem('isLoggedIn');
+
+      if(!isTrue){
+        logout()
+      }
       
     } catch (error) {
       // No valid session, user stays null
@@ -47,6 +51,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
     setUser(userData);
+    sessionStorage.setItem('isLoggedIn', 'true'); 
   };
 
   const logout = async () => {
@@ -56,6 +61,7 @@ export const AuthProvider = ({ children }) => {
       console.error('Logout error:', error);
     } finally {
       setUser(null);
+      sessionStorage.removeItem('isLoggedIn');
       setDefaultPaymentMethod(null);
     }
   };
