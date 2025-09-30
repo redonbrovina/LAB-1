@@ -2,46 +2,21 @@ const Admin = require('./Admin');
 const Aplikimi = require('./Aplikimi');
 const AplikimiStatus = require('./AplikimiStatus');
 const Cart = require('./Cart');
-const Contract = require('./Contract');
-const Doza = require('./Doza');
-const Employee = require('./Employee');
 const Furnitori = require('./Furnitori');
 const Kategoria = require('./Kategoria');
 const Klienti = require('./Klienti');
-const Lecture = require('./Lecture');
-const Lecturer = require('./Lecturer');
 const MenyraPageses = require('./MenyraPageses');
 const Pagesa = require('./Pagesa');
 const PagesaStatus = require('./PagesaStatus');
-const Planet = require('./Planet');
-const Player = require('./Player');
 const Porosia = require('./Porosia');
 const PorosiaStatus = require('./PorosiaStatus');
 const ProduktCart = require('./PrdouktCart');
 const Produkti = require('./Produkti');
 const ProduktPorosise = require('./ProduktPorosise');
 const RefreshToken = require('./RefreshToken');
-const Satellite = require('./Satellite');
 const Shteti = require('./Shteti');
-const Team = require('./Team');
-const Student = require('./Student');
-const Course = require('./Course');
-const Doctor = require('./Doctor');
-const Appointment = require('./Appointment');
-const Movie = require('./Movie');
-const Actor = require('./Actor');
-const Teacher = require('./Teacher');
-const Subject = require('./Subject');
-const Store = require('./Store');
-const Product = require('./Product');
-const Flight = require('./Flight');
-const Passenger = require('./Passenger');
-const Library = require('./Library');
-const Book = require('./Book');
-const Hotel = require('./Hotel');
-const Room = require('./Room');
-const Owner = require('./Owner');
-const Car = require('./Car');
+const Fabrika = require('./Fabrika');
+const Punetori = require('./Punetori');
 
 // Define all models
 const models = {
@@ -49,46 +24,21 @@ const models = {
     Aplikimi,
     AplikimiStatus,
     Cart,
-    Contract,
-    Doza,
-    Employee,
     Furnitori,
     Kategoria,
     Klienti,
-    Lecture,
-    Lecturer,
     MenyraPageses,
     Pagesa,
     PagesaStatus,
-    Planet,
-    Player,
     Porosia,
     PorosiaStatus,
     ProduktCart,
     Produkti,
     ProduktPorosise,
     RefreshToken,
-    Satellite,
     Shteti,
-    Team,
-    Student,
-    Course,
-    Doctor,
-    Appointment,
-    Movie,
-    Actor,
-    Teacher,
-    Subject,
-    Store,
-    Product,
-    Flight,
-    Passenger,
-    Library,
-    Book,
-    Hotel,
-    Room,
-    Owner,
-    Car
+    Fabrika,
+    Punetori
 };
 
 // Set up all associations
@@ -98,31 +48,5 @@ Object.keys(models).forEach(modelName => {
     }
 });
 
-// Set up Student-Course associations
-require('./associations/StudentCourseAssociations');
-
-// Set up Doctor-Appointment associations
-require('./associations/DoctorAppointmentAssociations');
-
-// Set up Movie-Actor associations
-require('./associations/MovieActorAssociations');
-
-// Set up Teacher-Subject associations
-require('./associations/TeacherSubjectAssociations');
-
-// Set up Store-Product associations
-require('./associations/StoreProductAssociations');
-
-// Set up Flight-Passenger associations
-require('./associations/FlightPassengerAssociations');
-
-// Set up Library-Book associations
-require('./associations/LibraryBookAssociations');
-
-// Set up Hotel-Room associations
-require('./associations/HotelRoomAssociations');
-
-// Set up Owner-Car associations
-require('./associations/OwnerCarAssociations');
 
 module.exports = models;

@@ -38,6 +38,8 @@ import HotelsManagement from '../HotelsManagement';
 import RoomsManagement from '../RoomsManagement';
 import OwnersManagement from '../OwnersManagement';
 import CarsManagement from '../CarsManagement';
+import FabrikaManagement from '../FabrikaManagement';
+import PunetoriManagement from '../PunetoriManagement';
 
 const AdminPages = () => {
   const location = useLocation();
@@ -115,8 +117,12 @@ const AdminPages = () => {
         return <RoomsManagement />;
       case '/admin/owners':
         return <OwnersManagement />;
-      case '/admin/cars':
-        return <CarsManagement />;
+    case '/admin/cars':
+      return <CarsManagement />;
+    case '/admin/fabrika':
+      return <FabrikaManagement />;
+    case '/admin/punetori':
+      return <PunetoriManagement />;
       default:
         return <AdminDashboard />;
   }

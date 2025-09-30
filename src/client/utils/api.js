@@ -216,6 +216,25 @@ export const orderItemsAPI = {
   delete: (id) => apiDelete(`/produkt-porosise/${id}`),
 };
 
+// Fabrika API functions
+export const fabrikaAPI = {
+  getAll: () => apiGet('/fabrika'),
+  getById: (id) => apiGet(`/fabrika/${id}`),
+  create: (data) => apiPost('/fabrika', data),
+  update: (id, data) => apiPut(`/fabrika/${id}`, data),
+  delete: (id) => apiDelete(`/fabrika/${id}`),
+};
+
+// Punetori API functions
+export const punetoriAPI = {
+  getAll: () => apiGet('/punetori'),
+  getById: (id) => apiGet(`/punetori/${id}`),
+  getByFactory: (factoryId) => apiGet(`/punetori/factory/${factoryId}`),
+  create: (data) => apiPost('/punetori', data),
+  update: (id, data) => apiPut(`/punetori/${id}`, data),
+  delete: (id) => apiDelete(`/punetori/${id}`),
+};
+
 // Cart API functions
 export const cartAPI = {
   getAll: () => apiGet('/carts'),

@@ -132,6 +132,8 @@ export default function App() {
         <Route path="rooms" element={<AdminPages />} />
         <Route path="owners" element={<AdminPages />} />
         <Route path="cars" element={<AdminPages />} />
+        <Route path="fabrika" element={<AdminPages />} />
+        <Route path="punetori" element={<AdminPages />} />
             </Route>
             <Route path='*' element={<NotFound />} />
           </Routes>

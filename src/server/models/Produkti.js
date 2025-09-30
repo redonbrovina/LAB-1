@@ -74,10 +74,6 @@ Produkti.associate = function(models) {
         foreignKey: 'furnitoriID',
         as: 'furnitori'
     });
-    Produkti.belongsTo(models.Doza, { 
-        foreignKey: 'dozaID',
-        as: 'doza'
-    });
 };
 
 module.exports = Produkti;
