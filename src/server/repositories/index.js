@@ -7,6 +7,8 @@ const PlanetiRepository = require('./PlanetiRepository');
 const SatelitRepository = require('./SatelitRepository');
 const TeamRepository = require('./TeamRepository');
 const PlayerRepository = require('./PlayerRepository');
+const EmployeeRepository = require('./EmployeeRepository');
+const ContractRepository = require('./ContractRepository');
 
 module.exports = {
     BaseRepository,
@@ -17,5 +19,7 @@ module.exports = {
     PlanetiRepository,
     SatelitRepository,
     TeamRepository,
-    PlayerRepository
+    PlayerRepository,
+    EmployeeRepository,
+    ContractRepository
 };

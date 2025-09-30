@@ -20,6 +20,8 @@ const Planeti = require('./Planeti');
 const Sateliti = require('./Sateliti');
 const Team = require('./Team');
 const Player = require('./Player');
+const Employee = require('./Employee');
+const Contract = require('./Contract');
 
 // Define all models
 const models = {
@@ -44,7 +46,9 @@ const models = {
     Planeti,
     Sateliti,
     Team,
-    Player
+    Player,
+    Employee,
+    Contract
 };
 
 // Set up all associations

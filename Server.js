@@ -26,6 +26,8 @@ const planetiRoutes = require('./src/server/routes/planetiRoutes');
 const satelitRoutes = require('./src/server/routes/satelitRoutes');
 const teamRoutes = require('./src/server/routes/teamRoutes');
 const playerRoutes = require('./src/server/routes/playerRoutes');
+const employeeRoutes = require('./src/server/routes/employeeRoutes');
+const contractRoutes = require('./src/server/routes/contractRoutes');
 
 app.use(cors({
     origin: ['http://localhost:5173', 'http://localhost:5000'],
@@ -59,6 +61,8 @@ app.use('/api/planetet', planetiRoutes);
 app.use('/api/satelitet', satelitRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/players', playerRoutes);
+app.use('/api/employees', employeeRoutes);
+app.use('/api/contracts', contractRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
