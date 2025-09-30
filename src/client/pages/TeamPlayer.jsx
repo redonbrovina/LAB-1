@@ -1,31 +1,71 @@
 import { useState, useEffect } from 'react';
 
+/**
+ * ===========================================
+ * TEAM & PLAYER MANAGEMENT PAGE
+ * ===========================================
+ * 
+ * KY ËSHTË FRONTEND PAGE për menaxhimin e Team & Player
+ * 
+ * STRUKTURA:
+ * - Team (Parent) - ka shumë Player (Children)
+ * - Hard Delete (fshi përfundimisht nga databaza)
+ * - Full CRUD për të dy entitetet
+ * - Sample data: FC Barcelona, PSG me lojtarët e tyre
+ */
+
 function TeamPlayer() {
-    const [teams, setTeams] = useState([]);
-    const [players, setPlayers] = useState([]);
-    const [teamForm, setTeamForm] = useState({ Name: '' });
-    const [playerForm, setPlayerForm] = useState({ Name: '', Number: '', BirthYear: '', TeamId: '' });
-    const [editingTeam, setEditingTeam] = useState(null);
-    const [editingPlayer, setEditingPlayer] = useState(null);
+    // ===========================================
+    // 1. STATE MANAGEMENT (useState)
+    // ===========================================
+    
+    // STATE për të ruajtur të dhënat nga API
+    const [teams, setTeams] = useState([]);           // Lista e të gjithë ekipeve
+    const [players, setPlayers] = useState([]);       // Lista e të gjithë lojtarëve
+    
+    // STATE për formularët e krijimit
+    const [teamForm, setTeamForm] = useState({ Name: '' });     // Form për të shtuar team të ri
+    const [playerForm, setPlayerForm] = useState({ Name: '', Number: '', BirthYear: '', TeamId: '' }); // Form për të shtuar player të ri
+    
+    // STATE për editim (kur klikon "Edit" button)
+    const [editingTeam, setEditingTeam] = useState(null);   // Team që po editohet
+    const [editingPlayer, setEditingPlayer] = useState(null); // Player që po editohet
 
+    // ===========================================
+    // 2. useEffect - LOAD DATA KUR HAPET FAQJA
+    // ===========================================
+    
     useEffect(() => {
-        fetchTeams();
-        fetchPlayers();
-    }, []);
+        // Kur hapet faqja, merr të gjitha të dhënat
+        fetchTeams();        // Merr ekipet
+        fetchPlayers();      // Merr lojtarët
+    }, []); // [] = ekzekutohet vetëm një herë kur hapet faqja
 
+    // ===========================================
+    // 3. API FUNCTIONS - KOMUNIKIMI ME BACKEND
+    // ===========================================
+
+    /**
+     * FETCH TEAMS - Merr të gjithë ekipet nga API
+     * KY ËSHTË PËR: Kur kërkon "shfaq të gjithë ekipet"
+     */
     const fetchTeams = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/teams');
-            const data = await res.json();
-            setTeams(data);
+            const res = await fetch('http://localhost:5000/api/teams'); // GET request
+            const data = await res.json(); // Konverto response në JSON
+            setTeams(data); // Ruaj në state
         } catch (err) {
-            console.error(err);
+            console.error(err); // Nëse ka gabim, shkruaj në console
         }
     };
 
+    /**
+     * FETCH PLAYERS - Merr të gjithë lojtarët nga API
+     * KY ËSHTË PËR: Kur kërkon "shfaq të gjithë lojtarët"
+     */
     const fetchPlayers = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/players');
+            const res = await fetch('http://localhost:5000/api/players'); // GET request
             const data = await res.json();
             setPlayers(data);
         } catch (err) {
@@ -33,16 +73,27 @@ function TeamPlayer() {
         }
     };
 
+    // ===========================================
+    // 4. CRUD OPERATIONS - CREATE, READ, UPDATE, DELETE
+    // ===========================================
+
+    /**
+     * CREATE TEAM - Shto team të ri
+     * KY ËSHTË PËR: Kur kërkon "realizoni kodin për të insertuar team"
+     */
     const createTeam = async (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Ndalon refresh të faqes kur submit form
         try {
+            // POST request për të krijuar team të ri
             await fetch('http://localhost:5000/api/teams', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(teamForm)
+                method: 'POST', // HTTP method
+                headers: { 'Content-Type': 'application/json' }, // Header për JSON
+                body: JSON.stringify(teamForm) // Të dhënat si JSON string
             });
-            setTeamForm({ Name: '' });
-            fetchTeams();
+            
+            // Pas suksesit:
+            setTeamForm({ Name: '' }); // Pastro formin
+            fetchTeams(); // Merr të dhënat e reja nga server
         } catch (err) {
             console.error(err);
         }
@@ -76,20 +127,29 @@ function TeamPlayer() {
         }
     };
 
+    /**
+     * CREATE PLAYER - Shto player të ri
+     * KY ËSHTË PËR: Kur kërkon "realizoni kodin për të insertuar player"
+     * VINI RE: Duhet dropdown për zgjedhjen e Team (si kërkohet në detyrë)
+     * VINI RE: Number dhe BirthYear duhen konvertuar në INTEGER
+     */
     const createPlayer = async (e) => {
         e.preventDefault();
         try {
+            // POST request për të krijuar player të ri
             await fetch('http://localhost:5000/api/players', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...playerForm,
-                    Number: parseInt(playerForm.Number),
-                    BirthYear: parseInt(playerForm.BirthYear)
+                    Number: parseInt(playerForm.Number),     // Konverto në integer
+                    BirthYear: parseInt(playerForm.BirthYear) // Konverto në integer
                 })
             });
-            setPlayerForm({ Name: '', Number: '', BirthYear: '', TeamId: '' });
-            fetchPlayers();
+            
+            // Pas suksesit:
+            setPlayerForm({ Name: '', Number: '', BirthYear: '', TeamId: '' }); // Pastro formin
+            fetchPlayers(); // Merr lojtarët e rinj
         } catch (err) {
             console.error(err);
         }
@@ -127,22 +187,36 @@ function TeamPlayer() {
         }
     };
 
+    // ===========================================
+    // 5. RENDER - SHFAQJA E FAQES
+    // ===========================================
+
     return (
         <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
             <h1>Team & Player Management</h1>
 
-            {/* CREATE TEAM */}
+            {/* ===========================================
+                SEKSIONI 1: CREATE TEAM
+                ===========================================
+                KY ËSHTË PËR: "Realizoni kodin për të insertuar team"
+                - Form për të shtuar team të ri
+                - Fushat: Name (sipas detyrës)
+                - Sample: FC Barcelona, Paris Saint-Germain
+            */}
             <div style={{ marginBottom: '30px', padding: '15px', border: '1px solid #ccc', borderRadius: '5px' }}>
                 <h2>Create Team</h2>
                 <form onSubmit={createTeam}>
+                    {/* INPUT për emrin e ekipit */}
                     <input
                         type="text"
                         placeholder="Team Name"
-                        value={teamForm.Name}
-                        onChange={(e) => setTeamForm({ ...teamForm, Name: e.target.value })}
-                        required
+                        value={teamForm.Name} // Vlera nga state
+                        onChange={(e) => setTeamForm({ ...teamForm, Name: e.target.value })} // Update state kur shkruan
+                        required // E detyrueshme
                         style={{ padding: '8px', marginRight: '10px', width: '300px' }}
                     />
+                    
+                    {/* BUTTON për të submituar formin */}
                     <button type="submit" style={{ padding: '8px 20px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Add Team</button>
                 </form>
             </div>

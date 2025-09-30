@@ -1,31 +1,71 @@
 import { useState, useEffect } from 'react';
 
+/**
+ * ===========================================
+ * EMPLOYEE & CONTRACT MANAGEMENT PAGE
+ * ===========================================
+ * 
+ * KY ËSHTË FRONTEND PAGE për menaxhimin e Employee & Contract
+ * 
+ * STRUKTURA:
+ * - Employee (Parent) - ka shumë Contract (Children)
+ * - Hard Delete me CASCADE (kur fshijmë Employee, fshihen edhe Contracts)
+ * - Full CRUD për të dy entitetet
+ * - Dropdown për zgjedhjen e Employee kur krijohet Contract
+ */
+
 function EmployeeContract() {
-    const [employees, setEmployees] = useState([]);
-    const [contracts, setContracts] = useState([]);
-    const [employeeForm, setEmployeeForm] = useState({ Name: '', Surname: '' });
-    const [contractForm, setContractForm] = useState({ Title: '', Description: '', Employee: '' });
-    const [editingEmployee, setEditingEmployee] = useState(null);
-    const [editingContract, setEditingContract] = useState(null);
+    // ===========================================
+    // 1. STATE MANAGEMENT (useState)
+    // ===========================================
+    
+    // STATE për të ruajtur të dhënat nga API
+    const [employees, setEmployees] = useState([]);           // Lista e të gjithë punonjësve
+    const [contracts, setContracts] = useState([]);           // Lista e të gjithë kontratave
+    
+    // STATE për formularët e krijimit
+    const [employeeForm, setEmployeeForm] = useState({ Name: '', Surname: '' });     // Form për të shtuar employee të ri
+    const [contractForm, setContractForm] = useState({ Title: '', Description: '', Employee: '' }); // Form për të shtuar contract të ri
+    
+    // STATE për editim (kur klikon "Edit" button)
+    const [editingEmployee, setEditingEmployee] = useState(null);   // Employee që po editohet
+    const [editingContract, setEditingContract] = useState(null);   // Contract që po editohet
 
+    // ===========================================
+    // 2. useEffect - LOAD DATA KUR HAPET FAQJA
+    // ===========================================
+    
     useEffect(() => {
-        fetchEmployees();
-        fetchContracts();
-    }, []);
+        // Kur hapet faqja, merr të gjitha të dhënat
+        fetchEmployees();        // Merr punonjësit
+        fetchContracts();        // Merr kontratat
+    }, []); // [] = ekzekutohet vetëm një herë kur hapet faqja
 
+    // ===========================================
+    // 3. API FUNCTIONS - KOMUNIKIMI ME BACKEND
+    // ===========================================
+
+    /**
+     * FETCH EMPLOYEES - Merr të gjithë punonjësit nga API
+     * KY ËSHTË PËR: Kur kërkon "shfaq të gjithë punonjësit"
+     */
     const fetchEmployees = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/employees');
-            const data = await res.json();
-            setEmployees(data);
+            const res = await fetch('http://localhost:5000/api/employees'); // GET request
+            const data = await res.json(); // Konverto response në JSON
+            setEmployees(data); // Ruaj në state
         } catch (err) {
-            console.error(err);
+            console.error(err); // Nëse ka gabim, shkruaj në console
         }
     };
 
+    /**
+     * FETCH CONTRACTS - Merr të gjitha kontratat nga API
+     * KY ËSHTË PËR: Kur kërkon "shfaq të gjitha kontratat"
+     */
     const fetchContracts = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/contracts');
+            const res = await fetch('http://localhost:5000/api/contracts'); // GET request
             const data = await res.json();
             setContracts(data);
         } catch (err) {
@@ -33,16 +73,27 @@ function EmployeeContract() {
         }
     };
 
+    // ===========================================
+    // 4. CRUD OPERATIONS - CREATE, READ, UPDATE, DELETE
+    // ===========================================
+
+    /**
+     * CREATE EMPLOYEE - Shto punonjës të ri
+     * KY ËSHTË PËR: Kur kërkon "realizoni kodin për të insertuar employee"
+     */
     const createEmployee = async (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Ndalon refresh të faqes kur submit form
         try {
+            // POST request për të krijuar employee të ri
             await fetch('http://localhost:5000/api/employees', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(employeeForm)
+                method: 'POST', // HTTP method
+                headers: { 'Content-Type': 'application/json' }, // Header për JSON
+                body: JSON.stringify(employeeForm) // Të dhënat si JSON string
             });
-            setEmployeeForm({ Name: '', Surname: '' });
-            fetchEmployees();
+            
+            // Pas suksesit:
+            setEmployeeForm({ Name: '', Surname: '' }); // Pastro formin
+            fetchEmployees(); // Merr të dhënat e reja nga server
         } catch (err) {
             console.error(err);
         }
@@ -63,33 +114,51 @@ function EmployeeContract() {
         }
     };
 
+    /**
+     * DELETE EMPLOYEE - Fshi punonjës (CASCADE DELETE)
+     * KY ËSHTË PËR: Kur kërkon "fshi punonjësin"
+     * VINI RE: CASCADE - kur fshijmë Employee, fshihen edhe të gjitha Contracts e tij
+     */
     const deleteEmployee = async (id) => {
+        // Konfirmim para fshirjes (me paralajmërim për CASCADE)
         if (window.confirm('Are you sure you want to delete this employee? This will also delete all their contracts.')) {
             try {
+                // DELETE request (CASCADE në backend)
                 await fetch(`http://localhost:5000/api/employees/${id}`, {
                     method: 'DELETE'
                 });
-                fetchEmployees();
-                fetchContracts();
+                
+                // Merr të dhënat e përditësuara
+                fetchEmployees(); // Merr punonjësit
+                fetchContracts(); // Merr kontratat (pasi mund të jenë fshirë disa)
             } catch (err) {
                 console.error(err);
             }
         }
     };
 
+    /**
+     * CREATE CONTRACT - Shto kontratë të re
+     * KY ËSHTË PËR: Kur kërkon "realizoni kodin për të insertuar contract"
+     * VINI RE: Duhet dropdown për zgjedhjen e Employee (si kërkohet në detyrë)
+     * VINI RE: Employee duhet konvertuar në INTEGER
+     */
     const createContract = async (e) => {
         e.preventDefault();
         try {
+            // POST request për të krijuar contract të ri
             await fetch('http://localhost:5000/api/contracts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...contractForm,
-                    Employee: parseInt(contractForm.Employee)
+                    Employee: parseInt(contractForm.Employee) // Konverto në integer
                 })
             });
-            setContractForm({ Title: '', Description: '', Employee: '' });
-            fetchContracts();
+            
+            // Pas suksesit:
+            setContractForm({ Title: '', Description: '', Employee: '' }); // Pastro formin
+            fetchContracts(); // Merr kontratat e reja
         } catch (err) {
             console.error(err);
         }
@@ -126,30 +195,45 @@ function EmployeeContract() {
         }
     };
 
+    // ===========================================
+    // 5. RENDER - SHFAQJA E FAQES
+    // ===========================================
+
     return (
         <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
             <h1>Employee & Contract Management</h1>
 
-            {/* CREATE EMPLOYEE */}
+            {/* ===========================================
+                SEKSIONI 1: CREATE EMPLOYEE
+                ===========================================
+                KY ËSHTË PËR: "Realizoni kodin për të insertuar employee"
+                - Form për të shtuar punonjës të ri
+                - Fushat: Name, Surname (sipas detyrës)
+            */}
             <div style={{ marginBottom: '30px', padding: '15px', border: '1px solid #ccc', borderRadius: '5px' }}>
                 <h2>Create Employee</h2>
                 <form onSubmit={createEmployee}>
+                    {/* INPUT për emrin e punonjësit */}
                     <input
                         type="text"
                         placeholder="Name"
-                        value={employeeForm.Name}
-                        onChange={(e) => setEmployeeForm({ ...employeeForm, Name: e.target.value })}
-                        required
+                        value={employeeForm.Name} // Vlera nga state
+                        onChange={(e) => setEmployeeForm({ ...employeeForm, Name: e.target.value })} // Update state kur shkruan
+                        required // E detyrueshme
                         style={{ padding: '8px', marginRight: '10px', width: '200px' }}
                     />
+                    
+                    {/* INPUT për mbiemrin e punonjësit */}
                     <input
                         type="text"
                         placeholder="Surname"
                         value={employeeForm.Surname}
                         onChange={(e) => setEmployeeForm({ ...employeeForm, Surname: e.target.value })}
-                        required
+                        required // E detyrueshme
                         style={{ padding: '8px', marginRight: '10px', width: '200px' }}
                     />
+                    
+                    {/* BUTTON për të submituar formin */}
                     <button type="submit" style={{ padding: '8px 20px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Add Employee</button>
                 </form>
             </div>

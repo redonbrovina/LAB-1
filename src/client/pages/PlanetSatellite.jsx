@@ -1,33 +1,72 @@
 import { useState, useEffect } from 'react';
 
+/**
+ * ===========================================
+ * PLANET & SATELLITE MANAGEMENT PAGE
+ * ===========================================
+ * 
+ * KY ËSHTË FRONTEND PAGE për menaxhimin e Planet & Satellite
+ * 
+ * STRUKTURA:
+ * - Planet (Parent) - ka shumë Satellite (Children)
+ * - Soft Delete për Satellite (IsDeleted = true/false)
+ * - Full CRUD për të dy entitetet
+ */
+
 function PlanetSatellite() {
-    const [planetet, setPlanetet] = useState([]);
-    const [satelitet, setSatelitet] = useState([]);
-    const [satelitetDeleted, setSatelitetDeleted] = useState([]);
-    const [planetForm, setPlanetForm] = useState({ Name: '', Type: '' });
-    const [satelitForm, setSatelitForm] = useState({ Name: '', PlanetID: '' });
-    const [editingPlanet, setEditingPlanet] = useState(null);
-    const [editingSatelit, setEditingSatelit] = useState(null);
+    // ===========================================
+    // 1. STATE MANAGEMENT (useState)
+    // ===========================================
+    
+    // STATE për të ruajtur të dhënat nga API
+    const [planetet, setPlanetet] = useState([]);           // Lista e të gjithë planetëve
+    const [satelitet, setSatelitet] = useState([]);         // Lista e të gjithë satelitëve (jo të fshirë)
+    const [satelitetDeleted, setSatelitetDeleted] = useState([]); // Lista e satelitëve të fshirë (IsDeleted = true)
+    
+    // STATE për formularët e krijimit
+    const [planetForm, setPlanetForm] = useState({ Name: '', Type: '' });     // Form për të shtuar planet të ri
+    const [satelitForm, setSatelitForm] = useState({ Name: '', PlanetID: '' }); // Form për të shtuar satelit të ri
+    
+    // STATE për editim (kur klikon "Edit" button)
+    const [editingPlanet, setEditingPlanet] = useState(null);   // Planet që po editohet (null = nuk po editohet)
+    const [editingSatelit, setEditingSatelit] = useState(null); // Satelit që po editohet (null = nuk po editohet)
 
+    // ===========================================
+    // 2. useEffect - LOAD DATA KUR HAPET FAQJA
+    // ===========================================
+    
     useEffect(() => {
-        fetchPlanetet();
-        fetchSatelitet();
-        fetchSatelitetDeleted();
-    }, []);
+        // Kur hapet faqja, merr të gjitha të dhënat
+        fetchPlanetet();        // Merr planetët
+        fetchSatelitet();       // Merr satelitët (jo të fshirë)
+        fetchSatelitetDeleted(); // Merr satelitët e fshirë
+    }, []); // [] = ekzekutohet vetëm një herë kur hapet faqja
 
+    // ===========================================
+    // 3. API FUNCTIONS - KOMUNIKIMI ME BACKEND
+    // ===========================================
+
+    /**
+     * FETCH PLANETËT - Merr të gjithë planetët nga API
+     * KY ËSHTË PËR: Kur kërkon "shfaq të gjithë planetët"
+     */
     const fetchPlanetet = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/planetet');
-            const data = await res.json();
-            setPlanetet(data);
+            const res = await fetch('http://localhost:5000/api/planetet'); // GET request
+            const data = await res.json(); // Konverto response në JSON
+            setPlanetet(data); // Ruaj në state
         } catch (err) {
-            console.error(err);
+            console.error(err); // Nëse ka gabim, shkruaj në console
         }
     };
 
+    /**
+     * FETCH SATELITËT - Merr satelitët që NUK janë të fshirë
+     * KY ËSHTË PËR: Tabela normale e satelitëve
+     */
     const fetchSatelitet = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/satelitet');
+            const res = await fetch('http://localhost:5000/api/satelitet'); // GET request
             const data = await res.json();
             setSatelitet(data);
         } catch (err) {
@@ -35,9 +74,13 @@ function PlanetSatellite() {
         }
     };
 
+    /**
+     * FETCH SATELITËT E FSHIRË - Merr vetëm ato me IsDeleted = true
+     * KY ËSHTË PËR: Seksioni i veçantë "Deleted Satellites Only"
+     */
     const fetchSatelitetDeleted = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/satelitet/deleted');
+            const res = await fetch('http://localhost:5000/api/satelitet/deleted'); // Special endpoint
             const data = await res.json();
             setSatelitetDeleted(data);
         } catch (err) {
@@ -45,111 +88,171 @@ function PlanetSatellite() {
         }
     };
 
+    // ===========================================
+    // 4. CRUD OPERATIONS - CREATE, READ, UPDATE, DELETE
+    // ===========================================
+
+    /**
+     * CREATE PLANET - Shto planet të ri
+     * KY ËSHTË PËR: Kur kërkon "realizoni kodin për të insertuar planet"
+     */
     const createPlanet = async (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Ndalon refresh të faqes kur submit form
         try {
+            // POST request për të krijuar planet të ri
             await fetch('http://localhost:5000/api/planetet', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(planetForm)
+                method: 'POST', // HTTP method
+                headers: { 'Content-Type': 'application/json' }, // Header për JSON
+                body: JSON.stringify(planetForm) // Të dhënat si JSON string
             });
-            setPlanetForm({ Name: '', Type: '' });
-            fetchPlanetet();
+            
+            // Pas suksesit:
+            setPlanetForm({ Name: '', Type: '' }); // Pastro formin
+            fetchPlanetet(); // Merr të dhënat e reja nga server
         } catch (err) {
             console.error(err);
         }
     };
 
+    /**
+     * UPDATE PLANET - Përditëso planet ekzistues
+     * KY ËSHTË PËR: Kur kërkon "përditëso planetin"
+     */
     const updatePlanet = async (e) => {
         e.preventDefault();
         try {
+            // PUT request për të përditësuar planet
             await fetch(`http://localhost:5000/api/planetet/${editingPlanet.PlanetID}`, {
-                method: 'PUT',
+                method: 'PUT', // HTTP method për update
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(editingPlanet)
+                body: JSON.stringify(editingPlanet) // Të dhënat e reja
             });
-            setEditingPlanet(null);
-            fetchPlanetet();
+            
+            // Pas suksesit:
+            setEditingPlanet(null); // Mbyll edit formin
+            fetchPlanetet(); // Merr të dhënat e përditësuara
         } catch (err) {
             console.error(err);
         }
     };
 
+    /**
+     * DELETE PLANET - Fshi planet
+     * KY ËSHTË PËR: Kur kërkon "fshi planetin"
+     */
     const deletePlanet = async (id) => {
+        // Konfirmim para fshirjes
         if (window.confirm('Are you sure you want to delete this planet?')) {
             try {
+                // DELETE request
                 await fetch(`http://localhost:5000/api/planetet/${id}`, {
                     method: 'DELETE'
                 });
-                fetchPlanetet();
+                fetchPlanetet(); // Merr listën e përditësuar
             } catch (err) {
                 console.error(err);
             }
         }
     };
 
+    /**
+     * CREATE SATELLITE - Shto satelit të ri
+     * KY ËSHTË PËR: Kur kërkon "realizoni kodin për të insertuar satelit"
+     * VINI RE: Duhet dropdown për zgjedhjen e Planet (si kërkohet në detyrë)
+     */
     const createSatelit = async (e) => {
         e.preventDefault();
         try {
+            // POST request për të krijuar satelit të ri
             await fetch('http://localhost:5000/api/satelitet', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(satelitForm)
             });
-            setSatelitForm({ Name: '', PlanetID: '' });
-            fetchSatelitet();
-            fetchSatelitetDeleted();
+            
+            // Pas suksesit:
+            setSatelitForm({ Name: '', PlanetID: '' }); // Pastro formin
+            fetchSatelitet(); // Merr satelitët e rinj
+            fetchSatelitetDeleted(); // Merr edhe të fshirët (nëse ka ndryshime)
         } catch (err) {
             console.error(err);
         }
     };
 
+    /**
+     * UPDATE SATELLITE - Përditëso satelit ekzistues
+     * KY ËSHTË PËR: Kur kërkon "përditëso satelitin"
+     */
     const updateSatelit = async (e) => {
         e.preventDefault();
         try {
+            // PUT request për të përditësuar satelit
             await fetch(`http://localhost:5000/api/satelitet/${editingSatelit.SatelliteID}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(editingSatelit)
             });
-            setEditingSatelit(null);
-            fetchSatelitet();
-            fetchSatelitetDeleted();
+            
+            // Pas suksesit:
+            setEditingSatelit(null); // Mbyll edit formin
+            fetchSatelitet(); // Merr satelitët e përditësuar
+            fetchSatelitetDeleted(); // Merr edhe të fshirët
         } catch (err) {
             console.error(err);
         }
     };
 
+    /**
+     * DELETE SATELLITE - Fshi satelit (SOFT DELETE)
+     * KY ËSHTË PËR: Kur kërkon "fshi satelitin"
+     * VINI RE: Kjo është SOFT DELETE - vetëm e markon IsDeleted = true
+     */
     const deleteSatelit = async (id) => {
         if (window.confirm('Are you sure you want to delete this satellite?')) {
             try {
+                // DELETE request (por në backend është soft delete)
                 await fetch(`http://localhost:5000/api/satelitet/${id}`, {
                     method: 'DELETE'
                 });
-                fetchSatelitet();
-                fetchSatelitetDeleted();
+                
+                // Merr të dhënat e përditësuara
+                fetchSatelitet(); // Merr satelitët aktivë
+                fetchSatelitetDeleted(); // Merr satelitët e fshirë
             } catch (err) {
                 console.error(err);
             }
         }
     };
 
+    // ===========================================
+    // 5. RENDER - SHFAQJA E FAQES
+    // ===========================================
+
     return (
         <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
             <h1>Planet & Satellite Management</h1>
 
-            {/* CREATE PLANET */}
+            {/* ===========================================
+                SEKSIONI 1: CREATE PLANET
+                ===========================================
+                KY ËSHTË PËR: "Realizoni kodin për të insertuar planet"
+                - Form për të shtuar planet të ri
+                - Fushat: Name, Type (sipas detyrës)
+            */}
             <div style={{ marginBottom: '30px', padding: '15px', border: '1px solid #ccc', borderRadius: '5px' }}>
                 <h2>Create Planet</h2>
                 <form onSubmit={createPlanet}>
+                    {/* INPUT për emrin e planetit */}
                     <input
                         type="text"
                         placeholder="Name"
-                        value={planetForm.Name}
-                        onChange={(e) => setPlanetForm({ ...planetForm, Name: e.target.value })}
-                        required
+                        value={planetForm.Name} // Vlera nga state
+                        onChange={(e) => setPlanetForm({ ...planetForm, Name: e.target.value })} // Update state kur shkruan
+                        required // E detyrueshme
                         style={{ padding: '8px', marginRight: '10px', width: '200px' }}
                     />
+                    
+                    {/* INPUT për tipin e planetit */}
                     <input
                         type="text"
                         placeholder="Type"
@@ -157,11 +260,19 @@ function PlanetSatellite() {
                         onChange={(e) => setPlanetForm({ ...planetForm, Type: e.target.value })}
                         style={{ padding: '8px', marginRight: '10px', width: '200px' }}
                     />
+                    
+                    {/* BUTTON për të submituar formin */}
                     <button type="submit" style={{ padding: '8px 20px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Add Planet</button>
                 </form>
             </div>
 
-            {/* VIEW ALL PLANETS */}
+            {/* ===========================================
+                SEKSIONI 2: VIEW ALL PLANETS (READ)
+                ===========================================
+                KY ËSHTË PËR: "Shfaq të gjithë planetët"
+                - Tabela që tregon të gjithë planetët
+                - Butona Edit dhe Delete për çdo planet
+            */}
             <div style={{ marginBottom: '30px', padding: '15px', border: '1px solid #ccc', borderRadius: '5px' }}>
                 <h2>All Planets</h2>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -174,20 +285,24 @@ function PlanetSatellite() {
                         </tr>
                     </thead>
                     <tbody>
+                        {/* MAP për të shfaqur çdo planet në tabelë */}
                         {planetet.map(p => (
                             <tr key={p.PlanetID}>
                                 <td style={{ border: '1px solid #ccc', padding: '8px' }}>{p.PlanetID}</td>
                                 <td style={{ border: '1px solid #ccc', padding: '8px' }}>{p.Name}</td>
                                 <td style={{ border: '1px solid #ccc', padding: '8px' }}>{p.Type}</td>
                                 <td style={{ border: '1px solid #ccc', padding: '8px' }}>
+                                    {/* EDIT BUTTON - Hap formin e editimit */}
                                     <button 
-                                        onClick={() => setEditingPlanet(p)}
+                                        onClick={() => setEditingPlanet(p)} // Vendos planetin që po editohet
                                         style={{ padding: '5px 10px', marginRight: '5px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
                                     >
                                         Edit
                                     </button>
+                                    
+                                    {/* DELETE BUTTON - Fshi planetin */}
                                     <button 
-                                        onClick={() => deletePlanet(p.PlanetID)}
+                                        onClick={() => deletePlanet(p.PlanetID)} // Thirr funksionin e fshirjes
                                         style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
                                     >
                                         Delete
@@ -199,30 +314,43 @@ function PlanetSatellite() {
                 </table>
             </div>
 
-            {/* EDIT PLANET */}
+            {/* ===========================================
+                SEKSIONI 3: EDIT PLANET (UPDATE)
+                ===========================================
+                KY ËSHTË PËR: "Përditëso planetin"
+                - Shfaqet vetëm kur editingPlanet nuk është null
+                - Form për të përditësuar planetin e zgjedhur
+            */}
             {editingPlanet && (
                 <div style={{ marginBottom: '30px', padding: '15px', border: '2px solid #007bff', borderRadius: '5px', backgroundColor: '#f0f8ff' }}>
                     <h2>Edit Planet</h2>
                     <form onSubmit={updatePlanet}>
+                        {/* INPUT për emrin e planetit (me vlerën aktuale) */}
                         <input
                             type="text"
                             placeholder="Name"
-                            value={editingPlanet.Name}
-                            onChange={(e) => setEditingPlanet({ ...editingPlanet, Name: e.target.value })}
+                            value={editingPlanet.Name} // Vlera aktuale e planetit
+                            onChange={(e) => setEditingPlanet({ ...editingPlanet, Name: e.target.value })} // Update vetëm Name
                             required
                             style={{ padding: '8px', marginRight: '10px', width: '200px' }}
                         />
+                        
+                        {/* INPUT për tipin e planetit (me vlerën aktuale) */}
                         <input
                             type="text"
                             placeholder="Type"
-                            value={editingPlanet.Type}
-                            onChange={(e) => setEditingPlanet({ ...editingPlanet, Type: e.target.value })}
+                            value={editingPlanet.Type} // Vlera aktuale e planetit
+                            onChange={(e) => setEditingPlanet({ ...editingPlanet, Type: e.target.value })} // Update vetëm Type
                             style={{ padding: '8px', marginRight: '10px', width: '200px' }}
                         />
+                        
+                        {/* SAVE BUTTON - Ruaj ndryshimet */}
                         <button type="submit" style={{ padding: '8px 20px', marginRight: '10px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Save</button>
+                        
+                        {/* CANCEL BUTTON - Anulo editimin */}
                         <button 
                             type="button" 
-                            onClick={() => setEditingPlanet(null)}
+                            onClick={() => setEditingPlanet(null)} // Mbyll edit formin
                             style={{ padding: '8px 20px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
                         >
                             Cancel
