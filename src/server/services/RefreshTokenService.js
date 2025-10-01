@@ -20,7 +20,7 @@ class RefreshTokenService {
                 iat: Math.floor(Date.now() / 1000)
             },
             JWT_REFRESH_SECRET,
-            { expiresIn: '1d' } // 7 days
+            { expiresIn: '1d' } // 1 day
         );
 
         const expiresAt = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000); 
