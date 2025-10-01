@@ -55,7 +55,7 @@ class AplikimiController {
             const { email, password, ...otherData } = req.body;
             const existingClient = await this.klientiService.getKlientiByEmail(email);
             
-            if (existingClient && existingClient.length > 0) {
+            if (existingClient) {
                 return res.status(400).json({ message: 'Email already in use' });
             }
 
