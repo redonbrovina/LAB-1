@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // Make a simple API call to check if we have a valid session
       const response = await publicApiPost('/form/refresh-token', {});
-
+      
       const userInfoResponse = await fetch('http://localhost:5000/api/form/user-info', {
         method: 'GET',
         credentials: 'include',
