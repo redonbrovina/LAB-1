@@ -36,6 +36,12 @@ export const AuthProvider = ({ children }) => {
         const userInfo = await userInfoResponse.json();
         setUser(userInfo);
       }
+
+      const isTrue = sessionStorage.getItem('isLoggedIn');
+
+      if(!isTrue){
+        logout()
+      }
       
     } catch (error) {
       // No valid session, user stays null
@@ -45,6 +51,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
     setUser(userData);
+    sessionStorage.setItem('isLoggedIn', 'true'); 
   };
 
   const logout = async () => {
@@ -54,6 +61,7 @@ export const AuthProvider = ({ children }) => {
       console.error('Logout error:', error);
     } finally {
       setUser(null);
+      sessionStorage.removeItem('isLoggedIn');
       setDefaultPaymentMethod(null);
     }
   };
